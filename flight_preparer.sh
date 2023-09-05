@@ -31,7 +31,7 @@ echo -e "${Red}\tErasing timer data from:${color_off} src/bobot_bin/abs_position
 > src/bobot_bin/abs_position.txt
 echo -e "${Green}\tFile contents erased from:${color_off} src/bobot_bin/abs_position.txt\n"
 
-echo -e "\tClear Flight Log and Error Log data?\n"
+echo -e "\tClear Flight Log and Error Log data?(Yes/no)"
 read clear_log_request
 if [ ${clear_log_request} == "Yes" ] || [ ${clear_log_request} == "yes" ] || [ ${clear_log_request} == "YES" ] || [ ${clear_log_request} == "y" ]
     then

@@ -9,7 +9,11 @@
 
 # Script to run on startup - should source the workspace, (possible) build the repository, and the launch the main code
 
-balls=$(dirname)
+_path=$(realpath "$0")
+_DIR=$(dirname $_path)
 
-echo ${balls}
-cd ${PATH}
+cd ${_DIR}
+cd ..
+source /opt/ros/humble/setup.bash
+source install/setup.bash
+rviz2
