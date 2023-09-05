@@ -4,7 +4,7 @@
 # |* (c) Copyright 2023                                           |
 # |* Balloon Payload Program, University of Maryland              |
 # |* College Park, MD 20742                                       |
-# |* https://ssl.umd.edu                                          |
+# |* https://bpp.umd.edu                                          |
 # |***************************************************************|
 
 
