@@ -14,6 +14,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
   # MESSAGES
   "msg/BobotTimer.msg"
+  "msg/BobotAbsPosition.msg"
 
   # SERVICES
   "srv/BobotInitialize.srv"

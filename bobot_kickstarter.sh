@@ -104,5 +104,7 @@ sudo apt install sl -y
 
 sudo apt update -y
 sudo apt upgrade -y
+echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 colcon build
+source install/setup.bash
 echo -e "\n${Green}Finished installing! Be sure to check for errors and out-of-date utilities\nFor any issues, please file a Git-issue or contact Rahul Vishnoi${color_off}\n"
