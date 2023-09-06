@@ -1,0 +1,3 @@
+[Error Log]-[06-09-23_104034] Program started, but bobot_bin/ directory did not exist!
+[Error Log]-[06-09-23_104034] creating path: src/bobot_bin/log_files/error_logs
+[Error Log]-[06-09-23_104034] creating path: src/bobot_bin/log_files/flight_logs

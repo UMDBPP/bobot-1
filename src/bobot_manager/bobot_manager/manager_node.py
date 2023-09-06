@@ -77,6 +77,11 @@ class BobotManagerNode(Node): # Create a new class that inherits the rclpy.Node 
             logfile.write("[BobotManager]-[" + datetime.datetime.now().strftime("%d-%m-%y_%H%M%S") + "] creating abs_position watcher file\n")
             open(os.path.join(src_path, "abs_position.txt"), "w").close()
 
+        if not os.path.exists(os.path.join(src_path, "reset_counter.txt")):
+            self.get_logger().info("creating reset counter file")
+            logfile.write("[BobotManager]-[" + datetime.datetime.now().strftime("%d-%m-%y_%H%M%S") + "] creating reset counter file\n")
+            open(os.path.join(src_path, "reset_counter.txt"), "w").close()
+
         # Start a subscriber to read the timer and write to the file(?)
         self.timer = self.create_subscription(BobotTimer, "flight_timer", self.timer_callback, 10)
 

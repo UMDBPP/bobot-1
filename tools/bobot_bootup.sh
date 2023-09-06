@@ -16,4 +16,5 @@ cd ${_DIR}
 cd ..
 source /opt/ros/humble/setup.bash
 source install/setup.bash
-rviz2
+
+gnome-terminal -- bash -c "ros2 launch bobot_launcher core_launcher.launch.py; exec bash"
