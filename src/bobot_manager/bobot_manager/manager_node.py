@@ -9,10 +9,13 @@
 
 import rclpy, os, datetime
 from rclpy.node import Node # Need to do this because ROS is cringe
+
+# -- BOBOT MSGS -- #
 from bobot_msgs.msg import BobotTimer
 from bobot_msgs.msg import BobotAbsPosition
 
-
+# -- BOBOT SRVS -- #
+from bobot_msgs.srv import BobotLastTimerValue
 
 class BobotManagerNode(Node): # Create a new class that inherits the rclpy.Node Class
     def __init__(self): # Define the initialze function
@@ -88,12 +91,22 @@ class BobotManagerNode(Node): # Create a new class that inherits the rclpy.Node 
         # Start a subscriber to read the abs_position and write to the file
         self.abs_position = self.create_publisher(BobotAbsPosition, "abs_position", 10)
 
+        # Create the timer service
+        self.bobot_last_timer_val = self.create_service(BobotLastTimerValue, "last_timer_value", self.get_last_timer_value_callback)
+
+        
+
 
 
     def timer_callback(self, msg):
         print(msg)
         print(msg.time)
 
+    def abs_position_callback(self, msg):
+        pass
+    
+    def get_last_timer_value_callback(self, request, response):
+        pass
         
 
 

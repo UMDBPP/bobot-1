@@ -21,13 +21,22 @@ def generate_launch_description():
     #     }
 
     # Declare the nodes that we wish to run
-    bobot_timer_node = Node(
+    bobot_manager_node = Node(
         package="bobot_manager",
         namespace="bobot",
         executable="Manager",
         name="BobotManagerNode"
     )
 
+    bobot_timer_node = Node(
+        package="bobot_manager",
+        namespace="bobot",
+        executable="Timer",
+        name="BobotTimerNode"
+    )
+
+
     return LaunchDescription([
-        bobot_timer_node, 
+        bobot_manager_node,
+        bobot_timer_node
     ])

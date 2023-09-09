@@ -1,0 +1,3 @@
+---
+bool returned
+uint32 last_recorded_time

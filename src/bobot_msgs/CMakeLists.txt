@@ -18,6 +18,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
   # SERVICES
   "srv/BobotInitialize.srv"
+  "srv/BobotLastTimerValue.srv"
 
  )
 

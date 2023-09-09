@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "Manager = bobot_manager.manager_node:main"
+            "Manager = bobot_manager.manager_node:main",
+            "Timer = bobot_manager.timer_node:main"
         ],
     },
 )
