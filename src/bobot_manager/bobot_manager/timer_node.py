@@ -21,6 +21,8 @@ class BobotTimerNode(Node):
         super().__init__("BobotTimer")
 
         self.get_last_time_value = self.create_client(BobotLastTimerValue, "last_timer_value")
+        while not self.get_last_time_value.wait_for_service(timeout_sec=2):
+            self.get_logger().warning("Waiting to get")
 
 
 

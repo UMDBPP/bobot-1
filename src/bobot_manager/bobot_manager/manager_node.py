@@ -89,7 +89,7 @@ class BobotManagerNode(Node): # Create a new class that inherits the rclpy.Node 
         self.timer = self.create_subscription(BobotTimer, "flight_timer", self.timer_callback, 10)
 
         # Start a subscriber to read the abs_position and write to the file
-        self.abs_position = self.create_publisher(BobotAbsPosition, "abs_position", 10)
+        self.abs_position = self.create_subscription(BobotAbsPosition, "abs_position", self.abs_position_callback, 10)
 
         # Create the timer service
         self.bobot_last_timer_val = self.create_service(BobotLastTimerValue, "last_timer_value", self.get_last_timer_value_callback)
