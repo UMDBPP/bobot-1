@@ -1,0 +1,4 @@
+# This name needs to be the same as the node name specified in the launch file for Bobot utils. DO NOT CHANGE IT... unless you change the node names
+ServoJerk:
+  ros__parameters:
+    jerk_rate: 10

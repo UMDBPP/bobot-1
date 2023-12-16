@@ -29,7 +29,10 @@ public:
     // Constructor -  needs a node name and a boolean that indicates if we are using intra_process_commms (?))
     explicit BobotTimerNode(const std::string & node_name, bool intra_process_comms = false) : rclcpp_lifecycle::LifecycleNode(node_name, rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
     {
-        RCLCPP_INFO(get_logger(), "Bobot timer node has succesfully launched, starting state is unconfigured state");
+        // Get the current bobot's name for logging purposes
+        this->declare_parameter("bobot_name", rclcpp::PARAMETER_STRING);
+        bobot_name = this->get_parameter("bobot_name").as_string();
+        RCLCPP_INFO(get_logger(), "Bobot timer node has succesfully launched for %s, starting state is unconfigured state", bobot_name.c_str());
     }
 
 
@@ -43,12 +46,12 @@ public:
 
         if(timer_publisher_->is_activated() != true && has_started != -1) //  If we're not activated, lets count how many seconds it takes. If we've already activated and we're shut down, don't send message
         {
-            RCLCPP_WARN(get_logger(), "Bobot-1 Timer has not started yet, this should not last longer than a few seconds");
+            RCLCPP_WARN(get_logger(), "Bobot Timer has not started yet, this should not last longer than a few seconds");
             has_started = has_started + 1;
         }
         if(has_started == 15)
         {
-            RCLCPP_ERROR(get_logger(), "Bobot-1 Timer has taken longer than 15 seconds to start, logging error!");
+            RCLCPP_ERROR(get_logger(), "Bobot Timer Node has taken longer than 15 seconds to start, logging error!");
             timer_msg->took_too_long = true;
             RCLCPP_ERROR(get_logger(), "Bobot Manager should be attempting to resolve this issue, hang tight!");
             has_started = -1; // set this to -1 so that we don't spam the message. The manager node will take care of it now
@@ -62,11 +65,12 @@ public:
     */
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_configure(const rclcpp_lifecycle::State&)
     {
-        timer_publisher_ = this->create_publisher<bobot_msgs::msg::BobotTimer>("bobot1/timer", 10); // Create a publisher with a namespace of bobot1 called timer, and have the queue size be 10 (since it should publish at 1 hz)
+        topic_name = bobot_name + "/timer";
+        timer_publisher_ = this->create_publisher<bobot_msgs::msg::BobotTimer>(topic_name, 10); // Create a publisher with a namespace of bobot1 called timer, and have the queue size be 10 (since it should publish at 1 hz)
         bobotTimer_callback_ = this->create_wall_timer(loop_rate, [this]() -> void { publish_time_count(); }); // Weird sytnax, but I think this is basically creating the callback function call at the specified spin rate
         
         // Add log information, incase our logging fails
-        RCLCPP_INFO(get_logger(), "Attempting to configure Bobot-1 timer, please hold!");
+        RCLCPP_INFO(get_logger(), "Attempting to configure %s timer, please hold!", bobot_name.c_str());
 
 
         // -- FROM ROS REFERENCE -- //
@@ -89,7 +93,7 @@ public:
         timer_publisher_->on_activate(); // Call the activatio functions
         timer_activated = true; // set the timer activated to be true
         has_started = -1;
-        RCLCPP_INFO(get_logger(), "Bobot-1 timer has been activated"); // use the ros logger incase our logging messes ups
+        RCLCPP_INFO(get_logger(), "%s's timer has been activated", bobot_name.c_str()); // use the ros logger incase our logging messes ups
         
         // We return a success and hence invoke the transition to the next step: "active".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS; // let the people know we've activated. In theory, this would so something important
@@ -102,9 +106,9 @@ public:
         // Here, we are deactivating the node, which no longer allows its messages to go through
         timer_publisher_->on_deactivate(); // Call the activation functions
         timer_activated = false; // set the timer activated to be true
-        RCLCPP_INFO(get_logger(), "Bobot-1 timer has been deactivated... This should only occur if we've reached the time limit!"); // use the ros logger incase our logging messes ups
+        RCLCPP_INFO(get_logger(), "%s's timer has been deactivated... This should only occur if we've reached the time limit!", bobot_name.c_str()); // use the ros logger incase our logging messes ups
         time_limit_reached = true; //publish that we've reached the time limit
-        RCLCPP_WARN(get_logger(), "Bobot-1 Timer Node confirms time limit reached and has deactivated, preparing to shut down node");
+        RCLCPP_WARN(get_logger(), "Bobot Timer Node confirms time limit reached and has deactivated, preparing to shut down node");
 
         // We return a success and hence invoke the transition to the next step: "inactive".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS; // let the people know we've activated. In theory, this would so something important
@@ -167,6 +171,8 @@ private:
     /// Same as above, this is a ros timer that regulates the rate at which the publisher publishhes data. Should follow lifecycle management (someho?)
     std::shared_ptr<rclcpp::TimerBase> bobotTimer_callback_;
 
+    std::string bobot_name;
+    std::string topic_name;
     uint32_t time_val = 0; // Keep track of the timer value
     int has_started = 0; // Check if we have started yet
     bool timer_activated = false; // Let the manager know if we've activated (for logging purposes)
@@ -185,7 +191,7 @@ int main(int argc, char* argv[])
     
     rclcpp::init(argc, argv); // initialize ROS
     rclcpp::executors::SingleThreadedExecutor bobot_exec; // created an executor on a single thread, because thats whats recommended (still learning about this)
-    std::shared_ptr<BobotTimerNode> bobot_timer_node = std::make_shared<BobotTimerNode>("bobot_timer"); // create the ros node
+    std::shared_ptr<BobotTimerNode> bobot_timer_node = std::make_shared<BobotTimerNode>("BobotTimer"); // create the ros node
     bobot_exec.add_node(bobot_timer_node->get_node_base_interface()); // add the nodes base class (lifecycle stuff)
     bobot_exec.spin(); // start spinning the node
     rclcpp::shutdown(); // Shutdown cleanly when we're done (ALL OF ROS, not just the node)

@@ -1,0 +1,37 @@
+# This name needs to be the same as the node name specified in the launch file for Bobot utils. DO NOT CHANGE IT... unless you change the node names
+ServoJerk:
+  ros__parameters:
+  # -- BOARD OPTIONS -- #
+  #   "lattepanda_v1" 
+  #   "arduino"
+  #   "raspberry_pi"
+
+    board: "raspberry_pi" # Can either be a raspberry pi, LattePanda (with specified version), or a PC-to-arduino
+
+    # Create an array of pins
+    IO_PINS: ["pin1", "pin2", "pin3", "pin4"]
+    # -
+    #   pin_num: 1
+    #   type: "digital"
+    #   read_type: "input"
+    # -
+    #   pin_num: 2
+    #   type: "PWM"
+    #   read_type: "output"
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+

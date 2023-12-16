@@ -85,6 +85,12 @@ class BobotManagerNode(Node): # Create a new class that inherits the rclpy.Node 
             logfile.write("[BobotManager]-[" + datetime.datetime.now().strftime("%d-%m-%y_%H%M%S") + "] creating reset counter file\n")
             open(os.path.join(src_path, "reset_counter.txt"), "w").close()
 
+
+        self.declare_parameter("bobot_name", rclpy.Parameter.Type.STRING)
+        bobot_name = self.get_parameter("bobot_name")
+        self.get_logger().info("Current Bobot's name: %s" % str(bobot_name.value))
+
+        ## TODO - add bobot name for this schtuff
         # Start a subscriber to read the timer and write to the file(?)
         self.timer = self.create_subscription(BobotTimer, "flight_timer", self.timer_callback, 10)
 

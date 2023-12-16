@@ -1,4 +1,0 @@
-[BobotManager]-[06-09-23_104034] Starting up Bobot!
-[BobotManager]-[06-09-23_104034] creating timer watcher file
-[BobotManager]-[06-09-23_104034] creating abs_position watcher file
-[BobotManager]-[06-09-23_104034] creating reset counter file

@@ -21,8 +21,17 @@ include_directories(
   ${rclcpp_INCLUDE_DIRS})
 
 add_executable(timer src/timer_node.cpp)
+add_executable(servo_jerk src/servo_jerker.cpp)
+
 ament_target_dependencies(timer rclcpp std_msgs bobot_msgs)
+ament_target_dependencies(servo_jerk rclcpp std_msgs bobot_msgs)
+
 target_link_libraries(timer
+  ${rclcpp_lifecycle_LIBRARIES}
+  ${std_msgs_LIBRARIES}
+)
+
+target_link_libraries(servo_jerk
   ${rclcpp_lifecycle_LIBRARIES}
   ${std_msgs_LIBRARIES}
 )
@@ -42,6 +51,12 @@ endif()
 
 install(TARGETS
   timer
+  servo_jerk
   DESTINATION lib/${PROJECT_NAME})
+
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
+)
 
 ament_package()
