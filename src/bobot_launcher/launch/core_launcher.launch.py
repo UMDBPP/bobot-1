@@ -18,6 +18,14 @@ def generate_launch_description():
         "bobot_name", default_value=TextSubstitution(text="bobot1")
     )
 
+    # -- BOARD OPTIONS -- #
+    #   "lattepanda_v1" 
+    #   "arduino"
+    #   "raspberry_pi"
+    device_type_arg = DeclareLaunchArgument(
+        "device_type", default_value=TextSubstitution(text="lattepanda_v1")
+    )
+
 
     # # Save the URDF xacro file path and save it for later
     # urdf_xacro_path = ""
@@ -37,6 +45,7 @@ def generate_launch_description():
         name="BobotManager",
         parameters=[{
             "bobot_name": LaunchConfiguration("bobot_name"),
+            "device_type" : LaunchConfiguration("device_type")
         }]
     )
 
@@ -45,14 +54,15 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(get_package_share_directory("bobot_utils"), "launch/bobot_utility_launcher.launch.py")
         ),
-        launch_arguments=[(
-            "bobot_name", LaunchConfiguration("bobot_name") # pass the bobot_name to the other launch file
-        )]
+        launch_arguments=[
+            ("bobot_name", LaunchConfiguration("bobot_name")), # pass the bobot_name to the other launch file 
+            ("device_type", LaunchConfiguration("device_type"))] # pass the device type to the other launch file
     )
 
 
     return LaunchDescription([
         bobot_name_arg,
+        device_type_arg,
         bobot_manager_node,
         launch_include
     ])

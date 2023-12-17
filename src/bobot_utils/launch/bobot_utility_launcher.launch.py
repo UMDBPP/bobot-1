@@ -17,6 +17,9 @@ def generate_launch_description():
     bobot_name_arg = DeclareLaunchArgument(
         "bobot_name", default_value=TextSubstitution(text="bobot1")
     )
+    device_type_arg = DeclareLaunchArgument(
+        "device_type", default_value=TextSubstitution(text="lattepanda_v1")
+    )
 
     # Declare the nodes thhat we want to run
     bobot_timer_node = Node(
@@ -30,7 +33,7 @@ def generate_launch_description():
 
 
     hardware_config = PathJoinSubstitution(["src", "bobot_utils", "hardware", LaunchConfiguration("bobot_name"), "hardware.yaml"])
-    board_info_config = PathJoinSubstitution(["src", "bobot_utils", "hardware", LaunchConfiguration("bobot_name"), "board_info.yaml"])
+    board_info_config = PathJoinSubstitution(["src", "bobot_utils", "hardware", LaunchConfiguration("bobot_name"), "pinouts.yaml"])
 
     bobot_servo_jerk_node = Node(
         package="bobot_utils",
@@ -41,6 +44,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         bobot_name_arg,
+        device_type_arg,
         bobot_timer_node,
         bobot_servo_jerk_node
     ])

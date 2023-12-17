@@ -37,7 +37,6 @@ public:
         // Get the rest of the parameters that we need for this node!
         // First, we delcare the parameters
         this->declare_parameter("jerk_rate", rclcpp::PARAMETER_INTEGER);
-        this->declare_parameter("board", rclcpp::PARAMETER_STRING);
         this->declare_parameter("IO_PINS", rclcpp::PARAMETER_STRING_ARRAY);
 
         // Then, we get the parameters
