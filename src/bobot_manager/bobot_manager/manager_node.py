@@ -13,6 +13,7 @@ from rclpy.node import Node # Need to do this because ROS is cringe
 # -- BOBOT MSGS -- #
 from bobot_msgs.msg import BobotTimer
 from bobot_msgs.msg import BobotAbsPosition
+from lifecycle_msgs.srv import GetState, ChangeState, GetAvailableStates, GetAvailableTransitions
 
 # -- BOBOT SRVS -- #
 from bobot_msgs.srv import BobotLastTimerValue
@@ -88,16 +89,22 @@ class BobotManagerNode(Node): # Create a new class that inherits the rclpy.Node 
 
         self.declare_parameter("bobot_name", rclpy.Parameter.Type.STRING)
         bobot_name = self.get_parameter("bobot_name")
-        self.get_logger().info("Current Bobot's name: %s" % str(bobot_name.value))
+        self.get_logger().info("Current bobot's name: %s" % str(bobot_name.value))
+        logfile.write("[BobotManager]-[" + datetime.datetime.now().strftime("%d-%m-%y_%H%M%S") + "] Current bobot's name: " + str(bobot_name.value))
 
-        ## TODO - add bobot name for this schtuff
-        # Start a subscriber to read the timer and write to the file(?)
-        self.timer = self.create_subscription(BobotTimer, "flight_timer", self.timer_callback, 10)
+        # Subscribe to the flight timer node, so that we can keep track of the time (and also write it to our file), and keep track of node events
+        self.timer = self.create_subscription(BobotTimer, (str(bobot_name.value) + "/flight_timer"), self.timer_callback, 10)
+        
+        # create clients to contact the ChangeState srv, GetState srv, and other state info services so that we can query the timer_node and make it start n stuff
+        self.timer_change_state = self.create_client(ChangeState, "BobotTimer/change_state")
+        self.timer_get_state = self.create_client(ChangeState, "BobotTimer/get_state")
+        self.timer_get_avail_state = self.create_client(ChangeState, "BobotTimer/get_available_states")
+        self.timer_get_avail_transitions = self.create_client(ChangeState, "BobotTimer/get_available_transitions")
 
         # Start a subscriber to read the abs_position and write to the file
         self.abs_position = self.create_subscription(BobotAbsPosition, "abs_position", self.abs_position_callback, 10)
 
-        # Create the timer service
+        # TODO: MAKE THIS A PARAMETER, LOAD IT INTO THE PARAMETER SERVER, AND THEN TURN ON BOBOT <- have it get the parameter in the active state
         self.bobot_last_timer_val = self.create_service(BobotLastTimerValue, "last_timer_value", self.get_last_timer_value_callback)
 
         

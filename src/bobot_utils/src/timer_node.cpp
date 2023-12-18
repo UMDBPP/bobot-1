@@ -65,7 +65,7 @@ public:
     */
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_configure(const rclcpp_lifecycle::State&)
     {
-        topic_name = bobot_name + "/timer";
+        topic_name = bobot_name + "/flight_timer";
         timer_publisher_ = this->create_publisher<bobot_msgs::msg::BobotTimer>(topic_name, 10); // Create a publisher with a namespace of bobot1 called timer, and have the queue size be 10 (since it should publish at 1 hz)
         bobotTimer_callback_ = this->create_wall_timer(loop_rate, [this]() -> void { publish_time_count(); }); // Weird sytnax, but I think this is basically creating the callback function call at the specified spin rate
         
@@ -90,7 +90,7 @@ public:
         // on_activate callback is being called when the lifecycle node enters the "activating" state.
 
         // Here, we are activating the node, allowing it publish messages
-        timer_publisher_->on_activate(); // Call the activatio functions
+        timer_publisher_->on_activate(); // Call the activation functions
         timer_activated = true; // set the timer activated to be true
         has_started = -1;
         RCLCPP_INFO(get_logger(), "%s's timer has been activated", bobot_name.c_str()); // use the ros logger incase our logging messes ups

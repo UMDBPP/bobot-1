@@ -68,6 +68,7 @@ sudo apt install -y \
     ros-humble-rmw-fastrtps-cpp
     ros-humble-ros2-control \
     ros-humble-ros2-controllers \
+    ros-humble-
     ros-humble-controller-manager \
     ros-humble-xacro \
     ros-humble-tf2-tools \

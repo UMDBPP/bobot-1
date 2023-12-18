@@ -1,2 +1,0 @@
-[Error Log]-[16-12-23_191321] creating path: src/bobot_bin/log_files/error_logs
-[Error Log]-[16-12-23_191321] creating path: src/bobot_bin/log_files/flight_logs

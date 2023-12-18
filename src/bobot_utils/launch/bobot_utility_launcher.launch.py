@@ -39,12 +39,20 @@ def generate_launch_description():
         package="bobot_utils",
         executable="servo_jerk",
         name="ServoJerk", # This overrides the name listed in the timer_node file, but that's okay because it's better here (and the same anyway)
-        parameters=[hardware_config, board_info_config, {"bobot_name" : LaunchConfiguration("bobot_name")}]
+        parameters=[hardware_config, board_info_config, {"bobot_name" : LaunchConfiguration("bobot_name")}, {"device_type" : LaunchConfiguration("device_type")}]
+    )
+
+    bobot_alt_monitor_node = Node(
+        package="bobot_utils",
+        executable="altitude_monitor",
+        name="AltitudeMonitor", # This overrides the name listed in the timer_node file, but that's okay because it's better here (and the same anyway)
+        parameters=[hardware_config, board_info_config, {"bobot_name" : LaunchConfiguration("bobot_name")}, {"device_type" : LaunchConfiguration("device_type")}]
     )
 
     return LaunchDescription([
         bobot_name_arg,
         device_type_arg,
         bobot_timer_node,
-        bobot_servo_jerk_node
+        bobot_servo_jerk_node,
+        bobot_alt_monitor_node
     ])

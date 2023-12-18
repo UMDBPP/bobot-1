@@ -2,3 +2,8 @@
 ServoJerk:
   ros__parameters:
     jerk_rate: 10
+
+AltitudeMonitor:
+  ros__parameters:
+    sample_rate: 2 # sampling rate for alt sensor in milliseconds - translates to 500 Hz (for now)
+    max_altitude: 20 # in feet?

@@ -22,9 +22,11 @@ include_directories(
 
 add_executable(timer src/timer_node.cpp)
 add_executable(servo_jerk src/servo_jerker.cpp)
+add_executable(altitude_monitor src/altitude_monitor.cpp)
 
 ament_target_dependencies(timer rclcpp std_msgs bobot_msgs)
 ament_target_dependencies(servo_jerk rclcpp std_msgs bobot_msgs)
+ament_target_dependencies(altitude_monitor rclcpp std_msgs bobot_msgs)
 
 target_link_libraries(timer
   ${rclcpp_lifecycle_LIBRARIES}
@@ -32,6 +34,11 @@ target_link_libraries(timer
 )
 
 target_link_libraries(servo_jerk
+  ${rclcpp_lifecycle_LIBRARIES}
+  ${std_msgs_LIBRARIES}
+)
+
+target_link_libraries(altitude_monitor
   ${rclcpp_lifecycle_LIBRARIES}
   ${std_msgs_LIBRARIES}
 )
@@ -52,11 +59,17 @@ endif()
 install(TARGETS
   timer
   servo_jerk
+  altitude_monitor
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY
   launch
   DESTINATION share/${PROJECT_NAME}/
+)
+
+install(
+  DIRECTORY include/
+  DESTINATION include
 )
 
 ament_package()
