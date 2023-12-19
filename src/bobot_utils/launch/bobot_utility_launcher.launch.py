@@ -25,7 +25,7 @@ def generate_launch_description():
     bobot_timer_node = Node(
         package="bobot_utils",
         executable="timer",
-        name="BobotTimer", # This overrides the name listed in the timer_node file, but that's okay because it's better here (and the same anyway)
+        name="FlightTimer", # This overrides the name listed in the timer_node file, but that's okay because it's better here (and the same anyway)
         parameters=[{
             "bobot_name" : LaunchConfiguration("bobot_name")
         }]

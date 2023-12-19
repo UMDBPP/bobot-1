@@ -21,18 +21,18 @@ using namespace std::literals::chrono_literals;
 // using namespace bobot; 
 
 
-class BobotTimerNode : public rclcpp_lifecycle::LifecycleNode
+class BobotFlightTimerNode : public rclcpp_lifecycle::LifecycleNode
 {
 
 public:
 
     // Constructor -  needs a node name and a boolean that indicates if we are using intra_process_commms (?))
-    explicit BobotTimerNode(const std::string & node_name, bool intra_process_comms = false) : rclcpp_lifecycle::LifecycleNode(node_name, rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
+    explicit BobotFlightTimerNode(const std::string & node_name, bool intra_process_comms = false) : rclcpp_lifecycle::LifecycleNode(node_name, rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
     {
         // Get the current bobot's name for logging purposes
         this->declare_parameter("bobot_name", rclcpp::PARAMETER_STRING);
         bobot_name = this->get_parameter("bobot_name").as_string();
-        RCLCPP_INFO(get_logger(), "Bobot timer node has succesfully launched for %s, starting state is unconfigured state", bobot_name.c_str());
+        RCLCPP_INFO(get_logger(), "Flight Timer node has succesfully launched for %s, starting state is unconfigured state", bobot_name.c_str());
     }
 
 
@@ -46,12 +46,12 @@ public:
 
         if(timer_publisher_->is_activated() != true && has_started != -1) //  If we're not activated, lets count how many seconds it takes. If we've already activated and we're shut down, don't send message
         {
-            RCLCPP_WARN(get_logger(), "Bobot Timer has not started yet, this should not last longer than a few seconds");
+            RCLCPP_WARN(get_logger(), "Flight Timer has not started yet, this should not last longer than a few seconds");
             has_started = has_started + 1;
         }
         if(has_started == 15)
         {
-            RCLCPP_ERROR(get_logger(), "Bobot Timer Node has taken longer than 15 seconds to start, logging error!");
+            RCLCPP_ERROR(get_logger(), "Flight Timer Node has taken longer than 15 seconds to start, logging error!");
             timer_msg->took_too_long = true;
             RCLCPP_ERROR(get_logger(), "Bobot Manager should be attempting to resolve this issue, hang tight!");
             has_started = -1; // set this to -1 so that we don't spam the message. The manager node will take care of it now
@@ -108,7 +108,7 @@ public:
         timer_activated = false; // set the timer activated to be true
         RCLCPP_INFO(get_logger(), "%s's timer has been deactivated... This should only occur if we've reached the time limit!", bobot_name.c_str()); // use the ros logger incase our logging messes ups
         time_limit_reached = true; //publish that we've reached the time limit
-        RCLCPP_WARN(get_logger(), "Bobot Timer Node confirms time limit reached and has deactivated, preparing to shut down node");
+        RCLCPP_WARN(get_logger(), "Flight Timer Node confirms time limit reached and has deactivated, preparing to shut down node");
 
         // We return a success and hence invoke the transition to the next step: "inactive".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS; // let the people know we've activated. In theory, this would so something important
@@ -125,7 +125,7 @@ public:
         bobotTimer_callback_.reset(); // release the timer first
         timer_publisher_.reset(); // release the publisher after the timer
 
-        RCLCPP_INFO(get_logger(), "Bobot Timer Node has begun cleaning up");
+        RCLCPP_INFO(get_logger(), "Flight Timer Node has begun cleaning up");
 
         // We return a success and hence invoke the transition to the next step: "unconfigured".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
@@ -143,7 +143,7 @@ public:
         bobotTimer_callback_.reset(); // release the timer first
         timer_publisher_.reset(); // release the publisher after the timer
 
-        RCLCPP_INFO(get_logger(), "Bobot Timer Node has shut down");
+        RCLCPP_INFO(get_logger(), "Flight Timer Node has shut down");
         RCLCPP_INFO(get_logger(), "shutdown command was called from state %s", state.label().c_str());
 
         // We return a success and hence invoke the transition to the next step: "finalized".
@@ -191,7 +191,7 @@ int main(int argc, char* argv[])
     
     rclcpp::init(argc, argv); // initialize ROS
     rclcpp::executors::SingleThreadedExecutor bobot_exec; // created an executor on a single thread, because thats whats recommended (still learning about this)
-    std::shared_ptr<BobotTimerNode> bobot_timer_node = std::make_shared<BobotTimerNode>("BobotTimer"); // create the ros node
+    std::shared_ptr<BobotFlightTimerNode> bobot_timer_node = std::make_shared<BobotFlightTimerNode>("FlightTimer"); // create the ros node
     bobot_exec.add_node(bobot_timer_node->get_node_base_interface()); // add the nodes base class (lifecycle stuff)
     bobot_exec.spin(); // start spinning the node
     rclcpp::shutdown(); // Shutdown cleanly when we're done (ALL OF ROS, not just the node)
