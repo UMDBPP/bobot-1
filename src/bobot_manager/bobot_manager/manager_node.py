@@ -87,6 +87,8 @@ class BobotManagerNode(Node): # Create a new class that inherits the rclpy.Node 
             self.logfile.write("[BobotManager]-[" + datetime.datetime.now().strftime("%d-%m-%y_%H%M%S") + "] creating reset counter file\n")
             open(os.path.join(src_path, "reset_counter.txt"), "w").close() # save it
 
+        # Put the stuff below into a function
+
         self.declare_parameter("bobot_name", rclpy.Parameter.Type.STRING) # declare the ros parameter for the bobot_name
         bobot_name = self.get_parameter("bobot_name") # get the parameter for the bobot_name
         self.get_logger().info("Current bobot's name: %s" % str(bobot_name.value)) 
@@ -100,7 +102,6 @@ class BobotManagerNode(Node): # Create a new class that inherits the rclpy.Node 
         self.logfile.write("[BobotManager]-[" + datetime.datetime.now().strftime("%d-%m-%y_%H%M%S") + "] Created Flight Timer Node clients for " + str(bobot_name.value) + "\n")
         self.get_logger().info("Created Flight Timer Node clients")
 
-
         # create clients to contact that ChangeState srv, GetState srv, and other state info services so that we can turn on/off the altitude monitor node and do other things
         self.alt_monitor_change_state = self.create_client(ChangeState, "AltitudeManager/change_state")
         self.alt_monitor_get_state = self.create_client(GetState, "AltitudeManager/get_state")
@@ -108,7 +109,7 @@ class BobotManagerNode(Node): # Create a new class that inherits the rclpy.Node 
         self.alt_monitor_get_avail_transitions = self.create_client(GetAvailableTransitions, "AltitudeManager/get_available_transitions")
         self.logfile.write("[BobotManager]-[" + datetime.datetime.now().strftime("%d-%m-%y_%H%M%S") + "] Created Altitude Monitor Node clients for " + str(bobot_name.value) + "\n")
         self.get_logger().info("Created Altitude Monitor Node clients")
-
+        
         # create clients to contact that ChangeState srv, GetState srv, and other state info services so that we can turn on/off the servo jerk node and do other things
         self.servo_jerk_change_state = self.create_client(ChangeState, "ServoJerk/change_state")
         self.servo_jerk_get_state = self.create_client(GetState, "ServoJerk/get_state")
@@ -116,6 +117,25 @@ class BobotManagerNode(Node): # Create a new class that inherits the rclpy.Node 
         self.servo_jerk_get_avail_transitions = self.create_client(GetAvailableTransitions, "ServoJerk/get_available_transitions")
         self.logfile.write("[BobotManager]-[" + datetime.datetime.now().strftime("%d-%m-%y_%H%M%S") + "] Created Servo Jerker Node clients for " + str(bobot_name.value) + "\n")
         self.get_logger().info("Created Servo Jerker Node clients")
+
+        # Leaving this big block to spite Dan Grammer
+        while (not self.flight_timer_change_state.wait_for_service(timeout_sec=1.0) 
+                and self.flight_timer_get_state.wait_for_service(timeout_sec=1.0) 
+                and self.flight_timer_get_avail_state.wait_for_service(timeout_sec=1.0) 
+                and self.flight_timer_get_avail_transitions.wait_for_service(timeout_sec=1.0)
+                and self.alt_monitor_change_state.wait_for_service(timeout_sec=1.0)
+                and self.alt_monitor_get_state.wait_for_service(timeout_sec=1.0)
+                and self.alt_monitor_get_avail_state.wait_for_service(timeout_sec=1.0)
+                and self.alt_monitor_get_avail_transitions.wait_for_service(timeout_sec=1.0)
+                and self.servo_jerk_change_state.wait_for_service(timeout_sec=1.0)
+                and self.servo_jerk_get_state.wait_for_service(timeout_sec=1.0)
+                and self.servo_jerk_get_avail_state.wait_for_service(timeout_sec=1.0)
+                and self.servo_jerk_get_avail_transitions.wait_for_service(timeout_sec=1.0)):
+            self.get_logger().warn("Flight Timer services not available, waiting...")
+        
+        # Create variables for each of the services so that we can use their respongses
+        
+        
 
         """
         TODO:

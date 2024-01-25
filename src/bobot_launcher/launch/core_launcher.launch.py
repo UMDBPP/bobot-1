@@ -15,7 +15,7 @@ def generate_launch_description():
 
     # Declare what are the possibly cmd_line inputs to this launch file:
     bobot_name_arg = DeclareLaunchArgument(
-        "bobot_name", default_value=TextSubstitution(text="bobot1")
+        "bobot_name", default_value=TextSubstitution(text="bb_bobot1")
     )
 
     # -- BOARD OPTIONS -- #
@@ -23,7 +23,7 @@ def generate_launch_description():
     #   "arduino"
     #   "raspberry_pi"
     device_type_arg = DeclareLaunchArgument(
-        "device_type", default_value=TextSubstitution(text="lattepanda_v1")
+        "device_type", default_value=TextSubstitution(text="arduino")
     )
 
 

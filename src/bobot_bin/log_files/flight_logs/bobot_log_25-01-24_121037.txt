@@ -1,0 +1,4 @@
+[BobotManager]-[25-01-24_121037] Starting up Bobot!
+[BobotManager]-[25-01-24_121037] Current bobot's name: bb_bobot1[BobotManager]-[25-01-24_121037] Created Flight Timer Node clients for bb_bobot1
+[BobotManager]-[25-01-24_121037] Created Altitude Monitor Node clients for bb_bobot1
+[BobotManager]-[25-01-24_121037] Created Servo Jerker Node clients for bb_bobot1
