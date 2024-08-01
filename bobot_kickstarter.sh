@@ -48,7 +48,7 @@ sudo apt upgrade -y
 
 ##### ----- #####
 #install ros2 (this way for now, may change)
-echo -e "${Green}\nInstalling ROS2 Humble Hawksbill! This will take several minutes... \n"
+echo -e "${Green}\nInstalling ROS2 Jazzy Jalisco! This will take several minutes... \n"
 
 #install locales, if not present (TODO: make this optional by havig the bashscript automatically check your locales)
 sudo apt update && sudo apt install locales -y
@@ -65,22 +65,21 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 #update once more and install!
 sudo apt update
 sudo apt install -y \
-    ros-humble-rmw-fastrtps-cpp
-    ros-humble-ros2-control \
-    ros-humble-ros2-controllers \
-    ros-humble-
-    ros-humble-controller-manager \
-    ros-humble-xacro \
-    ros-humble-tf2-tools \
-    ros-humble-tf-transformations \
-    ros-humble-desktop
-source /opt/ros/humble/setup.bash
+    ros-jazzy-rmw-fastrtps-cpp
+    ros-jazzy-ros2-control \
+    ros-jazzy-ros2-controllers \
+    ros-jazzy-controller-manager \
+    ros-jazzy-xacro \
+    ros-jazzy-tf2-tools \
+    ros-jazzy-tf-transformations \
+    ros-jazzy-desktop
+source /opt/ros/jazzy/setup.bash
 ##### ----- #####
 
 # install colcon build tools and other thingies
 sudo apt install python3-colcon-common-extensions -y
 sudo apt install python3-pip -y
-pip3 install setuptools==58.2.0
+pip3 install setuptools
 pip3 install xacro
 sudo apt install python3-rosdep -y
 
@@ -90,13 +89,13 @@ echo -e "Update rosdep? (yes/no)"
 read rosdep_request
 if [ ${rosdep_request} == "Yes" ] || [ ${rosdep_request} == "yes" ] || [ ${rosdep_request} == "YES" ] || [ ${rosdep_request} == "y" ]
     then
-    echo ${Green}Updating rosdep, this is gonna take a while, please be patient!${color_off}
+    echo -e ${Green}Updating rosdep, this is gonna take a while, please be patient!${color_off}
     sudo rosdep init
     rosdep update
     else
     echo -e "\nskipping rosdep update\n"
 fi
-rosdep install --from-paths src -y --ignore-src --rosdistro humble
+rosdep install --from-paths src -y --ignore-src --rosdistro jazzy
 
 # TODO - POssible move the ros dependencies to another tools file? not critical but could be better than directly modifiying the kickstarter for new people
 
@@ -105,7 +104,7 @@ sudo apt install sl -y
 
 sudo apt update -y
 sudo apt upgrade -y
-echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
+echo "source /opt/ros/jazzy/setup.bash" >> ~/.bashrc
 colcon build
 source install/setup.bash
 echo -e "\n${Green}Finished installing! Be sure to check for errors and out-of-date utilities\nFor any issues, please file a Git-issue or contact Rahul Vishnoi${color_off}\n"
