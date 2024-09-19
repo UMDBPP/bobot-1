@@ -42,6 +42,11 @@ public:
         return oss.str(); // return da string
     }
 
+    void print_debug_message(std::string message)
+    {
+        RCLCPP_INFO(this->get_logger(), "[USER DEBUG LOG] %s", message.c_str()); // just a helper to mroe easily print generic debug messages
+    }
+
 private:
     // ROS VARIABLES
     std::string ros_logger_name;
