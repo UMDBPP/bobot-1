@@ -9,18 +9,31 @@ endif()
 find_package(ament_cmake REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(bobot_msgs REQUIRED)
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+include_directories(include)
+
+# Add the bobot manager as an executable
+add_executable(manager src/bobot_manager.cpp)
+ament_target_dependencies(manager rclcpp std_msgs bobot_msgs)
+
+# This is good and important. Keep it - Romeo
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+
+install(TARGETS
+  manager
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# install(DIRECTORY
+#  launch
+#  DESTINATION share/${PROJECT_NAME}/
+# )
 
 ament_package()
