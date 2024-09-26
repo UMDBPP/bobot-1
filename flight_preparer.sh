@@ -60,7 +60,7 @@ DIR=$(dirname "$path")
 FULLPATH=${DIR}${startup_script}
 
 # create an environment variable
-echo -e "/**:\n\tros__parameters:\n\tIS_FLIGHT: true" > 
+echo -e "/**:\n\tros__parameters:\n\t\tIS_FLIGHT: true" > src/bobot_launcher/bobot_launch_config.yaml
 
 echo -e "[Desktop Entry]\nType=Application\nExec=${FULLPATH}\nHidden=false\nNoDisplay=true\nX-GNOME-Autostart-enabled=true\nName[en_US]=bobot_bootup\nName=bobot_bootup\nComment[en_US]=kys\nComment=SSL ROCKS" > ~/.config/autostart/bobot_bootup.desktop
 
