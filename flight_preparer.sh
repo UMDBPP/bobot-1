@@ -27,13 +27,20 @@ echo -e "${Red}\tErasing timer data from:${color_off} src/bobot_bin/timer.txt"
 > src/bobot_bin/timer.txt
 echo -e "${Green}\tFile contents erased from:${color_off} src/bobot_bin/timer.txt\n"
 
-echo -e "${Red}\tErasing timer data from:${color_off} src/bobot_bin/abs_position.txt"
+# Empty the absolute position data for the extension motor
+echo -e "${Red}\tErasing absolute position data from:${color_off} src/bobot_bin/abs_position.txt"
 > src/bobot_bin/abs_position.txt
 echo -e "${Green}\tFile contents erased from:${color_off} src/bobot_bin/abs_position.txt\n"
 
+# Empty the 
 echo -e "\t${Red}clearing reset counter:${color_off} src/bobot_bin/reset_counter.txt"
-> src/bobot_bin/reset_counter.txt
+> reset_counter.txt
 echo -e "\t${Green}reset counter cleared!${color_off}\n"
+
+echo -e "\t${Red}clearing previous flight data buffer:${color_off} src/bobot_bin/reset_counter.txt"
+> bobot_recovery/current_flight.txt
+echo -e "\t${Green}flight data buffers clear and ready!!${color_off}\n"
+
 
 echo -e "\tClear Flight Log and Error Log data?(Yes/no)"
 read clear_log_request
@@ -44,13 +51,14 @@ if [ ${clear_log_request} == "Yes" ] || [ ${clear_log_request} == "yes" ] || [ $
     echo -e "${Green}\tLog data cleared!${color_off}\n"
 fi
 
-
-
 echo -e "\tSetting up program to run on boot-up"
 startup_script="/tools/bobot_bootup.sh"
 path=$(realpath "$0")
 DIR=$(dirname "$path")
 FULLPATH=${DIR}${startup_script}
+
+# 
+export 
 
 echo -e "[Desktop Entry]\nType=Application\nExec=${FULLPATH}\nHidden=false\nNoDisplay=true\nX-GNOME-Autostart-enabled=true\nName[en_US]=bobot_bootup\nName=bobot_bootup\nComment[en_US]=kys\nComment=SSL ROCKS" > ~/.config/autostart/bobot_bootup.desktop
 
