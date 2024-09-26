@@ -32,16 +32,17 @@ echo -e "${Red}\tErasing absolute position data from:${color_off} src/bobot_bin/
 > src/bobot_bin/abs_position.txt
 echo -e "${Green}\tFile contents erased from:${color_off} src/bobot_bin/abs_position.txt\n"
 
-# Empty the 
+# Empty the reset counter before a flight
 echo -e "\t${Red}clearing reset counter:${color_off} src/bobot_bin/reset_counter.txt"
 > reset_counter.txt
 echo -e "\t${Green}reset counter cleared!${color_off}\n"
 
+# Empty the current flight data before a flight
 echo -e "\t${Red}clearing previous flight data buffer:${color_off} src/bobot_bin/reset_counter.txt"
 > bobot_recovery/current_flight.txt
 echo -e "\t${Green}flight data buffers clear and ready!!${color_off}\n"
 
-
+# Clear the log files before we start the flight
 echo -e "\tClear Flight Log and Error Log data?(Yes/no)"
 read clear_log_request
 if [ ${clear_log_request} == "Yes" ] || [ ${clear_log_request} == "yes" ] || [ ${clear_log_request} == "YES" ] || [ ${clear_log_request} == "y" ]
@@ -51,14 +52,15 @@ if [ ${clear_log_request} == "Yes" ] || [ ${clear_log_request} == "yes" ] || [ $
     echo -e "${Green}\tLog data cleared!${color_off}\n"
 fi
 
+# Set up the system to boot on startup
 echo -e "\tSetting up program to run on boot-up"
 startup_script="/tools/bobot_bootup.sh"
 path=$(realpath "$0")
 DIR=$(dirname "$path")
 FULLPATH=${DIR}${startup_script}
 
-# 
-export 
+# create an environment variable
+export IS_FLIGHT=true
 
 echo -e "[Desktop Entry]\nType=Application\nExec=${FULLPATH}\nHidden=false\nNoDisplay=true\nX-GNOME-Autostart-enabled=true\nName[en_US]=bobot_bootup\nName=bobot_bootup\nComment[en_US]=kys\nComment=SSL ROCKS" > ~/.config/autostart/bobot_bootup.desktop
 
