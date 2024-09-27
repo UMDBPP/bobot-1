@@ -22,10 +22,12 @@ include_directories(
   ${rclcpp_INCLUDE_DIRS})
 
 add_executable(timer src/timer_node.cpp)
+add_executable(simple_timer src/simple_timer_node.cpp)
 add_executable(servo_jerk src/servo_jerker.cpp)
 add_executable(altitude_monitor src/altitude_monitor.cpp)
 
 ament_target_dependencies(timer rclcpp std_msgs bobot_msgs)
+ament_target_dependencies(simple_timer rclcpp std_msgs)
 ament_target_dependencies(servo_jerk rclcpp std_msgs bobot_msgs bobot_hardware_interface)
 ament_target_dependencies(altitude_monitor rclcpp std_msgs bobot_msgs bobot_hardware_interface)
 
@@ -59,6 +61,7 @@ endif()
 
 install(TARGETS
   timer
+  simple_timer
   servo_jerk
   altitude_monitor
   DESTINATION lib/${PROJECT_NAME})
