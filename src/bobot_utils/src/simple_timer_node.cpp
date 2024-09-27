@@ -31,11 +31,11 @@ public:
   SimpleTimer()
   : Node("simple_timer"), count_(0)
   {
-    publisher_ = this->create_publisher<std_msgs::msg::String>("topic", 10);
+    publisher_ = this->create_publisher<std_msgs::msg::String>("/bobot_timer/time", 10);
     auto timer_callback =
       [this]() -> void {
         auto message = std_msgs::msg::String();
-        message.data = "Seconds elapsed: " + std::to_string(this->count_++);
+        message.data = std::to_string(this->count_++);
         RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
         this->publisher_->publish(message);
       };
