@@ -73,6 +73,7 @@ sudo apt install -y \
     ros-jazzy-xacro \
     ros-jazzy-tf2-tools \
     ros-jazzy-tf-transformations \
+    ros-jazzy-hardware-interface
 source /opt/ros/jazzy/setup.bash
 ##### ----- #####
 
