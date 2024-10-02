@@ -18,7 +18,7 @@ def generate_launch_description():
     bobot_manager_node = Node(
         package="bobot_manager",
         executable="manager",
-        name="BobotManager",
+        name="bobot_manager",
         emulate_tty=True,
         parameters=[manager_parameters]
     )
