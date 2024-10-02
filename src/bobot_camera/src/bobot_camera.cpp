@@ -251,7 +251,7 @@
 
 
 int main(int argc, char ** argv) {
-  printf("hello world bobot_camera package\n");
+  // printf("hello world bobot_camera package\n");
   return 0;
 }
 

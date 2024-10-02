@@ -47,57 +47,81 @@ public:
     BobotManager(const std::string &_node_name) : rclcpp::Node(_node_name), ros_logger_name(_node_name)
     {
         // Print out some log messages for the ROS logs
-        RCLCPP_INFO(this->get_logger(), "[USER DEBUG LOG] Bobot Manager starting up!");
-        this->print_debug_message("Bobot Manger starting up!");
+        this->print_debug_message("Bobot Manager starting up!");
 
         // Check to make sure the bobot_recovery/ directory exists, and that current_flight.txt and reset_counter.txt exist (but DONT check if they are empty)
-        std::string critical_error_msg = "[BOOTUP BEGIN] bobot_recovery/current_flight.txt and bobot_recovery/reset_counter.txt exist! Attempting to read from them now"; // This string only gets used if none of the below cases get tripped
+        std::string start_time_logs = this->get_current_time_for_logs();
+        std::string critical_error_msg = "[BOOTUP BEGIN " + start_time_logs + "] Checking if bobot_recovery/current_flight.txt and bobot_recovery/reset_counter.txt exist! If so attempting to read from them now"; // This string only gets used if none of the below cases get tripped
+        int error_count = 0;
+        std::string flight_log_msg = "[BOOTUP BEGIN " + start_time_logs + "] (SEE ERROR LOG FOR CRITICAL ISSUES) Setting up the BobotManager for flight, please hold...";
+
+        // Initial check variables
         bool reset_counter_exists = true;
         bool current_flight_exists = true;
+        std::string print_to_screen;
         if(std::filesystem::exists(std::filesystem::current_path() / "bobot_recovery") == true) // nominal case
         { 
             if(std::filesystem::exists(std::filesystem::current_path() / "bobot_recovery/current_flight.txt") == false && 
                 std::filesystem::exists(std::filesystem::current_path() / "bobot_recovery/reset_counter.txt") == false)
             {
-                critical_error_msg = "[CRITICAL STARTUP ERROR 1] bobot_recovery/ exists, but current_flight.txt and reset_counter.txt do not exist! This is a critical error - system will assuming that we are at the beginning of the flight";
-                this->print_error_message(critical_error_msg);
+                print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "bobot_recovery/ exists, but current_flight.txt and reset_counter.txt do not exist! This is a critical error - system will assuming that we are at the beginning of the flight", error_count);
+                this->print_error_message(print_to_screen);
                 reset_counter_exists = false;
                 current_flight_exists = false;
             }
             else if(std::filesystem::exists(std::filesystem::current_path() / "bobot_recovery/current_flight.txt") == true && 
                 std::filesystem::exists(std::filesystem::current_path() / "bobot_recovery/reset_counter.txt") == false)
             {
-                critical_error_msg = "[CRITICAL STARTUP ERROR 1] bobot_recovery/ exists, but reset_counter.txt do not exist! This is a critical error - system will attempt to read current_flight.txt and decide if we are already in flight";
+                print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "bobot_recovery/ exists, but reset_counter.txt does not exist! This is a critical error - system will attempt to read current_flight.txt and decide if we are already in flight", error_count);
                 reset_counter_exists = false;
-                this->print_error_message(critical_error_msg);
+                this->print_error_message(print_to_screen);
             }
             else if(std::filesystem::exists(std::filesystem::current_path() / "bobot_recovery/current_flight.txt") == false && 
                 std::filesystem::exists(std::filesystem::current_path() / "bobot_recovery/reset_counter.txt") == true)
             {
-                critical_error_msg = "[CRITICAL STARTUP ERROR 1] bobot_recovery/ exists, but current_flight.txt do not exist! This is a critical error - system will attempt to read reset_counter.txt and decide if we are already in flight";
+                print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "bobot_recovery/ exists, but current_flight.txt does not exist! This is a critical error - system will attempt to read reset_counter.txt and decide if we are already in flight", error_count);
                 current_flight_exists = false;
-                this->print_error_message(critical_error_msg);
+                this->print_error_message(print_to_screen);
+            }
+            else
+            {
+                // For this case, just indicate that we did not enccounter critical error 1
+                error_count += 1;
             }
         }
         else
         {
-            critical_error_msg = "[CRITICAL STARTUP ERROR 1] bobot_recovery/ does not exist! This is a critical error - system will assuming that we are at the beginning of the flight";
-            this->print_error_message(critical_error_msg);
+            print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "bobot_recovery/ does not exist! This is a critical error - system will assuming that we are at the beginning of the flight", error_count);
+            this->print_error_message(print_to_screen);
         }
 
         // Get the time at the very start of the software:
         start_time = get_current_time();
         RCLCPP_INFO(this->get_logger(), "[USER DEBUG LOG] Starting time: %s", start_time.c_str());
+        flight_log_msg = flight_log_msg + "[Flight Logs] Starting time: " + start_time;
 
         // Create a temporary string to send to the current_flight.txt file
         std::string current_flight_information = "CURRENT FLIGHT DATA FOR RECOVERY\ntime:\n" + start_time + "\n\nHAPPY BOBOT-ING";
         std::string reset_count_string = std::to_string(this->reset_counter);
 
         // get the is_flight variable
+        // NOTE:    This variable is declared by LITERALLY writing to a config file
+        //          when we run the "flight_preparer.sh" or "dev_preparer.sh" bash
+        //          scripts, so, don't worry about changing this variable. It was 
+        //          easier to do this than try to get an environment variable working
+        //          lol.
+        //          Defaults to being in flight mode, so just a heads up on that
         this->declare_parameter("IS_FLIGHT", true);
-        this->get_parameter("IS_FLIGHT").as_bool();
+        this->IS_FLIGHT = this->get_parameter("IS_FLIGHT").as_bool();
+        if(this->IS_FLIGHT == true)
+        {
+            this->print_debug_message("We are currently in flight mode!");
+        }
+        else if(this->IS_FLIGHT == false)
+        {
+            this->print_debug_message("We are currently in development mode");
+        }
 
-        this->IS_FLIGHT = std::getenv("IS_FLIGHT");
         // Now, check if we are in flight mode
         // If we are in flight mode, then we should
         //      first: check to see if already have 
@@ -118,19 +142,31 @@ public:
                 current_flight_txt.open((std::filesystem::current_path() / "bobot_recovery/current_flight.txt").string(), std::ios::out | std::ios::app);
                 if(current_flight_txt.is_open() == false)
                 {
-                    critical_error_msg = critical_error_msg + "\n[CRITICAL STARTUP ERROR 2] Could not open current_flight.txt! This is a critical error - system is unable to write the captured start time and will be unable to recover";
-                    this->print_error_message(critical_error_msg);
+                    print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Could not open current_flight.txt! This is a critical error - system is unable to write the captured start time and will be unable to recover", error_count);
+                    this->print_error_message(print_to_screen);
                 }
                 current_flight_txt << current_flight_information << std::endl;
                 current_flight_txt.flush();
                 current_flight_txt.close();
+                // done handling this case!
             }
-            else
+            else if(current_flight_exists == true)
             {
                 // Read in the data from current flight exists
-                std::ofstream current_flight_txt;
-                // current_flight_txt.open()
-
+                std::ifstream current_flight_txt;
+                current_flight_txt.open((std::filesystem::current_path() / "bobot_recovery/current_flight.txt").string(), std::ios::in);
+                if(current_flight_txt.is_open() == true)
+                {
+                    print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Could not open current_flight.txt! This is a critical error - system is unable to write the captured start time and will be unable to recover", error_count);
+                    this->print_error_message(print_to_screen);
+                }
+                // TODO: this
+                std::string 
+                std::string = std::getline(current_flight_txt, 1);
+                current_flight_txt << current_flight_information << std::endl;
+                current_flight_txt.flush();
+                current_flight_txt.close();
+                // done handling this case!
             }
         }
 
@@ -151,6 +187,15 @@ public:
         auto t = std::time(nullptr); // Make a time objects
         auto tm = *std::localtime(&t); // Make a tm pointer thingy
         oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S"); // Do this stuff
+        return oss.str(); // return da string
+    }
+    std::string get_current_time_for_logs()
+    {
+        // Stolen from Rahul
+        std::ostringstream oss; // Make an ostringstream object
+        auto t = std::time(nullptr); // Make a time objects
+        auto tm = *std::localtime(&t); // Make a tm pointer thingy
+        oss << std::put_time(&tm, "%d-%H:%M:%S"); // Do this stuff
         return oss.str(); // return da string
     }
 
@@ -194,6 +239,23 @@ public:
     void print_error_message(std::string message)
     {
         RCLCPP_ERROR(this->get_logger(), "[USER ERROR LOG] %s", message.c_str()); // just another helper to more easily print generid warning messages
+    }
+    
+    std::string add_to_flight_log_init_msg(std::string flight_log_prev, std::string new_msg)
+    {
+        std::string curr_time = this->get_current_time_for_logs();
+        return flight_log_prev + "\n[FLIGHT LOG :  " + curr_time + "] " + new_msg;
+    }
+
+    // Returns a string that contains the new message formatted correct, and also passes-by-reference the old message and adds the new message to it
+    // Doing this because we want to print these to the terminal for the user to see, and for the ROS logs to catch
+    std::string add_to_critical_error_log_init_msg(std::string &critical_error_msg, std::string new_error, int &error_count)
+    {
+        error_count += 1;
+        std::string curr_time = this->get_current_time_for_logs();
+        std::string count_string = std::to_string(error_count);
+        critical_error_msg = critical_error_msg + "\n[CRITICAL STARTUP ERROR " + count_string + " : " + curr_time + "] " + new_error;
+        return "[CRITICAL STARTUP ERROR " + count_string + " : " + curr_time + "] " + new_error;
     }
 
 private:

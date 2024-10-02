@@ -1,0 +1,4 @@
+/**:
+  ros__parameters:
+    IS_FLIGHT: true
+    mandatory_variable_that_does_nothing_and_doesnt_contribute: 0

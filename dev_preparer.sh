@@ -24,7 +24,7 @@ echo -e "${Red}\tDisabling bobot_bootup sequence - software will no longer run o
 echo -e "\tMake sure to run 'flight_preparer.sh' before launch\n"
 
 # create an environment variable
-echo -e "/**:\n\tros__parameters:\n\t\tIS_FLIGHT: false" > src/bobot_launcher/bobot_launch_config.yaml
+echo -e "/**:\n  ros__parameters:\n    IS_FLIGHT: false\n    mandatory_variable_that_does_nothing_and_doesnt_contribute: 0" > src/bobot_bringup/bobot_launch_config.yaml
 
 echo -e "[Desktop Entry]\nType=Application\nExec=""\nHidden=false\nNoDisplay=true\nX-GNOME-Autostart-enabled=true\nName[en_US]=bobot_bootup\nName=bobot_bootup\nComment[en_US]=kys\nComment=SSL ROCKS" > ~/.config/autostart/bobot_bootup.desktop
 
