@@ -9,6 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(bobot_msgs REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(lifecycle_msgs REQUIRED)
@@ -16,6 +17,7 @@ find_package(lifecycle_msgs REQUIRED)
 include_directories(
   include
   ${std_msgs_INCLUDE_DIRS}
+  ${std_srvs_INCLUDE_DIRS}
   ${lifecycle_msgs_INCLUDE_DIRS}
   ${rclcpp_lifecycle_INCLUDE_DIRS}
   ${rclcpp_INCLUDE_DIRS})
@@ -26,7 +28,7 @@ add_executable(servo_jerk src/servo_jerker.cpp)
 add_executable(altitude_monitor src/altitude_monitor.cpp)
 
 ament_target_dependencies(timer rclcpp std_msgs bobot_msgs)
-ament_target_dependencies(simple_timer rclcpp std_msgs)
+ament_target_dependencies(simple_timer rclcpp std_msgs std_srvs)
 ament_target_dependencies(servo_jerk rclcpp std_msgs bobot_msgs)
 ament_target_dependencies(altitude_monitor rclcpp std_msgs bobot_msgs)
 

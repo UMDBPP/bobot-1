@@ -14,10 +14,10 @@
 
 #include <chrono>
 #include <memory>
-#include <string>
 
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/u_int16.hpp"
+#include "std_srvs/srv/trigger.hpp"
 
 using namespace std::chrono_literals;
 
@@ -31,21 +31,47 @@ public:
   SimpleTimer()
   : Node("simple_timer"), count_(0)
   {
-    publisher_ = this->create_publisher<std_msgs::msg::String>("/bobot_timer/time", 10);
-    auto timer_callback =
-      [this]() -> void {
-        auto message = std_msgs::msg::String();
-        message.data = std::to_string(this->count_++);
-        RCLCPP_INFO(this->get_logger(), "Publishing: '%s'", message.data.c_str());
-        this->publisher_->publish(message);
-      };
-    timer_ = this->create_wall_timer(1000ms, timer_callback);
+    publisher_ = this->create_publisher<std_msgs::msg::UInt16>("/bobot_timer/time", 10);
+    timer_ = this->create_wall_timer(1000ms, std::bind(&SimpleTimer::publishTime, this));
+    
+    client_ = this->create_client<std_srvs::srv::Trigger>("/bobot_timer/is_past_due_date");
+  }
+
+private:
+  void publishTime()
+  {
+    auto message = std_msgs::msg::UInt16();
+    message.data = this->count_++;
+    RCLCPP_INFO(this->get_logger(), "Publishing: '%i'", message.data);
+    this->publisher_->publish(message);
+    if (count_ > 60 * 60 * 60 && !notified_)
+    {
+      pastDueNotification();
+      notified_ = true;
+    }
+  }
+
+ void pastDueNotification()
+  {
+    // Check if the service is available
+    while (!client_->wait_for_service(std::chrono::seconds(1))) {
+      RCLCPP_WARN(this->get_logger(), "Waiting for the service to be available...");
+    }
+
+    // Notify manager
+    auto request = std::make_shared<std_srvs::srv::Trigger::Request>();
+    auto result = client_->async_send_request(request);
+
+    RCLCPP_INFO(this->get_logger(), "Notified the manager node.");
   }
 
 private:
   rclcpp::TimerBase::SharedPtr timer_;
-  rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+  rclcpp::Publisher<std_msgs::msg::UInt16>::SharedPtr publisher_;
   size_t count_;
+  rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr client_;
+
+  bool notified_ = false;
 };
 
 int main(int argc, char * argv[])
