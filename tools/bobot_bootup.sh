@@ -14,7 +14,7 @@ _DIR=$(dirname $_path)
 
 cd ${_DIR}
 cd ..
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 source install/setup.bash
 
-gnome-terminal -- bash -c "ros2 launch bobot_launcher core_launcher.launch.py; exec bash"
+gnome-terminal -- bash -c "ros2 launch bobot_bringup core_launcher.launch.py; exec bash"

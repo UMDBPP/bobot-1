@@ -43,7 +43,7 @@ acting as a server for clients in the system
 
 Contributers:
 - Romeo Perlstein (romeperl@umd.edu)
-- Rahul Vishnoi (rvishnoi@umd.edu)
+- Rahul Vishnoi (rahul.vishnoi@nasa.gov)
 
 */
 
