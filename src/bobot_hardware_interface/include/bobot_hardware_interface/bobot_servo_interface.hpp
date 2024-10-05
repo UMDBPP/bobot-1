@@ -11,6 +11,17 @@
 #include <map>
 #include <vector>
 
+/* CODE FOUND AT https://blog.mbedded.ninja/programming/operating-systems/linux/linux-serial-ports-using-c-cpp/ */
+// C library headers
+#include <stdio.h>
+#include <string.h>
+
+// Linux headers
+#include <fcntl.h> // Contains file controls like O_RDWR
+#include <errno.h> // Error integer and strerror() function
+#include <termios.h> // Contains POSIX terminal control definitions
+#include <unistd.h> // write(), read(), close()
+
 namespace bobot_hardware
 {
 
@@ -38,6 +49,15 @@ public:
 
     // request multiple positions all at once
     void request_positions(std::vector<double> joint_positions);
+
+private:
+
+    // Integer to hold the serial port data
+    int serial_port;
+
+    // Create new termios struct, we call it 'tty' for convention
+    struct termios tty;
+
 
 };
 
