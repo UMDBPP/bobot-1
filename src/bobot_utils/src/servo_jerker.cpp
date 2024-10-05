@@ -35,9 +35,16 @@ public:
         this->declare_parameter("device_type", rclcpp::PARAMETER_STRING);
         bobot_name = this->get_parameter("bobot_name").as_string();
         device_type = this->get_parameter("device_type").as_string();
-        RCLCPP_INFO(get_logger(), "Getting parameters for Servo Jerker node...");
+        print_debug_message("Getting parameters for Servo Jerker node...");
+
         parameter_helper(); // get the parameters
-        RCLCPP_INFO(get_logger(), "Servo Jerker node has succesfully launched for %s, starting state is unconfigured state", bobot_name.c_str());
+        print_debug_message("Servo Jerker node has successfully launched! Starting state is {state: unconfigured}");
+    }
+
+    void print_debug_message(std::string message)
+    {
+        RCLCPP_INFO(this->get_logger(), "[USER DEBUG LOG] %s", message.c_str()); // just a helper to mroe easily print generic debug messages
+        return;
     }
 
     void publish_info_and_jerk_servo()

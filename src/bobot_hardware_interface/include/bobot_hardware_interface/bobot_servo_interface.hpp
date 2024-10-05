@@ -8,6 +8,7 @@
 #ifndef BOBOT_HARDWARE_INTERFACE__BOBOT_SERVO_INTERFACE_HPP
 #define BOBOT_HARDWARE_INTERFACE__BOBOT_SERVO_INTERFACE_HPP
 
+#include <rclcpp/rclcpp.hpp>
 #include <map>
 #include <vector>
 
@@ -38,6 +39,12 @@ public:
     // Close the serial connection
     bool close_serial_connection();
 
+    // Read
+    void read_serial();
+
+    // parse the serial data
+    void parse_serial_data(char read_buf[8]);
+
     // Send a position command to the servo (only one servo at a time)
     void command_position(int servoID, double command_position);
 
@@ -50,6 +57,8 @@ public:
     // request multiple positions all at once
     void request_positions(std::vector<double> joint_positions);
 
+    std::vector<double> servo_positions;
+
 private:
 
     // Integer to hold the serial port data
@@ -58,6 +67,11 @@ private:
     // Create new termios struct, we call it 'tty' for convention
     struct termios tty;
 
+    // Allocate memory for read buffer, set size according to your needs
+    char read_buf [8]; // we really only need 8 
+
+    // logger string
+    std::string ros_logger_string = "BobotServoInterface";
 
 };
 

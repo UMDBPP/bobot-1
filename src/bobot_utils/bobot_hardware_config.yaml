@@ -1,0 +1,13 @@
+/**:
+  ros__parameters:
+
+    # GENERAL SERVO PARAMETERS
+    NUM_JOINTS: 2 # Integer value
+
+
+    # SERVO JERKER NODE PARAMETERS
+    JERK_RATE: 1 # Jerk rate is in Hz
+
+    # ALTITUDE NODE PARAMETERS
+    SAMPLE_RATE: 
+
