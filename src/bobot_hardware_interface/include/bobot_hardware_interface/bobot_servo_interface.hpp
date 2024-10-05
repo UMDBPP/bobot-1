@@ -42,9 +42,6 @@ public:
     // Read
     void read_serial();
 
-    // parse the serial data
-    void parse_serial_data(char read_buf[8]);
-
     // Send a position command to the servo (only one servo at a time)
     void command_position(int servoID, double command_position);
 
@@ -60,6 +57,8 @@ public:
     std::vector<double> servo_positions;
 
 private:
+
+    
 
     // Integer to hold the serial port data
     int serial_port;

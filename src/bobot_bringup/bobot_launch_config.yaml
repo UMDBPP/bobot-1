@@ -1,5 +1,4 @@
 /**:
   ros__parameters:
-    IS_FLIGHT: true
-    bobot_name: "BB-Bobot-1"
+    IS_FLIGHT: false
     mandatory_variable_that_does_nothing_and_doesnt_contribute: 0

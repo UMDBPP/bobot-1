@@ -78,6 +78,7 @@ source /opt/ros/jazzy/setup.bash
 ##### ----- #####
 
 # install colcon build tools and other thingies
+sudo apt install arduino
 sudo apt install python3-colcon-common-extensions -y
 sudo apt install python3-pip -y
 pip3 install setuptools

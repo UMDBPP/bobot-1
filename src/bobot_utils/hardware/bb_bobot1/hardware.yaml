@@ -1,9 +1,0 @@
-# This name needs to be the same as the node name specified in the launch file for Bobot utils. DO NOT CHANGE IT... unless you change the node names
-ServoJerk:
-  ros__parameters:
-    jerk_rate: 10
-
-AltitudeMonitor:
-  ros__parameters:
-    sample_rate: 2 # sampling rate for alt sensor in milliseconds - translates to 500 Hz (for now)
-    max_altitude: 20 # in feet?

@@ -2,12 +2,16 @@
   ros__parameters:
 
     # GENERAL SERVO PARAMETERS
-    NUM_JOINTS: 2 # Integer value
-
+    NUM_JOINTS: 10 # Integer value
 
     # SERVO JERKER NODE PARAMETERS
     JERK_RATE: 1 # Jerk rate is in Hz
+    SERVOS_TO_JERK: [1]
+    MAX_ANGLE: 175
+    MIN_ANGLE: 5
 
     # ALTITUDE NODE PARAMETERS
-    SAMPLE_RATE: 
+    SAMPLE_RATE: 10 # value is in Hz
+    MAX_ALTITUDE: 82000 # feet - Change per flight!
+
 

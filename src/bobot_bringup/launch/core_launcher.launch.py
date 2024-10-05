@@ -23,6 +23,11 @@ def generate_launch_description():
         parameters=[manager_parameters]
     )
 
+    # Get the Wheel driver launch file
+    bobot_utils_dir = get_package_share_directory('bobot_utils')
+    bobot_utils_launcher = IncludeLaunchDescription(PythonLaunchDescriptionSource(bobot_utils_dir + '/launch/bobot_utility_launcher.launch.py'))
+
     return LaunchDescription([
-        bobot_manager_node
+        bobot_manager_node,
+        bobot_utils_launcher
     ])

@@ -349,6 +349,7 @@ public:
 
         // get the path to the bobot-1/src directory
         this->bobot_bin_dir = std::filesystem::current_path() / "src/bobot_bin";
+        this->bobot_log_files_dir = this->bobot_bin_dir / "log_files";
         this->print_debug_message("Got the path to bobot_bin/ directory: " + bobot_bin_dir.string());
 
         // Get the error log file path and get the flight log file path
@@ -377,6 +378,7 @@ public:
             std::filesystem::create_directory(this->bobot_bin_dir); // make the bin directory
 
             // since bin/ doesnt' exists, error_logs/ and flight_logs/ also don't exist
+            std::filesystem::create_directory(this->bobot_log_files_dir);
             std::filesystem::create_directory(this->error_log_dir);
             std::filesystem::create_directory(this->flight_log_dir);
             print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Created bobot_bin, bobot_bin/log_files/flight_logs/, bobot_bin/log_files/error_logs/");
@@ -386,6 +388,15 @@ public:
         // If bobot_bin exists, this is good
         else if(std::filesystem::exists(this->bobot_bin_dir) == true)
         {
+            if(std::filesystem::exists(this->bobot_log_files_dir) == false)
+            {
+                print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Creating bobot_bin/log_files/ directory as it did not exist");
+                this->print_warning_message(print_to_screen);
+                print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "bobot_bin/log_files/ directory does not exist - taking note of this as this should not be the case!", error_count);
+                this->print_error_message(print_to_screen);
+                std::filesystem::create_directory(this->bobot_log_files_dir); // make the bin directory
+                // done this case!
+            }
             // Now check if flight_logs/ exists
             if(std::filesystem::exists(this->flight_log_dir) == false)
             {
@@ -695,6 +706,7 @@ private:
     std::string start_time;
     int reset_counter = 0;
     std::filesystem::path bobot_bin_dir;
+    std::filesystem::path bobot_log_files_dir;
     std::filesystem::path error_log_dir;
     std::filesystem::path flight_log_dir;
     std::filesystem::path error_log_file_path;

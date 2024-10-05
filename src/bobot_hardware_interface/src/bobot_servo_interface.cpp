@@ -14,6 +14,33 @@ namespace bobot_hardware
 
     BobotServoInterface::BobotServoInterface()
     {
+        // Normally you wouldn't do this memset() call, but since we will just receive
+        // ASCII data for this example, we'll set everything to 0 so we can
+        // call printf() easily.
+        memset(&this->read_buf, '\0', sizeof(this->read_buf));
+
+        // Hardcode this for now, make it better later?
+        // initialize the servo vectors
+        for(int i=0;i<2;i+=1)
+        {
+            this->servo_positions.push_back(0.0);
+        }
+    }
+
+    BobotServoInterface::~BobotServoInterface() = default;
+
+    // Open the serial connection and talk tuah (its over) the servos
+    bool BobotServoInterface::open_serial_connection()
+    {
+        // Open the serial port. Change device path as needed (currently set to an standard FTDI USB-UART cable type device)
+        int serial_port = open("/dev/ttyACM0", O_RDWR);
+
+        // Read in existing settings, and handle any error
+        if(tcgetattr(serial_port, &tty) != 0) {
+            RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "Error %i from tcgetattr: %s\n", errno, strerror(errno));
+            return false;
+        }
+
         // set some flags
         this->tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
         this->tty.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
@@ -45,34 +72,9 @@ namespace bobot_hardware
         if (tcsetattr(this->serial_port, TCSANOW, &this->tty) != 0)
         {
             RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "Error %i from tcsetattr: %s\n", errno, strerror(errno));
-            return;
-        }
-
-        // Normally you wouldn't do this memset() call, but since we will just receive
-        // ASCII data for this example, we'll set everything to 0 so we can
-        // call printf() easily.
-        memset(&this->read_buf, '\0', sizeof(this->read_buf));
-
-        // Hardcode this for now, make it better later?
-        // initialize the servo vectors
-        for(int i=0;i<2;i+=1)
-        {
-            this->servo_positions.push_back(0.0);
-        }
-
-    }
-
-    // Open the serial connection and talk tuah (its over) the servos
-    bool BobotServoInterface::open_serial_connection()
-    {
-        // Open the serial port. Change device path as needed (currently set to an standard FTDI USB-UART cable type device)
-        int serial_port = open("/dev/ttyACM0", O_RDWR);
-
-        // Read in existing settings, and handle any error
-        if(tcgetattr(serial_port, &tty) != 0) {
-            RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "Error %i from tcgetattr: %s\n", errno, strerror(errno));
             return false;
         }
+
         return true;
     }
 
@@ -98,14 +100,6 @@ namespace bobot_hardware
             return;
         }
 
-        // Do all the serial parsing right now
-        // pass the read buff by value, not by reference
-        this->parse_serial_data(read_buf);
-    }
-
-    void parse_serial_data(char read_buff[8])
-    {
-        // TODO
     }
 
     // Send a position command to the servo (only one servo at a time)

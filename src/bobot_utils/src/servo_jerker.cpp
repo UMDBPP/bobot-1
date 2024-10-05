@@ -7,8 +7,10 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
+#include <std_msgs/msg/string.hpp>
 #include <bobot_msgs/msg/servo_jerk.hpp> // servo jerk message file
 #include <bobot_utils/bobot_common_types.hpp>
+#include "bobot_hardware_interface/bobot_servo_interface.hpp"
 
 // C++ specific libraries
 #include <chrono>
@@ -31,13 +33,15 @@ public:
     explicit BobotServoJerk(const std::string & node_name, bool intra_process_comms = false) : rclcpp_lifecycle::LifecycleNode(node_name, rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
     {
         // Get the name of the current bobot for ros-logging purposes
-        this->declare_parameter("bobot_name", rclcpp::PARAMETER_STRING);
-        this->declare_parameter("device_type", rclcpp::PARAMETER_STRING);
-        bobot_name = this->get_parameter("bobot_name").as_string();
-        device_type = this->get_parameter("device_type").as_string();
+        this->declare_parameter("BOBOT_NAME", "Bobot-1");
+        this->bobot_name = this->get_parameter("BOBOT_NAME").as_string();
         print_debug_message("Getting parameters for Servo Jerker node...");
 
         parameter_helper(); // get the parameters
+
+        // set up the serial connection
+        bobot_serial_write.open_serial_connection();
+
         print_debug_message("Servo Jerker node has successfully launched! Starting state is {state: unconfigured}");
     }
 
@@ -47,17 +51,37 @@ public:
         return;
     }
 
-    void publish_info_and_jerk_servo()
+    void publish_jerking_info()
     {
-        std::unique_ptr<bobot_msgs::msg::ServoJerk> servo_jerk_info_msg = std::make_unique<bobot_msgs::msg::ServoJerk>(); // make a unique point to our ROS message object
-        servo_jerk_info_msg->jerk_rate = jerk_rate;
-        servo_jerk_info_msg->jerking = jerking;
+        std::unique_ptr<std_msgs::msg::String> servo_jerk_info_msg = std::make_unique<std_msgs::msg::String>(); // make a unique point to our ROS message object
+        std::string send_string = "Still jerking it (and by it, I mean servos): ";
+        for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
+        {
+            send_string = send_string + std::to_string(servos_to_jerk[i]) + ", ";
+        }
+        servo_jerk_info_msg->data = send_string;
 
-        /*
-            Add code that will access the arduino and jerk a servo
-        */
+        this->servo_jerk_info_->publish(std::move(servo_jerk_info_msg));
+    }
 
-        servo_jerk_info_->publish(std::move(servo_jerk_info_msg));
+    void jerk_the_servos()
+    {
+        if(this->flip_flopper == true)
+        {
+            for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
+            {
+                this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->max_jerk_angle);
+            }
+            this->flip_flopper = false;
+        }
+        else if(this->flip_flopper == false)
+        {
+            for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
+            {
+                this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->min_jerk_angle);
+            }
+            this->flip_flopper = true;
+        }
     }
 
     /*
@@ -66,12 +90,17 @@ public:
     */
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_configure(const rclcpp_lifecycle::State&)
     {
-        topic_name = bobot_name + "/servo_jerk_info";
-        servo_jerk_info_ = this->create_publisher<bobot_msgs::msg::ServoJerk>(topic_name, 50); // Create a publisher with a namespace of bobot1 called timer, and have the queue size be 10 (since it should publish at 1 hz)
-        bobotServoJerk_callback_ = this->create_wall_timer(std::chrono::milliseconds(jerk_rate), [this]() -> void { publish_info_and_jerk_servo(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
+        this->topic_name = bobot_name + "/servo_jerk_info";
+
+        // Create a publisher to publish data to an info topic at every 10 seconds, indicating the jerking status
+        this->servo_jerk_info_ = this->create_publisher<std_msgs::msg::String>(topic_name, 50); 
+        this->bobot_servo_jerk_info_callback_ = this->create_wall_timer(std::chrono::seconds(10), [this]() -> void { publish_jerking_info(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
+
+        int freq_in_miliseconds = 1/this->jerk_rate * 1000;
+        this->bobot_servo_jerker_ = this->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), [this]() -> void { jerk_the_servos(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
         
         // Add log information, incase our logging fails
-        RCLCPP_INFO(get_logger(), "Attempting to configure Servo Jerker, please hold!");
+        this->print_debug_message("Attempting to configure Servo Jerker, please hold");
 
 
         // -- FROM ROS REFERENCE -- //
@@ -91,9 +120,8 @@ public:
         // on_activate callback is being called when the lifecycle node enters the "activating" state.
 
         // Here, we are activating the node, allowing it publish messages
-        servo_jerk_info_->on_activate(); // Call the activatio functions
-        jerking = true; // let our loggers and the Manger know we've begun jerking the servos
-        RCLCPP_INFO(get_logger(), "Servo jerking has been activated"); // use the ros logger incase our logging messes ups
+        this->servo_jerk_info_->on_activate(); // Call the activatio functions
+        this->print_debug_message("Servo jerking has been activated!");
         
         // We return a success and hence invoke the transition to the next step: "active".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS; // let the people know we've activated. In theory, this would so something important
@@ -105,9 +133,8 @@ public:
         // on_deactivate callback is being called when the lifecycle node enters the "deactivating" state.
 
         // Here, we are deactivating the node, which no longer allows its messages to go through
-        servo_jerk_info_->on_deactivate(); // Call the activation functions
-        jerking = false; // set the timer activated to be false
-        RCLCPP_INFO(get_logger(), "Servo jerking has been deactivated... we should be starting motion!"); // use the ros logger incase our logging messes ups
+        this->servo_jerk_info_->on_deactivate(); // Call the standard deactivate function 
+        this->print_debug_message("Servo jerking has been deactivated... we should be starting motion!");
 
         // We return a success and hence invoke the transition to the next step: "inactive".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS; // let the people know we've activated. In theory, this would so something important
@@ -121,10 +148,11 @@ public:
         // timer and publisher. These entities are no longer available
         // and our node is "clean".
 
-        bobotServoJerk_callback_.reset(); // release the timer first
-        servo_jerk_info_.reset(); // release the publisher after the timer
+        this->bobot_servo_jerk_info_callback_.reset(); // release the wall_timer first
+        this->bobot_servo_jerker_.reset();
+        this->servo_jerk_info_.reset(); // release the publisher after the timer
 
-        RCLCPP_INFO(get_logger(), "Servo Jerk Node has begun cleaning up");
+        this->print_debug_message("Servo Jerk Node has begin cleaning up");
 
         // We return a success and hence invoke the transition to the next step: "unconfigured".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
@@ -139,20 +167,14 @@ public:
         // and our node is "clean".
     
         // similar to the cleanup phase, although one is meant to cleanup the node, and the other is mean to shut down the node. We will be using the shutdown method
-        bobotServoJerk_callback_.reset(); // release the timer first
-        servo_jerk_info_.reset(); // release the publisher after the timer
+        this->bobot_servo_jerk_info_callback_.reset(); // release the timer first
+        this->servo_jerk_info_.reset(); // release the publisher after the timer
 
-        RCLCPP_INFO(get_logger(), "Servo Jerk Node has shut down");
-        RCLCPP_INFO(get_logger(), "shutdown command was called from state %s", state.label().c_str());
+        this->print_debug_message("Servo Jerk Node has shut down!");
+        this->print_debug_message("Shutdown was called from state " + state.label());
 
         // We return a success and hence invoke the transition to the next step: "finalized".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
-    }
-    
-    // function to open the serial port for arduino communication
-    bool initializeComms()
-    {
-        // todo
     }
 
 protected:
@@ -162,15 +184,17 @@ protected:
     {
         // Get the rest of the parameters that we need for this node!
         // First, we delcare the parameters
-        this->declare_parameter("jerk_rate", rclcpp::PARAMETER_INTEGER);
-        std::string device_params = device_type + ".pins";
-        this->declare_parameter(device_params, rclcpp::PARAMETER_STRING_ARRAY);
+        this->declare_parameter("JERK_RATE", 2);
+        this->declare_parameter("SERVOS_TO_JERK", std::vector<int>({1,2}));
+        this->declare_parameter("MAX_ANGLE", 0);
+        this->declare_parameter("MIN_ANGLE", 0);
 
         // Then, we get the parameters
-        jerk_rate = this->get_parameter("jerk_rate").as_int();
-        pin_info.pins = this->get_parameter(device_params).as_string_array();
-
-        RCLCPP_INFO(get_logger(), "Servo jerk rate: %ld", jerk_rate);
+        this->jerk_rate = this->get_parameter("JERK_RATE").as_int();
+        this->servos_to_jerk = this->get_parameter("SERVOS_TO_JERK").as_integer_array();
+        this->max_jerk_angle = this->get_parameter("MAX_ANGLE").as_int();
+        this->min_jerk_angle = this->get_parameter("MIN_ANGLE").as_int();
+        this->print_debug_message("Found servo jerking rate: " + std::to_string(this->jerk_rate));
     }
 
 private:
@@ -183,7 +207,7 @@ private:
     activated to publish messages into the ROS world.
 */
     // This is a regular ROS publisher, BUT it follows the rules of the lifecycle management, as in it won't do JACK until you set a certain state
-    std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<bobot_msgs::msg::ServoJerk>> servo_jerk_info_;
+    std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>> servo_jerk_info_;
 
 /*
     We hold an instance of a timer which periodically triggers the publish function.
@@ -192,14 +216,18 @@ private:
     lifecycle publisher.
 */  
     /// Same as above, this is a ros timer that regulates the rate at which the publisher publishhes data. Should follow lifecycle management (someho?)
-    std::shared_ptr<rclcpp::TimerBase> bobotServoJerk_callback_;
+    std::shared_ptr<rclcpp::TimerBase> bobot_servo_jerk_info_callback_;
+    std::shared_ptr<rclcpp::TimerBase> bobot_servo_jerker_;
 
     std::string bobot_name; // private property for the bobot name
-    std::string device_type;
     std::string topic_name; // private property for the topic name
-    int64_t jerk_rate; // servo jerk rate, defined in the servo_info.yaml file in the bobot_utils/hardware folder
-    bool jerking = false;
-    PinInfo pin_info;
+    int64_t jerk_rate; // servo jerk rate in the bobot_hardware_config_file.yaml
+    std::vector<long int> servos_to_jerk;
+    bool flip_flopper = true;
+    int max_jerk_angle = 0;
+    int min_jerk_angle = 0;
+    bobot_hardware::BobotServoInterface bobot_serial_write;
+
 };
 
 
