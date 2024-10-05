@@ -4,10 +4,17 @@
   <name>bobot_camera</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="rvishnoi@umd.edu">oberon</maintainer>
+  <maintainer email="rvishnoi439@gmail.com">oberon</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+
+
+  <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>bobot_msgs</depend>
+  <depend>lifecycle_msgs</depend>
+
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
