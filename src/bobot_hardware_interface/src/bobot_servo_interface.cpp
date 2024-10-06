@@ -33,7 +33,7 @@ namespace bobot_hardware
     bool BobotServoInterface::open_serial_connection()
     {
         // Open the serial port. Change device path as needed (currently set to an standard FTDI USB-UART cable type device)
-        int serial_port = open("/dev/ttyACM0", O_RDWR);
+        serial_port = open("/dev/ttyACM0", O_RDWR);
 
         // Read in existing settings, and handle any error
         if(tcgetattr(serial_port, &tty) != 0) {
@@ -84,7 +84,7 @@ namespace bobot_hardware
     bool BobotServoInterface::close_serial_connection()
     {
         // Close the serial port
-        close(this->serial_port);
+        close(serial_port);
         return true;
     }
 
