@@ -69,12 +69,14 @@ namespace bobot_hardware
         cfsetospeed(&this->tty, B9600);
 
         // Save tty settings, also checking for error
-        if (tcsetattr(this->serial_port, TCSANOW, &this->tty) != 0)
+        if (tcsetattr(serial_port, TCSANOW, &tty) != 0)
         {
             RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "Error %i from tcsetattr: %s\n", errno, strerror(errno));
             return false;
         }
 
+        std::string send_string = "GET01";
+        write(serial_port, send_string.c_str(), sizeof(send_string.c_str()));
         return true;
     }
 
