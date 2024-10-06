@@ -22,7 +22,7 @@
 
 /** Other names */
 #define CAMERA_DEV      "/dev/video2"
-#define IMAGE_HDR       "/home/oberon/bobot-1/src/bobot_camera/images/"
+#define IMAGE_HDR       "/home/oberon/bobot-1/src/bobot_camera/images/image"
 
 #define UCAM_SUCCESS 1
 
@@ -48,6 +48,7 @@ struct v4l2_buffer camera_buffer;
 struct v4l2_format format;
 
 rclcpp::Publisher<std_msgs::msg::String>::SharedPtr image_stream;
+rclcpp::TimerBase::SharedPtr timer;
 rclcpp::Node::SharedPtr node;
 
 void resize_rgb_image(unsigned char *src, unsigned char *dst, int src_width, int src_height, int dst_width, int dst_height);
@@ -58,12 +59,14 @@ int8_t UCAM_LIB_StartStream(void);
 int8_t UCAM_LIB_StopStream(void);
 int8_t UCAM_LIB_StopStream(void);
 int32_t UCAM_LIB_Init(void);
+void timer_callback(void);
 int8_t prep_stream(void);
 
 int main(int argc, char ** argv) {
   rclcpp::init(argc, argv);
   counter = 1;
   node = rclcpp::Node::make_shared("bobot_camera");
+  timer = node->create_wall_timer(std::chrono::milliseconds(500), timer_callback);
   image_stream = node->create_publisher<std_msgs::msg::String>("/bobot_camera/heartbeat", 10);
   
   if(UCAM_LIB_Init() != UCAM_SUCCESS) {
@@ -94,6 +97,20 @@ int main(int argc, char ** argv) {
 * get_next_image() <- save image for u, just call with correct file path and name
 * make sure that u are using counter to help generate new names
 */
+
+void timer_callback(void) {
+    std::string filename = IMAGE_HDR;
+    filename.append(std::to_string(counter));
+    filename.append(".jpg");
+
+    if(get_next_image(filename.c_str()) != UCAM_SUCCESS) {
+        RCLCPP_ERROR(node->get_logger(), "[Bobot Camera] Failed to take initial image oops baka.");
+        rclcpp::shutdown();
+        return;
+    }
+
+    counter += 1;
+}
 
 int32_t UCAM_LIB_Init(void) {
     if(prep_stream() != UCAM_SUCCESS){
