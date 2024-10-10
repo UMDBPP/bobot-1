@@ -31,6 +31,7 @@ public:
   SimpleTimer()
   : Node("simple_timer"), count_(0)
   {
+    this->declare_parameter("time_upper_bound", 60 * 60 * 60);
     publisher_ = this->create_publisher<std_msgs::msg::UInt16>("/bobot_timer/time", 10);
     timer_ = this->create_wall_timer(1000ms, std::bind(&SimpleTimer::publishTime, this));
     
@@ -44,7 +45,8 @@ private:
     message.data = this->count_++;
     RCLCPP_INFO(this->get_logger(), "Publishing: '%i'", message.data);
     this->publisher_->publish(message);
-    if (count_ > 60 * 60 * 60 && !notified_)
+    long unsigned int upper_bound = (long unsigned int)(this->get_parameter("time_upper_bound").as_int());
+    if (count_ > upper_bound && !notified_)
     {
       pastDueNotification();
       notified_ = true;
