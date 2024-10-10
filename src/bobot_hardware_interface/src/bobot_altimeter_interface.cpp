@@ -94,11 +94,12 @@ namespace bobot_hardware
         int num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
 
         // n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
-        if(num_bytes < 0) 
+        if(num_bytes <= 0) 
         {
             RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "Error reading: %s", strerror(errno));
             return;
         }
+        RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "%i", num_bytes);
 
         if(num_bytes == 8) // note - need to change to whatever we decided on
         {
