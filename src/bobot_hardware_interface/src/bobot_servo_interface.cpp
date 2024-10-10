@@ -74,9 +74,6 @@ namespace bobot_hardware
             RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "Error %i from tcsetattr: %s\n", errno, strerror(errno));
             return false;
         }
-
-        std::string send_string = "GET01";
-        write(serial_port, send_string.c_str(), sizeof(send_string.c_str()));
         return true;
     }
 
@@ -93,7 +90,7 @@ namespace bobot_hardware
         // Read bytes. The behaviour of read() (e.g. does it block?,
         // how long does it block for?) depends on the configuration
         // settings above, specifically VMIN and VTIME
-        int num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
+        int num_bytes = read(serial_port, &this->read_buf, sizeof(this->read_buf));
 
         // n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
         if(num_bytes < 0) 
@@ -101,15 +98,25 @@ namespace bobot_hardware
             RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "Error reading: %s", strerror(errno));
             return;
         }
-        if(num_bytes == 1)
+        if(num_bytes == 8) // expected number of bytes for servo data
         {
             if(read_buf[0] == '!')
             {
-                // update servo 1 position
+                std::string position_string;
+                for(int i=1;i<num_bytes;i+=1)
+                {
+                    position_string.push_back(read_buf[i]);
+                }
+                this->servo_positions[0] = (stod(position_string));
             }
             else if(read_buf[0] == '@')
             {
-                // update servo 2 position
+                std::string position_string;
+                for(int i=1;i<num_bytes;i+=1)
+                {
+                    position_string.push_back(read_buf[i]);
+                }
+                this->servo_positions[1] = (stod(position_string));
             }
         }
 
@@ -126,24 +133,24 @@ namespace bobot_hardware
     }
 
     // Request position data from the servo (only one servo at a time)
-    double BobotServoInterface::request_position(int servoID)
+    void BobotServoInterface::request_position(int servoID)
     {
         // Write to serial port
         std::string servoID_string = std::to_string(servoID);
-        std::string final_command = "SET0" + servoID_string  + "\n";
+        std::string final_command = "GET0" + servoID_string  + "\n";
         write(serial_port, final_command.c_str(), sizeof(final_command.c_str()));
     }
 
-    // command multiple position all at once
-    void BobotServoInterface::command_positions()
-    {
-        // TODO
-    }
+    // // command multiple position all at once
+    // void BobotServoInterface::command_positions()
+    // {
+    //     // TODO
+    // }
 
-    // request multiple positions all at once
-    void BobotServoInterface::request_positions(std::vector<double> joint_positions)
-    {
-        // TODO
-    }
+    // // request multiple positions all at once
+    // void BobotServoInterface::request_positions(std::vector<double> joint_positions)
+    // {
+    //     // TODO
+    // }
 
 };

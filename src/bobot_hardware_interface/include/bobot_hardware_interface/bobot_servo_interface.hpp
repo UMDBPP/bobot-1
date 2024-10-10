@@ -46,7 +46,7 @@ public:
     void command_position(int servoID, double command_position);
 
     // Request position data from the servo (only one servo at a time)
-    double request_position(int servoID);
+    void request_position(int servoID);
 
     // command multiple position all at once
     void command_positions();
