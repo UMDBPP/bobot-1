@@ -39,9 +39,6 @@ public:
 
         parameter_helper(); // get the parameters
 
-        // set up the serial connection
-        bobot_serial_write.open_serial_connection();
-
         print_debug_message("Servo Jerker node has successfully launched! Starting state is {state: unconfigured}");
     }
 
@@ -90,6 +87,9 @@ public:
     */
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_configure(const rclcpp_lifecycle::State&)
     {
+        this->print_debug_message("Attempting to configure Servo Jerker, please hold");
+
+        // Get the topic name
         this->topic_name = bobot_name + "/servo_jerk_info";
 
         // Create a publisher to publish data to an info topic at every 10 seconds, indicating the jerking status
@@ -100,8 +100,7 @@ public:
         this->bobot_servo_jerker_ = this->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), [this]() -> void { jerk_the_servos(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
         
         // Add log information, incase our logging fails
-        this->print_debug_message("Attempting to configure Servo Jerker, please hold");
-
+        this->print_debug_message("Servo Jerker ROS stuff made! Opening the serial port");
 
         // -- FROM ROS REFERENCE -- //
         // We return a success and hence invoke the transition to the next step: "inactive".
@@ -110,8 +109,31 @@ public:
         // In case of TRANSITION_CALLBACK_ERROR or any thrown exception within
         // this callback, the state machine transitions to state "errorprocessing".
 
-        // TL:DR, we update the state of the node to say that on_configure successfully called. If the on_configure function isn't successful, it should either not update the state or change it to error_processing
-        return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+        this->print_debug_message("Servo Jerker ROS stuff made! Opening the serial port");
+
+        // set up the serial connection
+        if(bobot_serial_write.open_serial_connection() == true)
+        {
+            this->print_debug_message("Servo Jerker successfully opened the serial port");
+            // TL:DR, we update the state of the node to say that on_configure successfully called. 
+            // If the on_configure function isn't successful, it should either not update the state 
+            // or change it to error_processing
+            return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+        }
+        else
+        {
+            this->print_debug_message("Servo Jerker was unable to open the serial port! This is bad!!");
+            // TL:DR, we update the state of the node to say that on_configure successfully called. 
+            // If the on_configure function isn't successful, it should either not update the state 
+            // or change it to error_processing
+            return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+        }
+
+
+
+        
+
+        
     }
 
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_activate(const rclcpp_lifecycle::State&)
