@@ -50,13 +50,15 @@ public:
 
     void publish_jerking_info()
     {
-        std::unique_ptr<std_msgs::msg::String> servo_jerk_info_msg = std::make_unique<std_msgs::msg::String>(); // make a unique point to our ROS message object
+        std::unique_ptr<bobot_msgs::msg::ServoJerk> servo_jerk_info_msg = std::make_unique<bobot_msgs::msg::ServoJerk>(); // make a unique point to our ROS message object
         std::string send_string = "Still jerking it (and by it, I mean servos): ";
-        for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
+        for(int i=0;i<(int)this->servos_to_jerk_id.size();i+=1)
         {
-            send_string = send_string + std::to_string(servos_to_jerk[i]) + ", ";
+            send_string = send_string + (this->servos_to_jerk_id[i]) + ", ";
         }
-        servo_jerk_info_msg->data = send_string;
+        servo_jerk_info_msg->jerk_msg = send_string;
+        servo_jerk_info_msg->jerk_rate = this->jerk_rate;
+        servo_jerk_info_msg->num_strokes = this->strokes;
 
         this->servo_jerk_info_->publish(std::move(servo_jerk_info_msg));
     }
@@ -65,20 +67,33 @@ public:
     {
         if(this->flip_flopper == true)
         {
-            for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
+            if(this->is_simulated == false)
             {
-                this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->max_jerk_angle);
+                for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
+                {
+                
+                    this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->max_jerk_angle);
+                }
             }
             this->flip_flopper = false;
         }
         else if(this->flip_flopper == false)
         {
-            for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
+            if(this->is_simulated == false)
             {
-                this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->min_jerk_angle);
+                for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
+                {
+                    this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->min_jerk_angle);
+                }
             }
             this->flip_flopper = true;
         }
+        // Dont need to mutex because I am using a single threaded executor, so each callback will be called one after the other
+        this->strokes += 1;
+    }
+    void jerk_the_simulated_servos()
+    {
+
     }
 
     /*
@@ -93,7 +108,7 @@ public:
         this->topic_name = bobot_name + "/servo_jerk_info";
 
         // Create a publisher to publish data to an info topic at every 10 seconds, indicating the jerking status
-        this->servo_jerk_info_ = this->create_publisher<std_msgs::msg::String>(topic_name, 50); 
+        this->servo_jerk_info_ = this->create_publisher<bobot_msgs::msg::ServoJerk>(topic_name, 50); 
         this->bobot_servo_jerk_info_callback_ = this->create_wall_timer(std::chrono::seconds(10), [this]() -> void { publish_jerking_info(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
 
         int freq_in_miliseconds = 1/this->jerk_rate * 1000;
@@ -112,27 +127,31 @@ public:
         this->print_debug_message("Servo Jerker ROS stuff made! Opening the serial port");
 
         // set up the serial connection
-        if(bobot_serial_write.open_serial_connection() == true)
+        if(this->is_simulated == false)
         {
-            this->print_debug_message("Servo Jerker successfully opened the serial port");
-            // TL:DR, we update the state of the node to say that on_configure successfully called. 
-            // If the on_configure function isn't successful, it should either not update the state 
-            // or change it to error_processing
-            return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+            if(bobot_serial_write.open_serial_connection() == true)
+            {
+                this->print_debug_message("Servo Jerker successfully opened the serial port");
+                // TL:DR, we update the state of the node to say that on_configure successfully called. 
+                // If the on_configure function isn't successful, it should either not update the state 
+                // or change it to error_processing
+                return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+            }
+            else
+            {
+                this->print_debug_message("Servo Jerker was unable to open the serial port! This is bad!!");
+                // TL:DR, we update the state of the node to say that on_configure successfully called. 
+                // If the on_configure function isn't successful, it should either not update the state 
+                // or change it to error_processing
+                return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
+            }
         }
         else
         {
-            this->print_debug_message("Servo Jerker was unable to open the serial port! This is bad!!");
-            // TL:DR, we update the state of the node to say that on_configure successfully called. 
-            // If the on_configure function isn't successful, it should either not update the state 
-            // or change it to error_processing
+            this->print_debug_message("Running in simulation mode, so not attempting to open the serial port!");
             return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
         }
-
-
-
         
-
         
     }
 
@@ -207,13 +226,17 @@ protected:
         // Get the rest of the parameters that we need for this node!
         // First, we delcare the parameters
         this->declare_parameter("JERK_RATE", 2);
-        this->declare_parameter("SERVOS_TO_JERK", std::vector<int>({1,2}));
+        this->declare_parameter("SERVOS_TO_JERK_ID", std::vector<std::string>({"ID-1","ID-2"}));
+        this->declare_parameter("SERVOS_TO_JERK", std::vector<int>({1, 2}));
+        this->declare_parameter("IS_SIMULATED", false);
         this->declare_parameter("MAX_ANGLE", 0);
         this->declare_parameter("MIN_ANGLE", 0);
 
         // Then, we get the parameters
         this->jerk_rate = this->get_parameter("JERK_RATE").as_int();
+        this->servos_to_jerk_id = this->get_parameter("SERVOS_TO_JERK_ID").as_string_array();
         this->servos_to_jerk = this->get_parameter("SERVOS_TO_JERK").as_integer_array();
+        this->is_simulated = this->get_parameter("IS_SIMULATED").as_bool();
         this->max_jerk_angle = this->get_parameter("MAX_ANGLE").as_int();
         this->min_jerk_angle = this->get_parameter("MIN_ANGLE").as_int();
         this->print_debug_message("Found servo jerking rate: " + std::to_string(this->jerk_rate));
@@ -229,7 +252,7 @@ private:
     activated to publish messages into the ROS world.
 */
     // This is a regular ROS publisher, BUT it follows the rules of the lifecycle management, as in it won't do JACK until you set a certain state
-    std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>> servo_jerk_info_;
+    std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<bobot_msgs::msg::ServoJerk>> servo_jerk_info_;
 
 /*
     We hold an instance of a timer which periodically triggers the publish function.
@@ -244,7 +267,10 @@ private:
     std::string bobot_name; // private property for the bobot name
     std::string topic_name; // private property for the topic name
     int64_t jerk_rate; // servo jerk rate in the bobot_hardware_config_file.yaml
+    std::vector<std::string> servos_to_jerk_id;
     std::vector<long int> servos_to_jerk;
+    unsigned int strokes = 0; // I'm LITERALLY hilarious
+    bool is_simulated = false; // by default we are not in simulation
     bool flip_flopper = true;
     int max_jerk_angle = 0;
     int min_jerk_angle = 0;

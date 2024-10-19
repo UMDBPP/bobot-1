@@ -6,9 +6,11 @@
 
     # SERVO JERKER NODE PARAMETERS
     JERK_RATE: 1 # Jerk rate is in Hz
-    SERVOS_TO_JERK: [1]
+    SERVOS_TO_JERK_ID: ["ID-1", "ID-2", "ID-3"]
+    SERVOS_TO_JERK: [1,2,3]
     MAX_ANGLE: 175
     MIN_ANGLE: 5
+    IS_SIMULATED: true
 
     # ALTITUDE NODE PARAMETERS
     SAMPLE_RATE: 10 # value is in Hz
