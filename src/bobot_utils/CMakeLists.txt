@@ -27,7 +27,7 @@ add_executable(altitude_monitor src/altitude_monitor.cpp)
 
 ament_target_dependencies(timer rclcpp std_msgs bobot_msgs)
 ament_target_dependencies(servo_jerk rclcpp std_msgs bobot_msgs bobot_hardware_interface)
-ament_target_dependencies(altitude_monitor rclcpp std_msgs bobot_msgs)
+ament_target_dependencies(altitude_monitor rclcpp std_msgs bobot_msgs bobot_hardware_interface)
 
 target_link_libraries(timer
   ${rclcpp_lifecycle_LIBRARIES}

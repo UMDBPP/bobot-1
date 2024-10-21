@@ -19,6 +19,7 @@ def generate_launch_description():
         package="bobot_utils",
         executable="servo_jerk",
         name="servo_jerker", # This overrides the name listed in the timer_node file, but that's okay because it's better here (and the same anyway)
+        emulate_tty=True,
         parameters=[bobot_launch_config, bobot_hardware_config]
     )
 

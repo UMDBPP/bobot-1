@@ -4,6 +4,7 @@
     # GENERAL SERVO PARAMETERS
     NUM_JOINTS: 10 # Integer value
     BOBOT_NAME: "bb_bobot_1"
+    LOGGING_SAMPLE_RATE: 10 # value is in Hz
 
     # SERVO JERKER NODE PARAMETERS
     JERK_RATE: 1 # Jerk rate is in Hz
@@ -11,10 +12,11 @@
     SERVOS_TO_JERK: [1,2,3]
     MAX_ANGLE: 175
     MIN_ANGLE: 5
-    IS_SIMULATED: true
+    SERVO_IS_SIMULATED: false
 
     # ALTITUDE NODE PARAMETERS
-    SAMPLE_RATE: 10 # value is in Hz
+    SAMPLE_RATE: 100 # value is in Hz
     MAX_ALTITUDE: 82000 # feet - Change per flight!
+    ALT_IS_SIMULATED: true
 
 

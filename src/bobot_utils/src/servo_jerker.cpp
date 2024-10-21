@@ -21,8 +21,6 @@
 #include <utility>
 #include <vector>
 
-using namespace std::literals::chrono_literals;
-using namespace bobot; 
 
 class BobotServoJerk : public rclcpp_lifecycle::LifecycleNode
 {
@@ -150,6 +148,12 @@ public:
         this->strokes += 1;
     }
 
+    rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_error(const rclcpp_lifecycle::State&)
+    {
+        this->print_warn_message("Servo Jerker returning to state [unconfigured]");
+        return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
+    }
+
     /*
         The following are declerations to the callback functions for on_configure, on_active, on_deactivate, on_cleanup, and on_shutdown.
         There are inherited lifecycle methods from the lifecycle node class definition, and we are simply overriding them
@@ -162,7 +166,7 @@ public:
         this->topic_name = bobot_name + "/servo_jerk_info";
 
         // Create a publisher to publish data to an info topic at every 10 seconds, indicating the jerking status
-        this->servo_jerk_info_ = this->create_publisher<bobot_msgs::msg::ServoJerk>(topic_name, 10); 
+        this->servo_jerk_info_ = this->create_publisher<bobot_msgs::msg::ServoJerk>(topic_name, 20); 
         this->bobot_servo_jerk_info_callback_ = this->create_wall_timer(std::chrono::seconds(2), [this]() -> void { publish_jerking_info(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
 
         int freq_in_miliseconds = 1/this->jerk_rate * 1000;
@@ -211,9 +215,7 @@ public:
         {
             this->print_warning_message("Running in simulation mode, so not attempting to open the serial port!");
             return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
-        }
-        
-        
+        } 
     }
 
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_activate(const rclcpp_lifecycle::State&)
@@ -295,7 +297,7 @@ protected:
         this->declare_parameter("JERK_RATE", 2);
         this->declare_parameter("SERVOS_TO_JERK_ID", std::vector<std::string>({"ID-1","ID-2"}));
         this->declare_parameter("SERVOS_TO_JERK", std::vector<int>({1, 2}));
-        this->declare_parameter("IS_SIMULATED", false);
+        this->declare_parameter("SERVO_IS_SIMULATED", false);
         this->declare_parameter("MAX_ANGLE", 0);
         this->declare_parameter("MIN_ANGLE", 0);
 
@@ -303,7 +305,7 @@ protected:
         this->jerk_rate = this->get_parameter("JERK_RATE").as_int();
         this->servos_to_jerk_id = this->get_parameter("SERVOS_TO_JERK_ID").as_string_array();
         this->servos_to_jerk = this->get_parameter("SERVOS_TO_JERK").as_integer_array();
-        this->is_simulated = this->get_parameter("IS_SIMULATED").as_bool();
+        this->is_simulated = this->get_parameter("SERVO_IS_SIMULATED").as_bool();
         this->max_jerk_angle = this->get_parameter("MAX_ANGLE").as_int();
         this->min_jerk_angle = this->get_parameter("MIN_ANGLE").as_int();
         this->print_debug_message("Found servo jerking rate: " + std::to_string(this->jerk_rate));
