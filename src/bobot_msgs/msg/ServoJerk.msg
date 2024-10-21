@@ -2,3 +2,4 @@
 uint16 jerk_rate #Hz
 string jerk_msg 
 uint64 num_strokes
+string send_time

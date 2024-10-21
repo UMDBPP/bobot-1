@@ -3,6 +3,7 @@
 
     # GENERAL SERVO PARAMETERS
     NUM_JOINTS: 10 # Integer value
+    BOBOT_NAME: "bb_bobot_1"
 
     # SERVO JERKER NODE PARAMETERS
     JERK_RATE: 1 # Jerk rate is in Hz

@@ -33,7 +33,7 @@ public:
     explicit BobotServoJerk(const std::string & node_name, bool intra_process_comms = false) : rclcpp_lifecycle::LifecycleNode(node_name, rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
     {
         // Get the name of the current bobot for ros-logging purposes
-        this->declare_parameter("BOBOT_NAME", "Bobot-1");
+        this->declare_parameter("BOBOT_NAME", "bobot_1");
         this->bobot_name = this->get_parameter("BOBOT_NAME").as_string();
         print_debug_message("Getting parameters for Servo Jerker node...");
 
@@ -47,6 +47,34 @@ public:
         RCLCPP_INFO(this->get_logger(), "[USER DEBUG LOG] %s", message.c_str()); // just a helper to mroe easily print generic debug messages
         return;
     }
+    void print_warning_message(std::string message)
+    {
+        RCLCPP_WARN(this->get_logger(), "[USER WARN LOG] %s", message.c_str()); // just another helper to more easily print generid warning messages
+        return;
+    }
+    void print_error_message(std::string message)
+    {
+        RCLCPP_ERROR(this->get_logger(), "[USER ERROR LOG] %s", message.c_str()); // just another helper to more easily print generid warning messages
+        return;
+    }
+    std::string get_current_time_for_logs()
+    {
+        // Stolen from Rahul
+        std::ostringstream oss; // Make an ostringstream object
+        auto t = std::time(nullptr); // Make a time objects
+        auto tm = *std::localtime(&t); // Make a tm pointer thingy
+        oss << std::put_time(&tm, "%d-%H:%M:%S"); // Do this stuff
+        return oss.str(); // return da string
+    }
+    std::string get_current_time()
+    {
+        // Stolen from Rahul
+        std::ostringstream oss; // Make an ostringstream object
+        auto t = std::time(nullptr); // Make a time objects
+        auto tm = *std::localtime(&t); // Make a tm pointer thingy
+        oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S"); // Do this stuff
+        return oss.str(); // return da string
+    }
 
     void publish_jerking_info()
     {
@@ -59,6 +87,7 @@ public:
         servo_jerk_info_msg->jerk_msg = send_string;
         servo_jerk_info_msg->jerk_rate = this->jerk_rate;
         servo_jerk_info_msg->num_strokes = this->strokes;
+        servo_jerk_info_msg->send_time = this->get_current_time();
 
         this->servo_jerk_info_->publish(std::move(servo_jerk_info_msg));
     }
@@ -93,7 +122,32 @@ public:
     }
     void jerk_the_simulated_servos()
     {
-
+        if(this->flip_flopper == true)
+        {
+            if(this->is_simulated == false)
+            {
+                for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
+                {
+                    // Do nothing
+                    // this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->max_jerk_angle);
+                }
+            }
+            this->flip_flopper = false;
+        }
+        else if(this->flip_flopper == false)
+        {
+            if(this->is_simulated == false)
+            {
+                for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
+                {
+                    // Do nothing
+                    // this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->min_jerk_angle);
+                }
+            }
+            this->flip_flopper = true;
+        }
+        // Dont need to mutex because I am using a single threaded executor, so each callback will be called one after the other
+        this->strokes += 1;
     }
 
     /*
@@ -108,11 +162,18 @@ public:
         this->topic_name = bobot_name + "/servo_jerk_info";
 
         // Create a publisher to publish data to an info topic at every 10 seconds, indicating the jerking status
-        this->servo_jerk_info_ = this->create_publisher<bobot_msgs::msg::ServoJerk>(topic_name, 50); 
-        this->bobot_servo_jerk_info_callback_ = this->create_wall_timer(std::chrono::seconds(10), [this]() -> void { publish_jerking_info(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
+        this->servo_jerk_info_ = this->create_publisher<bobot_msgs::msg::ServoJerk>(topic_name, 10); 
+        this->bobot_servo_jerk_info_callback_ = this->create_wall_timer(std::chrono::seconds(2), [this]() -> void { publish_jerking_info(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
 
         int freq_in_miliseconds = 1/this->jerk_rate * 1000;
-        this->bobot_servo_jerker_ = this->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), [this]() -> void { jerk_the_servos(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
+        if(this->is_simulated == false)
+        {
+            this->bobot_servo_jerker_ = this->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), [this]() -> void { jerk_the_servos(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
+        }
+        else
+        {
+            this->bobot_servo_jerker_ = this->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), [this]() -> void { jerk_the_simulated_servos(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
+        }
         
         // Add log information, incase our logging fails
         this->print_debug_message("Servo Jerker ROS stuff made! Opening the serial port");
@@ -139,7 +200,7 @@ public:
             }
             else
             {
-                this->print_debug_message("Servo Jerker was unable to open the serial port! This is bad!!");
+                this->print_error_message("Servo Jerker was unable to open the serial port! This is bad!!");
                 // TL:DR, we update the state of the node to say that on_configure successfully called. 
                 // If the on_configure function isn't successful, it should either not update the state 
                 // or change it to error_processing
@@ -148,7 +209,7 @@ public:
         }
         else
         {
-            this->print_debug_message("Running in simulation mode, so not attempting to open the serial port!");
+            this->print_warning_message("Running in simulation mode, so not attempting to open the serial port!");
             return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
         }
         
@@ -162,11 +223,17 @@ public:
 
         // Here, we are activating the node, allowing it publish messages
         this->servo_jerk_info_->on_activate(); // Call the activatio functions
-        this->print_debug_message("Servo jerking has been activated!");
+        this->print_debug_message("Servo Jerking has been activated!");
         
         // We return a success and hence invoke the transition to the next step: "active".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS; // let the people know we've activated. In theory, this would so something important
     }
+
+
+
+/// DATA FOR EVERY NODE TO PUBLISH
+/// time when publisher, data1, data2, data3, etc
+
 
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State&)
     {
@@ -188,13 +255,13 @@ public:
         // In our cleanup phase, we release the shared pointers to the
         // timer and publisher. These entities are no longer available
         // and our node is "clean".
+        this->print_debug_message("Servo Jerk Node has begin cleaning up");
 
         this->bobot_servo_jerk_info_callback_.reset(); // release the wall_timer first
         this->bobot_servo_jerker_.reset();
         this->servo_jerk_info_.reset(); // release the publisher after the timer
 
-        this->print_debug_message("Servo Jerk Node has begin cleaning up");
-
+        this->print_debug_message("Servo Jerk Node has finished cleaning up, quite the mess we made!");
         // We return a success and hence invoke the transition to the next step: "unconfigured".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
     }
