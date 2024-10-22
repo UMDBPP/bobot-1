@@ -150,7 +150,7 @@ public:
 
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_error(const rclcpp_lifecycle::State&)
     {
-        this->print_warn_message("Servo Jerker returning to state [unconfigured]");
+        this->print_warning_message("Servo Jerker returning to state [unconfigured]");
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
     }
 
