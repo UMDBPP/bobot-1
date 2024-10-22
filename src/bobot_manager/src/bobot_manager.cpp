@@ -578,26 +578,26 @@ public:
         // While we want to be able to control this, we don't really want to have this get caught up and cause our whole system to freeze. These
         // critical nodes will start in the "active" state anyway, and the purpose of the lifecycle is more to be able to turn these off when we 
         // no longer need them to help with processing! (At least that is my reason)
-        if(!flight_timer_get_state->wait_for_service(std::chrono::seconds(10)))
-        {
-            print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /get_state service for the flight timer! this is bad!", error_count);
-            this->print_error_message(print_to_screen);
-        }
-        else
-        {
-            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /get_state service for the flight timer!");
-            this->print_debug_message(print_to_screen);
-        }
-        if(!flight_timer_change_state->wait_for_service(std::chrono::seconds(10)))
-        {
-            print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /change_state service for the flight timer! this is bad!", error_count);
-            this->print_error_message(print_to_screen);
-        }
-        else
-        {
-            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /change_state service for the flight timer!");
-            this->print_debug_message(print_to_screen);
-        }
+        // if(!flight_timer_get_state->wait_for_service(std::chrono::seconds(10)))
+        // {
+        //     print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /get_state service for the flight timer! this is bad!", error_count);
+        //     this->print_error_message(print_to_screen);
+        // }
+        // else
+        // {
+        //     print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /get_state service for the flight timer!");
+        //     this->print_debug_message(print_to_screen);
+        // }
+        // if(!flight_timer_change_state->wait_for_service(std::chrono::seconds(10)))
+        // {
+        //     print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /change_state service for the flight timer! this is bad!", error_count);
+        //     this->print_error_message(print_to_screen);
+        // }
+        // else
+        // {
+        //     print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /change_state service for the flight timer!");
+        //     this->print_debug_message(print_to_screen);
+        // }
 
         // Servo Jerker
         if(!servo_jerker_get_state->wait_for_service(std::chrono::seconds(10)))
@@ -621,53 +621,55 @@ public:
             this->print_debug_message(print_to_screen);
         }
 
-        // Servo commander
-        if(!servo_command_get_state->wait_for_service(std::chrono::seconds(10)))
-        {
-            print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /get_state service for the servo commander! this is bad!", error_count);
-            this->print_error_message(print_to_screen);
-        }
-        else
-        {
-            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /get_state service for the servo commander!");
-            this->print_debug_message(print_to_screen);
-        }
-        if(!servo_command_change_state->wait_for_service(std::chrono::seconds(10)))
-        {
-            print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /change_state service for the servo commander! this is bad!", error_count);
-            this->print_error_message(print_to_screen);
-        }
-        else
-        {
-            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /change_state service for the servo commander!");
-            this->print_debug_message(print_to_screen);
-        }
+        // // Servo commander
+        // if(!servo_command_get_state->wait_for_service(std::chrono::seconds(10)))
+        // {
+        //     print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /get_state service for the servo commander! this is bad!", error_count);
+        //     this->print_error_message(print_to_screen);
+        // }
+        // else
+        // {
+        //     print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /get_state service for the servo commander!");
+        //     this->print_debug_message(print_to_screen);
+        // }
+        // if(!servo_command_change_state->wait_for_service(std::chrono::seconds(10)))
+        // {
+        //     print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /change_state service for the servo commander! this is bad!", error_count);
+        //     this->print_error_message(print_to_screen);
+        // }
+        // else
+        // {
+        //     print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /change_state service for the servo commander!");
+        //     this->print_debug_message(print_to_screen);
+        // }
 
-        // Altitude Monitor
-        if(!altitude_monitor_get_state->wait_for_service(std::chrono::seconds(10)))
-        {
-            print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /get_state service for the altitude monitor! this is bad!", error_count);
-            this->print_error_message(print_to_screen);
-        }
-        else
-        {
-            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /get_state service for the altitude monitor!");
-            this->print_debug_message(print_to_screen);
-        }
-        if(!altitude_monitor_change_state->wait_for_service(std::chrono::seconds(10)))
-        {
-            print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /change_state service for the altitude monitor! this is bad!", error_count);
-            this->print_error_message(print_to_screen);
-        }
-        else
-        {
-            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /change_state service for the altitude monitor!");
-            this->print_debug_message(print_to_screen);
-        }
+        // // Altitude Monitor
+        // if(!altitude_monitor_get_state->wait_for_service(std::chrono::seconds(10)))
+        // {
+        //     print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /get_state service for the altitude monitor! this is bad!", error_count);
+        //     this->print_error_message(print_to_screen);
+        // }
+        // else
+        // {
+        //     print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /get_state service for the altitude monitor!");
+        //     this->print_debug_message(print_to_screen);
+        // }
+        // if(!altitude_monitor_change_state->wait_for_service(std::chrono::seconds(10)))
+        // {
+        //     print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /change_state service for the altitude monitor! this is bad!", error_count);
+        //     this->print_error_message(print_to_screen);
+        // }
+        // else
+        // {
+        //     print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /change_state service for the altitude monitor!");
+        //     this->print_debug_message(print_to_screen);
+        // }
 
         // Get the initial states, and log them
-        // std::shared_ptr<lifecycle_msgs::srv::GetState::Request> request = std::make_shared<lifecycle_msgs::srv::GetState::Request>();
+        std::shared_ptr<lifecycle_msgs::srv::ChangeState::Request> request = std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
+        request->transition->id = 1;
 
+        auto result = servo_jerker_change_state->async_send_request(request);
         
     }
 
