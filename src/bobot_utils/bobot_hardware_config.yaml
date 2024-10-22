@@ -12,7 +12,7 @@
     SERVOS_TO_JERK: [1,2,3]
     MAX_ANGLE: 175
     MIN_ANGLE: 5
-    SERVO_IS_SIMULATED: false
+    SERVO_IS_SIMULATED: true
 
     # ALTITUDE NODE PARAMETERS
     SAMPLE_RATE: 100 # value is in Hz

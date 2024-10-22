@@ -29,12 +29,13 @@ public:
     explicit BobotAltitudeMonitor(const std::string & node_name, bool intra_process_comms = false) : rclcpp_lifecycle::LifecycleNode(node_name, rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
     {
         // Get the name of the current bobot for ros-logging purposes
-        this->declare_parameter("bobot_name", rclcpp::PARAMETER_STRING);
-        bobot_name = this->get_parameter("bobot_name").as_string();
-        print_debug_message("Getting parameters for Altitude Monitor node...");
+        this->declare_parameter("BOBOT_NAME", rclcpp::PARAMETER_STRING);
+        bobot_name = this->get_parameter("BOBOT_NAME").as_string();
+        this->print_debug_message("Getting parameters for Altitude Monitor node...");
 
-        parameter_helper(); // get the parameters
-        print_debug_message("Altitude Monitor node has succesfully launched! Starting state is [unconfigured]");
+        // Get the parameters
+        parameter_helper(); 
+        this->print_debug_message("Altitude Monitor node has succesfully launched! Starting state is [unconfigured]");
     }
 
     void print_debug_message(std::string message)
@@ -67,8 +68,12 @@ public:
         std::ostringstream oss; // Make an ostringstream object
         auto t = std::time(nullptr); // Make a time objects
         auto tm = *std::localtime(&t); // Make a tm pointer thingy
-        oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S"); // Do this stuff
+        oss << std::put_time(&tm, "%Y-%m-%d_%H-%M-%S-%ms"); // Do this stuff
         return oss.str(); // return da string
+    }
+    double simulate_altitude_sensor()
+    {
+        return (15.0/this->sampling_rate);
     }
 
     void publish_altitude_info()
@@ -77,6 +82,18 @@ public:
         /*
             Add code that will access the board and get a data and checks what alt we are at
         */
+
+        altitude_info_->publish(std::move(altitude_info_msg));
+    }
+    void publish_simulated_altitude_info()
+    {
+        this->altitude_buffer += this->simulate_altitude_sensor(); // simulate collecting the altitude from the sensor
+        std::unique_ptr<bobot_msgs::msg::AltitudeMonitor> altitude_info_msg = std::make_unique<bobot_msgs::msg::AltitudeMonitor>(); // make a unique point to our ROS message object
+        
+        altitude_info_msg->current_altitude = this->altitude_buffer;
+        altitude_info_msg->alt_reached = this->alt_reached;
+        altitude_info_msg->send_time = get_current_time_for_logs();
+        altitude_info_msg->ros_send_time = this->now().seconds(); /// get ros time
 
         altitude_info_->publish(std::move(altitude_info_msg));
     }
@@ -97,14 +114,14 @@ public:
 
         topic_name = bobot_name + "/altitude_monitor_info";
         altitude_info_ = this->create_publisher<bobot_msgs::msg::AltitudeMonitor>(topic_name, 20); // Create a publisher with a namespace of bobot1 called timer, and have the queue size be 10 (since it should publish at 1 hz)
-        altitude_info_callback_ = this->create_wall_timer(std::chrono::milliseconds(sampling_rate), [this]() -> void { publish_altitude_info(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
+        int freq_in_miliseconds = 1/this->sampling_rate * 1000; 
         
-        // Add log information, incase our logging fails
-        this->print_debug_message("Attempting to configure Altitude Monitor, please hold!");
-
         // set up the serial connection
         if(this->is_simulated == false)
         {
+            // create the callback thread for the non-simulated case
+            altitude_info_callback_ = this->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), [this]() -> void { publish_altitude_info(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
+
             if(altitude_serial_write.open_serial_connection() == true)
             {
                 this->print_debug_message("Altitude Monitor successfully opened the serial port");
@@ -124,6 +141,8 @@ public:
         }
         else
         {
+            // create the callback thread for the simulated case
+            altitude_info_callback_ = this->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), [this]() -> void { publish_simulated_altitude_info(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
             this->print_warning_message("Running in simulation mode, so not attempting to open the serial port!");
             return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
         } 
@@ -134,9 +153,19 @@ public:
         // -- FROM ROS -- //
         // on_activate callback is being called when the lifecycle node enters the "activating" state.
 
+        // Get the initial altitude, and check if it's different from expected
+        if(this->is_simulated == false)
+        {
+
+        }
+        else
+        {
+            this->altitude_buffer = 0.0; // say we're at sea level
+        }
+
         // Here, we are activating the node, allowing it publish messages
         altitude_info_->on_activate(); // Call the activatio functions
-        RCLCPP_INFO(get_logger(), "Altitude Monitor has been activated has been activated"); // use the ros logger incase our logging messes ups
+        this->print_debug_message("Altitude Monitor has been activated has been activated");
         
         // We return a success and hence invoke the transition to the next step: "active".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS; // let the people know we've activated. In theory, this would so something important
@@ -149,7 +178,7 @@ public:
 
         // Here, we are deactivating the node, which no longer allows its messages to go through
         altitude_info_->on_deactivate(); // Call the activation functions
-        RCLCPP_INFO(get_logger(), "Servo jerking has been deactivated... we should be starting motion!"); // use the ros logger incase our logging messes ups
+        this->print_debug_message("Altitude Monitor has been deactivated... end of flight approaching!");
 
         // We return a success and hence invoke the transition to the next step: "inactive".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS; // let the people know we've activated. In theory, this would so something important
@@ -162,11 +191,12 @@ public:
         // In our cleanup phase, we release the shared pointers to the
         // timer and publisher. These entities are no longer available
         // and our node is "clean".
+        this->print_debug_message("Altitude Monitor Node has begun cleaning up");
 
         altitude_info_callback_.reset(); // release the timer first
         altitude_info_.reset(); // release the publisher after the timer
 
-        RCLCPP_INFO(get_logger(), "Servo Jerk Node has begun cleaning up");
+        this->print_debug_message("Altitude Monitor finished cleaning up!");
 
         // We return a success and hence invoke the transition to the next step: "unconfigured".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
@@ -184,8 +214,8 @@ public:
         altitude_info_callback_.reset(); // release the timer first
         altitude_info_.reset(); // release the publisher after the timer
 
-        RCLCPP_INFO(get_logger(), "Servo Jerk Node has shut down");
-        RCLCPP_INFO(get_logger(), "shutdown command was called from state %s", state.label().c_str());
+        this->print_debug_message("Altitude Monitor Node has shut down");
+        this->print_debug_message("Shutdown command was called from state " + state.label());
 
         // We return a success and hence invoke the transition to the next step: "finalized".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
@@ -228,6 +258,9 @@ private:
 */  
     /// Same as above, this is a ros timer that regulates the rate at which the publisher publishhes data. Should follow lifecycle management (someho?)
     std::shared_ptr<rclcpp::TimerBase> altitude_info_callback_;
+    
+    double altitude_buffer; // variable to store altitude data
+    bool alt_reached = false;
 
     std::string bobot_name; // private property for the bobot name
     std::string topic_name; // private property for the topic name

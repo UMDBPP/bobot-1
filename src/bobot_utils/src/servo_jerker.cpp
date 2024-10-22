@@ -85,7 +85,7 @@ public:
         servo_jerk_info_msg->jerk_msg = send_string;
         servo_jerk_info_msg->jerk_rate = this->jerk_rate;
         servo_jerk_info_msg->num_strokes = this->strokes;
-        servo_jerk_info_msg->send_time = this->get_current_time();
+        servo_jerk_info_msg->send_time = this->get_current_time_for_logs();
 
         this->servo_jerk_info_->publish(std::move(servo_jerk_info_msg));
     }

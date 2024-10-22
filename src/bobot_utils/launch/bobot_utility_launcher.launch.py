@@ -23,6 +23,15 @@ def generate_launch_description():
         parameters=[bobot_launch_config, bobot_hardware_config]
     )
 
+    bobot_altitude_monitor_node = Node(
+        package="bobot_utils",
+        executable="altitude_monitor",
+        name="altitude_monitor", # This overrides the name listed in the timer_node file, but that's okay because it's better here (and the same anyway)
+        emulate_tty=True,
+        parameters=[bobot_launch_config, bobot_hardware_config]
+    )
+
     return LaunchDescription([
-        bobot_servo_jerk_node
+        bobot_servo_jerk_node,
+        bobot_altitude_monitor_node
     ])
