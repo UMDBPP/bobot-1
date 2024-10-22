@@ -182,15 +182,6 @@ public:
         // Add log information, incase our logging fails
         this->print_debug_message("Servo Jerker ROS stuff made! Opening the serial port");
 
-        // -- FROM ROS REFERENCE -- //
-        // We return a success and hence invoke the transition to the next step: "inactive".
-        // If we returned TRANSITION_CALLBACK_FAILURE instead, the state machine
-        // would stay in the "unconfigured" state.
-        // In case of TRANSITION_CALLBACK_ERROR or any thrown exception within
-        // this callback, the state machine transitions to state "errorprocessing".
-
-        this->print_debug_message("Servo Jerker ROS stuff made! Opening the serial port");
-
         // set up the serial connection
         if(this->is_simulated == false)
         {
