@@ -16,19 +16,24 @@ int main()
     std::cout << "Preparing to command!" << std::endl;
     bobot_servo.command_position(1,5);
     bobot_servo.command_position(2,5);
+    bobot_servo.request_position(1);
+    bobot_servo.read_serial();
+    std::cout << 1.0*bobot_servo.servo_positions[0] << std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(2));
     while(true)
     {
-        std::cout << count*1.0 << std::endl;
+	bobot_servo.request_position(1);
+	bobot_servo.read_serial();
+        std::cout << bobot_servo.servo_positions[0]*1.0 << std::endl;
 	bobot_servo.command_position(1,count);
-      	bobot_servo.command_position(2,count);
-	count += (1*direction);
+      	//bobot_servo.command_position(2,count);
+	count += (5*direction);
 	if(count == 175 || count == 5)
 	{
 	    direction = direction*-1;
 	}
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
 
     }

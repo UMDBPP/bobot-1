@@ -46,7 +46,7 @@ public:
     void command_position(uint8_t servoID, uint8_t command_position);
 
     // Request position data from the servo (only one servo at a time)
-    void request_position(int servoID);
+    void request_position(uint8_t servoID);
 
     // command multiple position all at once
     void command_positions();
@@ -54,7 +54,7 @@ public:
     // request multiple positions all at once
     void request_positions(std::vector<double> joint_positions);
 
-    std::vector<double> servo_positions;
+    std::vector<uint8_t> servo_positions;
 
 private:
 
@@ -67,7 +67,7 @@ private:
     struct termios tty;
 
     // Allocate memory for read buffer, set size according to your needs
-    char read_buf [8]; // we really only need 8 
+    uint8_t* read_buf = new uint8_t[2]; // 1 byte for identity, 1 byte for data
 
     // logger string
     std::string ros_logger_string = "BobotServoInterface";
