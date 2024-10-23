@@ -64,9 +64,9 @@ namespace bobot_hardware
         this->tty.c_cc[VTIME] = 10;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
         this->tty.c_cc[VMIN] = 0;   
 
-        // Set in/out baud rate to be 9600
-        cfsetispeed(&this->tty, B9600);
-        cfsetospeed(&this->tty, B9600);
+        // Set in/out baud rate to be 115200
+        cfsetispeed(&this->tty, B115200);
+        cfsetospeed(&this->tty, B115200);
 
         // Save tty settings, also checking for error
         if (tcsetattr(serial_port, TCSANOW, &tty) != 0)

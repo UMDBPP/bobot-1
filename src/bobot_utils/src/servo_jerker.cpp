@@ -94,24 +94,18 @@ public:
     {
         if(this->flip_flopper == true)
         {
-            if(this->is_simulated == false)
+            for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
             {
-                for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
-                {
-                
-                    this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->max_jerk_angle);
-                }
+            
+                this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->max_jerk_angle);
             }
             this->flip_flopper = false;
         }
         else if(this->flip_flopper == false)
         {
-            if(this->is_simulated == false)
+            for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
             {
-                for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
-                {
-                    this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->min_jerk_angle);
-                }
+                this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->min_jerk_angle);
             }
             this->flip_flopper = true;
         }
@@ -122,25 +116,20 @@ public:
     {
         if(this->flip_flopper == true)
         {
-            if(this->is_simulated == false)
+
+            for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
             {
-                for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
-                {
-                    // Do nothing
-                    // this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->max_jerk_angle);
-                }
+                // Do nothing
+                // this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->max_jerk_angle);
             }
             this->flip_flopper = false;
         }
         else if(this->flip_flopper == false)
         {
-            if(this->is_simulated == false)
+            for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
             {
-                for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
-                {
-                    // Do nothing
-                    // this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->min_jerk_angle);
-                }
+                // Do nothing
+                // this->bobot_serial_write.command_position(this->servos_to_jerk[i], this->min_jerk_angle);
             }
             this->flip_flopper = true;
         }
