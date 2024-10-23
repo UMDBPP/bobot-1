@@ -284,10 +284,16 @@ protected:
         // Then, we get the parameters
         this->jerk_rate = this->get_parameter("JERK_RATE").as_int();
         this->servos_to_jerk_id = this->get_parameter("SERVOS_TO_JERK_ID").as_string_array();
-        this->servos_to_jerk = this->get_parameter("SERVOS_TO_JERK").as_integer_array();
+        this->servos_to_jerk_long = this->get_parameter("SERVOS_TO_JERK").as_integer_array();
+	for(int i=0;i<(int)this->servos_to_jerk_long.size();i+=1)
+	{
+	    this->servos_to_jerk.push_back((uint8_t)servos_to_jerk_long[i]); // typcast
+	}
         this->is_simulated = this->get_parameter("SERVO_IS_SIMULATED").as_bool();
-        this->max_jerk_angle = this->get_parameter("MAX_ANGLE").as_int();
-        this->min_jerk_angle = this->get_parameter("MIN_ANGLE").as_int();
+        this->max_jerk_angle_long = this->get_parameter("MAX_ANGLE").as_int();
+        this->min_jerk_angle_long = this->get_parameter("MIN_ANGLE").as_int();
+	this->max_jerk_angle = (uint8_t)this->max_jerk_angle_long; // typecast
+	this->min_jerk_angle = (uint8_t)this->min_jerk_angle_long;
         this->print_debug_message("Found servo jerking rate: " + std::to_string(this->jerk_rate));
     }
 
@@ -317,12 +323,15 @@ private:
     std::string topic_name; // private property for the topic name
     int64_t jerk_rate; // servo jerk rate in the bobot_hardware_config_file.yaml
     std::vector<std::string> servos_to_jerk_id;
-    std::vector<long int> servos_to_jerk;
+    std::vector<long int> servos_to_jerk_long;
+    std::vector<uint8_t> servos_to_jerk;
     unsigned int strokes = 0; // I'm LITERALLY hilarious
     bool is_simulated = false; // by default we are not in simulation
     bool flip_flopper = true;
-    int max_jerk_angle = 0;
-    int min_jerk_angle = 0;
+    int max_jerk_angle_long = 0;
+    int min_jerk_angle_long = 0;
+    uint8_t max_jerk_angle = 0;
+    uint8_t min_jerk_angle = 0;
     bobot_hardware::BobotServoInterface bobot_serial_write;
 
 };

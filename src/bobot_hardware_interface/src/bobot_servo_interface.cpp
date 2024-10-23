@@ -123,13 +123,14 @@ namespace bobot_hardware
     }
 
     // Send a position command to the servo (only one servo at a time)
-    void BobotServoInterface::command_position(int servoID, double command_position)
+    void BobotServoInterface::command_position(uint8_t servoID, uint8_t command_position)
     {
         // Write to serial port
-        std::string servoID_string = std::to_string(servoID);
-        std::string command_position_string = std::to_string(command_position);
-        std::string final_command = "SET0" + servoID_string + " " + command_position_string + "\n";
-        write(serial_port, final_command.c_str(), sizeof(final_command.c_str()));
+	uint8_t* command = new uint8_t[3];
+	command[0] = 1; // 1 specifies "GET" command
+	command[1] = servoID;
+	command[2] = command_position;
+        write(serial_port, command, 3);
     }
 
     // Request position data from the servo (only one servo at a time)
@@ -137,7 +138,7 @@ namespace bobot_hardware
     {
         // Write to serial port
         std::string servoID_string = std::to_string(servoID);
-        std::string final_command = "GET0" + servoID_string  + "\n";
+        std::string final_command = "GET0" + servoID_string  + ";";
         write(serial_port, final_command.c_str(), sizeof(final_command.c_str()));
     }
 

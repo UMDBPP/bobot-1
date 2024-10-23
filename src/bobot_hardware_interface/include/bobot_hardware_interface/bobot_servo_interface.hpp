@@ -43,7 +43,7 @@ public:
     void read_serial();
 
     // Send a position command to the servo (only one servo at a time)
-    void command_position(int servoID, double command_position);
+    void command_position(uint8_t servoID, uint8_t command_position);
 
     // Request position data from the servo (only one servo at a time)
     void request_position(int servoID);

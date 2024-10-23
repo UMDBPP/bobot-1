@@ -82,7 +82,7 @@ namespace bobot_hardware
     {
         // Write to serial port
         std::string sensorID_string = "5"; // hardcoded, requst for altitude uses ID 5
-        std::string final_command = "GET0" + sensorID_string  + "\n";
+        std::string final_command = "GET0" + sensorID_string  + ";";
         write(serial_port, final_command.c_str(), sizeof(final_command.c_str()));
     }
 
