@@ -90,7 +90,7 @@ namespace bobot_hardware
         // Read bytes. The behaviour of read() (e.g. does it block?,
         // how long does it block for?) depends on the configuration
         // settings above, specifically VMIN and VTIME
-        int num_bytes = read(serial_port, &this->read_buf, 2); // always expecting bytes of size 2 for servos
+        int num_bytes = read(serial_port, this->read_buf, 2); // always expecting bytes of size 2 for servos
 
         // n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
         if(num_bytes < 0) 
@@ -99,16 +99,14 @@ namespace bobot_hardware
             return;
         }
         if(num_bytes == 2) // expected number of bytes for servo data
-        {
-	    RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "reading %i", read_buf[0]);
-	    RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "value %i", read_buf[1]);
+     	{
             if(read_buf[0] == 1)
             {
-                this->servo_positions[0] = read_buf[1];
+                this->servo_positions[0] = this->read_buf[1];
             }
             else if(read_buf[0] == 2)
             {
-                this->servo_positions[1] = read_buf[1];
+                this->servo_positions[1] = this->read_buf[1];
             }
         }
 

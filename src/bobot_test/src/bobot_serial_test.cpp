@@ -22,18 +22,20 @@ int main()
     std::this_thread::sleep_for(std::chrono::seconds(2));
     while(true)
     {
-	bobot_servo.request_position(1);
-	bobot_servo.read_serial();
-        std::cout << bobot_servo.servo_positions[0]*1.0 << std::endl;
+//	bobot_servo.request_position(1);
+//	bobot_servo.read_serial();
+//        bobot_servo.request_position(2);
+//	bobot_servo.read_serial();
+//        std::cout << bobot_servo.servo_positions[0]*1.0 << ", " << bobot_servo.servo_positions[1]*1.0 << ", " << count*1.0 << std::endl;
 	bobot_servo.command_position(1,count);
-      	//bobot_servo.command_position(2,count);
-	count += (5*direction);
+     	bobot_servo.command_position(2,count);
+	count += (1*direction);
 	if(count == 175 || count == 5)
 	{
 	    direction = direction*-1;
 	}
 
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
 
 
     }
