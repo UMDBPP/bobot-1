@@ -12,7 +12,6 @@ save timer count to file, and recover when reboot
 - difference between a fresh start and a restart?
 - append to timer on each iteration
 - read in on startup
-figure out what the trigger time(s) should be and add a lower bound
 */
 
 #include <chrono>
