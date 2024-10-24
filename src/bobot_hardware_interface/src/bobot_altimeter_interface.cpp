@@ -15,7 +15,7 @@ namespace bobot_hardware
         // Normally you wouldn't do this memset() call, but since we will just receive
         // ASCII data for this example, we'll set everything to 0 so we can
         // call printf() easily.
-        memset(&this->read_buf, '\0', sizeof(this->read_buf));
+        // memset(&this->read_buf, '\0', sizeof(this->read_buf));
     }
 
     BobotAltimeterInterface::~BobotAltimeterInterface() = default;
@@ -81,9 +81,11 @@ namespace bobot_hardware
     void BobotAltimeterInterface::request_altitude()
     {
         // Write to serial port
-        std::string sensorID_string = "5"; // hardcoded, requst for altitude uses ID 5
-        std::string final_command = "GET0" + sensorID_string  + ";";
-        write(serial_port, final_command.c_str(), sizeof(final_command.c_str()));
+	uint8_t* req_command = new uint8_t[3];
+	req_command[0] = 2; // 2 specifies "GET"
+	req_command[1] = 5; // 5 is the ID for the altimeter
+	req_command[2] = 0; // unused
+        write(serial_port, req_command, 3);
     }
 
     void BobotAltimeterInterface::read_serial()
@@ -91,7 +93,7 @@ namespace bobot_hardware
         // Read bytes. The behaviour of read() (e.g. does it block?,
         // how long does it block for?) depends on the configuration
         // settings above, specifically VMIN and VTIME
-        int num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
+        int num_bytes = read(serial_port, this->read_buf, 5);
 
         // n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
         if(num_bytes <= 0) 
@@ -99,18 +101,15 @@ namespace bobot_hardware
             RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "Error reading: %s", strerror(errno));
             return;
         }
-        RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "%i", num_bytes);
 
-        if(num_bytes == 8) // note - need to change to whatever we decided on
+        if(num_bytes == 5) // note - need to change to whatever we decided on
         {
-            if(read_buf[0] == '%')
+            if(read_buf[0] == 5)
             {
-                std::string altitude_string;
-                for(int i=1;i<num_bytes;i+=1)
-                {
-                    altitude_string.push_back(read_buf[i]);
-                }
-                this->altitude = (stod(altitude_string));
+            	RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "%i", read_buf[1]);
+		RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "%i", read_buf[2]);
+		RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "%i", read_buf[3]);
+		RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "%i", read_buf[4]);
             }
         }
     }

@@ -44,7 +44,7 @@ public:
     // Request position data from the servo (only one servo at a time)
     void request_altitude();
 
-    double altitude;
+    int32_t altitude;
 
 private:
     // Integer to hold the serial port data
@@ -54,7 +54,7 @@ private:
     struct termios tty;
 
     // Allocate memory for read buffer, set size according to your needs
-    char read_buf [8]; // we really only need 8 
+    uint8_t* read_buf = new uint8_t[5]; // we really only need 8 
 
     std::string ros_logger_string = "BobotAltimeterInterface";
 
