@@ -1,16 +1,19 @@
-// Copyright 2016 Open Source Robotics Foundation, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// |***************************************************************|
+// |* (c) Copyright 2024                                           |
+// |* Balloon Payload Program, University of Maryland              |
+// |* College Park, MD 20742                                       |
+// |* https://bpp.umd.edu                                          |
+// |***************************************************************|
+
+/* todos
+lifecycle node
+- add lifecycle state functions
+save timer count to file, and recover when reboot
+- difference between a fresh start and a restart?
+- append to timer on each iteration
+- read in on startup
+figure out what the trigger time(s) should be and add a lower bound
+*/
 
 #include <chrono>
 #include <memory>
