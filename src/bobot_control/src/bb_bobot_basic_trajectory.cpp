@@ -122,7 +122,6 @@ public:
         int period = this->trajectory_time/5;
         // This is one period of the trajectory
         int array_length = floor(this->hardware_loop_rate * period);
-        int array_val_for_each_stop = array_length/5;
 
         for(int i=0;i<array_length/5;i++)
         {
