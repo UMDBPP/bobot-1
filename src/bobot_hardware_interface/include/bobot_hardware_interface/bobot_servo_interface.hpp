@@ -58,16 +58,11 @@ public:
 
 private:
 
-    
-
     // Integer to hold the serial port data
     int serial_port;
 
     // Create new termios struct, we call it 'tty' for convention
     struct termios tty;
-
-    // Allocate memory for read buffer, set size according to your needs
-    uint8_t* read_buf = new uint8_t[2]; // 1 byte for identity, 1 byte for data
 
     // logger string
     std::string ros_logger_string = "BobotServoInterface";

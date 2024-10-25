@@ -2,21 +2,29 @@
   ros__parameters:
 
     # GENERAL SERVO PARAMETERS
-    NUM_JOINTS: 3 # Integer value
     BOBOT_NAME: "bb_bobot_1"
     LOGGING_SAMPLE_RATE: 10 # value is in Hz
 
     # SERVO JERKER NODE PARAMETERS
-    JERK_RATE: 2 # Jerk rate is in Hz
-    SERVOS_TO_JERK_ID: ["ID-1", "ID-2", "ID-3"]
-    SERVOS_TO_JERK: [1,2,3]
-    MAX_ANGLE: 100
-    MIN_ANGLE: 90
+    JERK_RATE: 1.0 # Jerk rate is in Hz
+    SERVOS_TO_JERK_ID: ["ID-1"]
+    SERVOS_TO_JERK: [1]
+    MAX_ANGLE: 120
+    MIN_ANGLE: 30
     SERVO_IS_SIMULATED: false
 
     # ALTITUDE NODE PARAMETERS
-    SAMPLE_RATE: 100 # value is in Hz
+    SAMPLE_RATE: 100.0 # value is in Hz
     MAX_ALTITUDE: 82000 # feet - Change per flight!
     ALT_IS_SIMULATED: true
+
+    # TRAJECTORY COMMANDER NODE
+    JOINT_IDS: [1,2]
+    TRAJ_IS_SIMULATED: false
+    HARDWARE_LOOP_RATE: 100.0 # Hz
+    CONSTANT_JOINT_VELOCITY: 90.0 # Degrees per second
+    TRAJECTORY_TIME: 5 # Making these integers for simplicity <-- the time to complete specific trajectories [NOTE - MAKE THESE INTERVALS OF 5 PLEASE]
+
+
 
 

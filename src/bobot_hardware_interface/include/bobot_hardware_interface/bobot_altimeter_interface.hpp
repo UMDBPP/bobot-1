@@ -44,7 +44,8 @@ public:
     // Request position data from the servo (only one servo at a time)
     void request_altitude();
 
-    int32_t altitude;
+    double altitude = 0; // initialize with 0 incase the arduino fails during flight
+    int32_t altitude_centimeters = 0; // initialize with 0 incase the arduino fails during flight
 
 private:
     // Integer to hold the serial port data
@@ -53,9 +54,7 @@ private:
     // Create new termios struct, we call it 'tty' for convention
     struct termios tty;
 
-    // Allocate memory for read buffer, set size according to your needs
-    uint8_t* read_buf = new uint8_t[5]; // we really only need 8 
-
+    // logger string
     std::string ros_logger_string = "BobotAltimeterInterface";
 
 };

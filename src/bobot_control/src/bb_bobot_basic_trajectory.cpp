@@ -8,8 +8,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
 #include <std_msgs/msg/string.hpp>
-#include <bobot_msgs/msg/servo_jerk.hpp> // servo jerk message file
-#include <bobot_utils/bobot_common_types.hpp>
+#include <bobot_msgs/msg/bobot_commander.hpp>
 #include "bobot_hardware_interface/bobot_servo_interface.hpp"
 
 // C++ specific libraries
@@ -22,22 +21,32 @@
 #include <vector>
 
 
-class BobotServoJerk : public rclcpp_lifecycle::LifecycleNode
+class BBBobotBasicTrajectoryGenerator : public rclcpp_lifecycle::LifecycleNode
 {
 
 public:
 
     // Constructor -  needs a node name and a boolean that indicates if we are using intra_process_commms (?))
-    explicit BobotServoJerk(const std::string & node_name, bool intra_process_comms = false) : rclcpp_lifecycle::LifecycleNode(node_name, rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
+    explicit BBBobotBasicTrajectoryGenerator(const std::string &node_name, bool intra_process_comms = false) : rclcpp_lifecycle::LifecycleNode(node_name, rclcpp::NodeOptions().use_intra_process_comms(intra_process_comms))
     {
         // Get the name of the current bobot for ros-logging purposes
         this->declare_parameter("BOBOT_NAME", "bobot_1");
         this->bobot_name = this->get_parameter("BOBOT_NAME").as_string();
-        print_debug_message("Getting parameters for Servo Jerker node...");
+        print_debug_message("Getting parameters for BB-Bobot Trajectory Generator node...");
 
         parameter_helper(); // get the parameters
 
-        print_debug_message("Servo Jerker node has successfully launched! Starting state is {state: unconfigured}");
+        // establish the joint positions vector
+        for(int i=0;i<this->num_joints;i+=1)
+        {
+            this->joint_positions.push_back(0);
+        }
+
+        // make out trajectories:
+        generate_sweep_trajectory();
+        generate_0_90_180_trajectory();
+
+        print_debug_message("BB-Bobot-1 Trajectory Generator node has successfully launched! Starting state is {state: unconfigured}");
     }
 
     void print_debug_message(std::string message)
@@ -74,72 +83,106 @@ public:
         return oss.str(); // return da string
     }
 
-    void publish_jerking_info()
+    // Make a sweep trajectory
+    void generate_sweep_trajectory()
     {
-        std::unique_ptr<bobot_msgs::msg::ServoJerk> servo_jerk_info_msg = std::make_unique<bobot_msgs::msg::ServoJerk>(); // make a unique point to our ROS message object
-        std::string send_string = "Still jerking it (and by it, I mean servos): ";
-        for(int i=0;i<(int)this->servos_to_jerk_id.size();i+=1)
-        {
-            send_string = send_string + (this->servos_to_jerk_id[i]) + ", ";
-        }
-        servo_jerk_info_msg->jerk_msg = send_string;
-        servo_jerk_info_msg->jerk_rate = this->jerk_rate;
-        servo_jerk_info_msg->num_strokes = this->strokes;
-        servo_jerk_info_msg->send_time = this->get_current_time_for_logs();
+        // Using the formula from Dan Grammer:
+        // Degrees/sec * 1/Hz = Degrees / Cycle
+        // Length of array should be Hz * seoncds to complete trajectory
+        // For example, if we are moving for 2 seconds, are array is length 200
+        double degrees_per_cycle = this->constant_joint_velocity/this->hardware_loop_rate; // the degree per cycle we need to travel at the given speed
 
-        this->servo_jerk_info_->publish(std::move(servo_jerk_info_msg));
+        // Find out how many seconds it will take to get to 180 degrees:
+        double period = (180/this->constant_joint_velocity)*2; // at 90 deg/sec, this should be 2 sec for a half a period (multiply by 2 to get the full period)
+        
+        // Total array size is period * hardware_loop_rate, so
+        // To ensure this number is a int, floor the sucker
+        int array_length = floor(this->hardware_loop_rate * period);
+        double curr_val = 0;
+        int direction = 1;
+        for(int i=0;i<array_length;i++)
+        {
+            curr_val += degrees_per_cycle*direction; // get the current value
+            if(curr_val <= 0.0) // make sure we don't go less than 0
+            {
+                curr_val = 0.0;
+            }
+            this->one_period_sweep.push_back((uint8_t)floor(curr_val));
+            if(curr_val >= 180)
+            {
+                direction = direction * -1;
+            }
+            // this->print_debug_message(std::to_string(one_period_sweep[i]*1.0));
+        }
     }
 
-    void jerk_the_servos()
+    void generate_0_90_180_trajectory()
     {
-        if(this->flip_flopper == true)
-        {
-            for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
-            {
-            
-                this->bobot_serial_interface.command_position(this->servos_to_jerk[i], this->max_jerk_angle);
-            }
-            this->flip_flopper = false;
-        }
-        else if(this->flip_flopper == false)
-        {
-            for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
-            {
-                this->bobot_serial_interface.command_position(this->servos_to_jerk[i], this->min_jerk_angle);
-            }
-            this->flip_flopper = true;
-        }
-        // Dont need to mutex because I am using a single threaded executor, so each callback will be called one after the other
-        this->strokes += 1;
-    }
-    void jerk_the_simulated_servos()
-    {
-        if(this->flip_flopper == true)
-        {
+        // Want the servo to sit at a position for a certain amount of time
+        int period = this->trajectory_time/5;
+        // This is one period of the trajectory
+        int array_length = floor(this->hardware_loop_rate * period);
+        int array_val_for_each_stop = array_length/5;
 
-            for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
-            {
-                // Do nothing
-                // this->bobot_serial_interface.command_position(this->servos_to_jerk[i], this->max_jerk_angle);
-            }
-            this->flip_flopper = false;
-        }
-        else if(this->flip_flopper == false)
+        for(int i=0;i<array_length/5;i++)
         {
-            for(int i=0;i<(int)this->servos_to_jerk.size();i+=1)
-            {
-                // Do nothing
-                // this->bobot_serial_interface.command_position(this->servos_to_jerk[i], this->min_jerk_angle);
-            }
-            this->flip_flopper = true;
+            this->one_0_90_180_traj.push_back(5);
+            this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
         }
-        // Dont need to mutex because I am using a single threaded executor, so each callback will be called one after the other
-        this->strokes += 1;
+        for(int i=array_length/5;i<(2*(array_length/5));i++)
+        {
+            this->one_0_90_180_traj.push_back(90);
+            this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
+        }
+        for(int i=(2*(array_length/5));i<(3*(array_length/5));i++)
+        {
+            this->one_0_90_180_traj.push_back(175);
+            this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
+        }
+        for(int i=(3*(array_length/5));i<(4*(array_length/5));i++)
+        {
+            this->one_0_90_180_traj.push_back(90);
+            this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
+        }
+        for(int i=(4*(array_length/5));i<(array_length);i++)
+        {
+            this->one_0_90_180_traj.push_back(5);
+            this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
+        }
     }
+    
+
+    void trajectory_generator_callback()
+    {
+        // std::unique_ptr<bobot_msgs::msg::BobotCommander> bobot_command_msg = std::make_unique<bobot_msgs::msg::BobotCommander>(); // make a unique point to our ROS message object
+        // std::string send_string = "Still jerking it (and by it, I mean servos): ";
+        // for(int i=0;i<(int)this->servos_to_jerk_id.size();i+=1)
+        // {
+        //     send_string = send_string + (this->servos_to_jerk_id[i]) + ", ";
+        // }
+        // trajectory_publishermsg->jerk_msg = send_string;
+        // trajectory_publishermsg->jerk_rate = this->jerk_rate;
+        // trajectory_publishermsg->num_strokes = this->strokes;
+        // trajectory_publishermsg->send_time = this->get_current_time_for_logs();
+
+        // this->trajectory_publisher->publish(std::move(trajectory_publishermsg));
+    }
+    void simulated_trajectory_generator_callback()
+    {
+        // std::unique_ptr<bobot_msgs::msg::BobotCommander> bobot_command_msg = std::make_unique<bobot_msgs::msg::BobotCommander>(); // make a unique point to our ROS message object
+        
+        // trajectory_publishermsg->jerk_msg = send_string;
+        // trajectory_publishermsg->jerk_rate = this->jerk_rate;
+        // trajectory_publishermsg->num_strokes = this->strokes;
+        // trajectory_publishermsg->send_time = this->get_current_time_for_logs();
+
+        // this->trajectory_publisher->publish(std::move(trajectory_publishermsg));
+    }
+
 
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_error(const rclcpp_lifecycle::State&)
     {
-        this->print_warning_message("Servo Jerker returning to state [unconfigured]");
+        this->print_warning_message("BB-Bobot-1 Trajectory Generator returning to state [unconfigured]");
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
     }
 
@@ -152,31 +195,30 @@ public:
         this->print_debug_message("Attempting to configure Servo Jerker, please hold");
 
         // Get the topic name
-        this->topic_name = bobot_name + "/servo_jerk_info";
+        this->topic_name = bobot_name + "/basic_trajectory_generator";
 
         // Create a publisher to publish data to an info topic at every 10 seconds, indicating the jerking status
-        this->servo_jerk_info_ = this->create_publisher<bobot_msgs::msg::ServoJerk>(topic_name, 20); 
-        this->bobot_servo_jerk_info_callback_ = this->create_wall_timer(std::chrono::seconds(2), [this]() -> void { publish_jerking_info(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
+        this->trajectory_publisher = this->create_publisher<bobot_msgs::msg::BobotCommander>(topic_name, 20); 
+        int freq_in_miliseconds = 1/this->hardware_loop_rate * 1000;
 
-        int freq_in_miliseconds = 1/this->jerk_rate * 1000;
         if(this->is_simulated == false)
         {
-            this->bobot_servo_jerker_ = this->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), [this]() -> void { jerk_the_servos(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
+            this->trajectory_looper = this->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), [this]() -> void { trajectory_generator_callback(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
         }
         else
         {
-            this->bobot_servo_jerker_ = this->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), [this]() -> void { jerk_the_simulated_servos(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
+            this->trajectory_looper = this->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), [this]() -> void { simulated_trajectory_generator_callback(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
         }
-        
+
         // Add log information, incase our logging fails
-        this->print_debug_message("Servo Jerker ROS stuff made! Opening the serial port");
+        this->print_debug_message("BB-Bobot-1 Trajectory Generator ROS stuff made! Opening the serial port");
 
         // set up the serial connection
         if(this->is_simulated == false)
         {
             if(bobot_serial_interface.open_serial_connection() == true)
             {
-                this->print_debug_message("Servo Jerker successfully opened the serial port");
+                this->print_debug_message("BB-Bobot-1 Trajectory Generator successfully opened the serial port");
                 // TL:DR, we update the state of the node to say that on_configure successfully called. 
                 // If the on_configure function isn't successful, it should either not update the state 
                 // or change it to error_processing
@@ -184,7 +226,7 @@ public:
             }
             else
             {
-                this->print_error_message("Servo Jerker was unable to open the serial port! This is bad!!");
+                this->print_error_message("BB-Bobot-1 Trajectory Generator was unable to open the serial port! This is bad!!");
                 // TL:DR, we update the state of the node to say that on_configure successfully called. 
                 // If the on_configure function isn't successful, it should either not update the state 
                 // or change it to error_processing
@@ -204,8 +246,8 @@ public:
         // on_activate callback is being called when the lifecycle node enters the "activating" state.
 
         // Here, we are activating the node, allowing it publish messages
-        this->servo_jerk_info_->on_activate(); // Call the activatio functions
-        this->print_debug_message("Servo Jerking has been activated!");
+        this->trajectory_publisher->on_activate(); // Call the activatio functions
+        this->print_debug_message("BB-Bobot-1 Trajectory Generatoring has been activated!");
         
         // We return a success and hence invoke the transition to the next step: "active".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS; // let the people know we've activated. In theory, this would so something important
@@ -218,8 +260,8 @@ public:
         // on_deactivate callback is being called when the lifecycle node enters the "deactivating" state.
 
         // Here, we are deactivating the node, which no longer allows its messages to go through
-        this->servo_jerk_info_->on_deactivate(); // Call the standard deactivate function 
-        this->print_debug_message("Servo jerking has been deactivated... we should be starting motion!");
+        this->trajectory_publisher->on_deactivate(); // Call the standard deactivate function 
+        this->print_debug_message("BB-Bobot-1 Trajectory Generatoring has been deactivated... we should be ending motion!");
 
         // We return a success and hence invoke the transition to the next step: "inactive".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS; // let the people know we've activated. In theory, this would so something important
@@ -232,13 +274,12 @@ public:
         // In our cleanup phase, we release the shared pointers to the
         // timer and publisher. These entities are no longer available
         // and our node is "clean".
-        this->print_debug_message("Servo Jerk Node has begin cleaning up");
+        this->print_debug_message("BB-Bobot-1 Trajectory Generator Node has begin cleaning up");
 
-        this->bobot_servo_jerk_info_callback_.reset(); // release the wall_timer first
-        this->bobot_servo_jerker_.reset();
-        this->servo_jerk_info_.reset(); // release the publisher after the timer
+        this->trajectory_looper.reset(); // release the wall_timer first
+        this->trajectory_publisher.reset(); // release the publisher after the timer
 
-        this->print_debug_message("Servo Jerk Node has finished cleaning up, quite the mess we made!");
+        this->print_debug_message("BB-Bobot-1 Trajectory Generator Node has finished cleaning up, should have ended motion!");
         // We return a success and hence invoke the transition to the next step: "unconfigured".
         return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
     }
@@ -252,10 +293,10 @@ public:
         // and our node is "clean".
     
         // similar to the cleanup phase, although one is meant to cleanup the node, and the other is mean to shut down the node. We will be using the shutdown method
-        this->bobot_servo_jerk_info_callback_.reset(); // release the timer first
-        this->servo_jerk_info_.reset(); // release the publisher after the timer
+        this->trajectory_looper.reset(); // release the timer first
+        this->trajectory_publisher.reset(); // release the publisher after the timer
 
-        this->print_debug_message("Servo Jerk Node has shut down!");
+        this->print_debug_message("BB-Bobot-1 Trajectory Generator Node has shut down!");
         this->print_debug_message("Shutdown was called from state " + state.label());
 
         // We return a success and hence invoke the transition to the next step: "finalized".
@@ -269,32 +310,29 @@ protected:
     {
         // Get the rest of the parameters that we need for this node!
         // First, we delcare the parameters
-        this->declare_parameter("JERK_RATE", 1.0);
-        this->declare_parameter("SERVOS_TO_JERK_ID", std::vector<std::string>({"ID-1","ID-2"}));
-        this->declare_parameter("SERVOS_TO_JERK", std::vector<int>({1, 2}));
-        this->declare_parameter("SERVO_IS_SIMULATED", false);
-        this->declare_parameter("MAX_ANGLE", 0);
-        this->declare_parameter("MIN_ANGLE", 0);
+        this->declare_parameter("JOINT_IDS", std::vector<int>({1, 2}));
+        this->declare_parameter("TRAJ_IS_SIMULATED", false);
+        this->declare_parameter("HARDWARE_LOOP_RATE", 100.0);
+        this->declare_parameter("CONSTANT_JOINT_VELOCITY", 90.0);
+        this->declare_parameter("TRAJECTORY_TIME", 5);
 
         // Then, we get the parameters
-        this->jerk_rate = this->get_parameter("JERK_RATE").as_double();
-        this->servos_to_jerk_id = this->get_parameter("SERVOS_TO_JERK_ID").as_string_array();
-        this->servos_to_jerk_long = this->get_parameter("SERVOS_TO_JERK").as_integer_array();
-	    for(int i=0;i<(int)this->servos_to_jerk_long.size();i+=1)
+        this->joint_IDs_long = this->get_parameter("JOINT_IDS").as_integer_array();
+        this->is_simulated = this->get_parameter("TRAJ_IS_SIMULATED").as_bool();
+        this->hardware_loop_rate = this->get_parameter("HARDWARE_LOOP_RATE").as_double();
+        this->constant_joint_velocity = this->get_parameter("CONSTANT_JOINT_VELOCITY").as_double();
+        this->trajectory_time = this->get_parameter("TRAJECTORY_TIME").as_int();
+        this->num_joints = (int)this->joint_IDs_long.size();
+        for(int i=0;i<this->num_joints;i+=1)
         {
-            this->servos_to_jerk.push_back((uint8_t)servos_to_jerk_long[i]); // typcast
-            this->print_debug_message("Found servo to jerk: " + this->servos_to_jerk_id[i]);
+            this->joint_IDs.push_back((uint8_t)this->joint_IDs_long[i]);
+            this->print_debug_message("Found joint with id: " + std::to_string(this->joint_IDs_long[i]));
         }
-        this->is_simulated = this->get_parameter("SERVO_IS_SIMULATED").as_bool();
-        this->max_jerk_angle_long = this->get_parameter("MAX_ANGLE").as_int();
-        this->min_jerk_angle_long = this->get_parameter("MIN_ANGLE").as_int();
-	    this->max_jerk_angle = (uint8_t)this->max_jerk_angle_long; // typecast
-	    this->min_jerk_angle = (uint8_t)this->min_jerk_angle_long;
-        this->print_debug_message(std::string("Found following parameters for Servo Jerker\n")
-                                + std::string("Servo Jerk rate (Hz): ") + std::to_string(this->jerk_rate) + "\n"
-                                + std::string("Is simulated: ") + std::to_string(this->is_simulated) + "\n"
-                                + std::string("Max Angle: ") + std::to_string(this->max_jerk_angle_long) + "\n"
-                                + std::string("Min Angle: ") + std::to_string(this->min_jerk_angle_long) + "\n");
+        this->print_debug_message(std::string("Found following parameters for BB-Bobot-1's Basic Trajectory Generator\n") 
+                                + std::string("Is Simulated: ") + std::to_string(this->is_simulated) + "\n"
+                                + std::string("Hardware Loop Rate: ") + std::to_string(this->hardware_loop_rate) + "\n"
+                                + std::string("Num Joints: ") + std::to_string(this->num_joints) + "\n"
+                                + std::string("Trajectory Time: ") + std::to_string(this->trajectory_time) + "\n");
     }
 
 private:
@@ -307,7 +345,7 @@ private:
     activated to publish messages into the ROS world.
 */
     // This is a regular ROS publisher, BUT it follows the rules of the lifecycle management, as in it won't do JACK until you set a certain state
-    std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<bobot_msgs::msg::ServoJerk>> servo_jerk_info_;
+    std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<bobot_msgs::msg::BobotCommander>> trajectory_publisher;
 
 /*
     We hold an instance of a timer which periodically triggers the publish function.
@@ -316,23 +354,23 @@ private:
     lifecycle publisher.
 */  
     /// Same as above, this is a ros timer that regulates the rate at which the publisher publishhes data. Should follow lifecycle management (someho?)
-    std::shared_ptr<rclcpp::TimerBase> bobot_servo_jerk_info_callback_;
-    std::shared_ptr<rclcpp::TimerBase> bobot_servo_jerker_;
+    std::shared_ptr<rclcpp::TimerBase> trajectory_looper;
 
     std::string bobot_name; // private property for the bobot name
     std::string topic_name; // private property for the topic name
-    double jerk_rate; // servo jerk rate in the bobot_hardware_config_file.yaml
-    std::vector<std::string> servos_to_jerk_id;
-    std::vector<long int> servos_to_jerk_long;
-    std::vector<uint8_t> servos_to_jerk;
-    unsigned int strokes = 0; // I'm LITERALLY hilarious
+    int num_joints;
+    std::vector<int> joint_positions;
+    std::vector<long int> joint_IDs_long;
+    std::vector<uint8_t> joint_IDs;
+    double constant_joint_velocity;
+    int trajectory_time;
     bool is_simulated = false; // by default we are not in simulation
-    bool flip_flopper = true;
-    int max_jerk_angle_long = 0;
-    int min_jerk_angle_long = 0;
-    uint8_t max_jerk_angle = 0;
-    uint8_t min_jerk_angle = 0;
+    double hardware_loop_rate;
     bobot_hardware::BobotServoInterface bobot_serial_interface;
+
+    // Trajectories
+    std::vector<uint8_t> one_period_sweep;
+    std::vector<uint8_t> one_0_90_180_traj;
 
 };
 
@@ -347,8 +385,8 @@ int main(int argc, char* argv[])
     
     rclcpp::init(argc, argv); // initialize ROS
     rclcpp::executors::SingleThreadedExecutor bobot_exec; // created an executor on a single thread, because thats whats recommended (still learning about this)
-    std::shared_ptr<BobotServoJerk> bobot_servo_jerk = std::make_shared<BobotServoJerk>("ServoJerk"); // create the ros node
-    bobot_exec.add_node(bobot_servo_jerk->get_node_base_interface()); // add the nodes base class (lifecycle stuff)
+    std::shared_ptr<BBBobotBasicTrajectoryGenerator> bb_bobot_basic_traj_generator = std::make_shared<BBBobotBasicTrajectoryGenerator>("BBBobotBasicTrajectoryGenerator"); // create the ros node
+    bobot_exec.add_node(bb_bobot_basic_traj_generator->get_node_base_interface()); // add the nodes base class (lifecycle stuff)
     bobot_exec.spin(); // start spinning the node
     rclcpp::shutdown(); // Shutdown cleanly when we're done (ALL OF ROS, not just the node)
 

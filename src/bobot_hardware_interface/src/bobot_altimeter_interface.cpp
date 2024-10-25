@@ -77,23 +77,15 @@ namespace bobot_hardware
         return true;
     }
 
-    // Request position data from the servo (only one servo at a time)
-    void BobotAltimeterInterface::request_altitude()
-    {
-        // Write to serial port
-	uint8_t* req_command = new uint8_t[3];
-	req_command[0] = 2; // 2 specifies "GET"
-	req_command[1] = 5; // 5 is the ID for the altimeter
-	req_command[2] = 0; // unused
-        write(serial_port, req_command, 3);
-    }
-
     void BobotAltimeterInterface::read_serial()
     {
         // Read bytes. The behaviour of read() (e.g. does it block?,
         // how long does it block for?) depends on the configuration
         // settings above, specifically VMIN and VTIME
-        int num_bytes = read(serial_port, this->read_buf, 5);
+
+        // Allocate memory for read buffer, set size according to your needs
+        uint8_t* read_buf = new uint8_t[5]; // we should only need 5
+        int num_bytes = read(serial_port, read_buf, 5);
 
         // n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
         if(num_bytes <= 0) 
@@ -106,12 +98,37 @@ namespace bobot_hardware
         {
             if(read_buf[0] == 5)
             {
-            	RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "%i", read_buf[1]);
-		RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "%i", read_buf[2]);
-		RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "%i", read_buf[3]);
-		RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "%i", read_buf[4]);
+                int32_t bit1_high = read_buf[4] << 24;
+                int32_t bit2 = read_buf[3] << 16;
+                int32_t bit3 = read_buf[2] << 8;
+                int32_t bit4_low = read_buf[1];
+                altitude_centimeters = bit1_high | bit2 | bit3 | bit4_low; // Get the altitude
+
+                // int32_t bit = 0
+                // for int(i=0;i<4;i+=1)
+                // {
+                //     bit = read_buf[i] << (8 * i);
+                //     altitude_centimeters = altitude_centimeters | bit;
+                //     bit = 0;
+                // }
+                altitude = altitude_centimeters/30.48; // convert centimeters to feet
             }
         }
+
+        // free up the pointer
+        delete[] read_buf;
+    }
+
+    // Request position data from the servo (only one servo at a time)
+    void BobotAltimeterInterface::request_altitude()
+    {
+        // Write to serial port
+        uint8_t* req_command = new uint8_t[3];
+        req_command[0] = 2; // 2 specifies "GET"
+        req_command[1] = 5; // 5 is the ID for the altimeter
+        req_command[2] = 0; // unused
+        write(serial_port, req_command, 3);
+        delete[] req_command;
     }
 
 };

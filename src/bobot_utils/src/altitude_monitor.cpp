@@ -9,7 +9,7 @@
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
 #include <bobot_msgs/msg/altitude_monitor.hpp> // AltitudeMonitor .msg file
 #include <std_msgs/msg/string.hpp>
-#include "bobot_hardware_interface/bobot_servo_interface.hpp"
+#include "bobot_hardware_interface/bobot_altimeter_interface.hpp"
 
 // C++ specific libraries
 #include <chrono>
@@ -78,19 +78,44 @@ public:
 
     void publish_altitude_info()
     {
+        // Read the serial bus for altitude info
+        this->altitude_serial_interface.request_altitude();
+        this->altitude_serial_interface.read_serial();
+
+        // Check if we've reached the max altitude
+        if(this->altitude_serial_interface.altitude >= this->max_altitude)
+        {
+            this->alt_reached = true;
+            // Make service calll here
+        }
+
         std::unique_ptr<bobot_msgs::msg::AltitudeMonitor> altitude_info_msg = std::make_unique<bobot_msgs::msg::AltitudeMonitor>(); // make a unique point to our ROS message object
-        /*
-            Add code that will access the board and get a data and checks what alt we are at
-        */
+        
+        // Add the info to the message
+        altitude_info_msg->current_altitude = this->altitude_serial_interface.altitude;
+        altitude_info_msg->current_altitude_centimeters = this->altitude_serial_interface.altitude_centimeters;
+        altitude_info_msg->alt_reached = this->alt_reached;
+        altitude_info_msg->send_time = get_current_time_for_logs();
+        altitude_info_msg->ros_send_time = this->now().seconds(); /// get ros time
 
         altitude_info_->publish(std::move(altitude_info_msg));
     }
     void publish_simulated_altitude_info()
     {
-        this->altitude_buffer += this->simulate_altitude_sensor(); // simulate collecting the altitude from the sensor
+        this->altitude_buffer_sim += this->simulate_altitude_sensor(); // simulate collecting the altitude from the sensor
+
+        // Check if we've reached the max altitude
+        if(this->altitude_serial_interface.altitude >= this->max_altitude)
+        {
+            this->alt_reached = true;
+            // Make service calll here
+        }
+
         std::unique_ptr<bobot_msgs::msg::AltitudeMonitor> altitude_info_msg = std::make_unique<bobot_msgs::msg::AltitudeMonitor>(); // make a unique point to our ROS message object
         
-        altitude_info_msg->current_altitude = this->altitude_buffer;
+        // Add the info to the message
+        altitude_info_msg->current_altitude = this->altitude_buffer_sim;
+        altitude_info_msg->current_altitude_centimeters = (int)(this->altitude_buffer_sim*30.48);
         altitude_info_msg->alt_reached = this->alt_reached;
         altitude_info_msg->send_time = get_current_time_for_logs();
         altitude_info_msg->ros_send_time = this->now().seconds(); /// get ros time
@@ -122,7 +147,7 @@ public:
             // create the callback thread for the non-simulated case
             altitude_info_callback_ = this->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), [this]() -> void { publish_altitude_info(); }); // Weird sytnax (lambda syntax), but I think this is basically creating the callback function call at the specified spin rate
 
-            if(altitude_serial_write.open_serial_connection() == true)
+            if(altitude_serial_interface.open_serial_connection() == true)
             {
                 this->print_debug_message("Altitude Monitor successfully opened the serial port");
                 // TL:DR, we update the state of the node to say that on_configure successfully called. 
@@ -156,11 +181,13 @@ public:
         // Get the initial altitude, and check if it's different from expected
         if(this->is_simulated == false)
         {
-
+            this->altitude_serial_interface.request_altitude();
+            this->altitude_serial_interface.read_serial();
+            // This command automatically saves the altitude value in the altitude interface object
         }
         else
         {
-            this->altitude_buffer = 0.0; // say we're at sea level
+            this->altitude_buffer_sim = 0.0; // say we're at sea level
         }
 
         // Here, we are activating the node, allowing it publish messages
@@ -228,14 +255,18 @@ protected:
     {
         // Get the rest of the parameters that we need for this node!
         // First, we delcare the parameters
-        this->declare_parameter("SAMPLE_RATE", 10); // milliseconds per cycle
+        this->declare_parameter("SAMPLE_RATE", 10.0); // milliseconds per cycle
         this->declare_parameter("MAX_ALTITUDE", 90000); // feet
         this->declare_parameter("ALT_IS_SIMULATED", false);
 
         // Then, we get the parameters
-        this->sampling_rate = this->get_parameter("SAMPLE_RATE").as_int();
+        this->sampling_rate = this->get_parameter("SAMPLE_RATE").as_double();
         this->max_altitude = this->get_parameter("MAX_ALTITUDE").as_int();
         this->is_simulated = this->get_parameter("ALT_IS_SIMULATED").as_bool();
+        this->print_debug_message(std::string("Found following parameters for the Altitude Monitor\n") 
+                                + std::string("Sample Rate (Hz): ") + std::to_string(this->sampling_rate) + "\n"
+                                + std::string("Max Altitude: ") + std::to_string(this->max_altitude) + "\n"
+                                + std::string("Is Simulated: ") + std::to_string(this->is_simulated) + "\n");
     }
 
 private:
@@ -259,15 +290,15 @@ private:
     /// Same as above, this is a ros timer that regulates the rate at which the publisher publishhes data. Should follow lifecycle management (someho?)
     std::shared_ptr<rclcpp::TimerBase> altitude_info_callback_;
     
-    double altitude_buffer; // variable to store altitude data
+    double altitude_buffer_sim; // variable to store altitude data
     bool alt_reached = false;
 
     std::string bobot_name; // private property for the bobot name
     std::string topic_name; // private property for the topic name
-    int64_t sampling_rate; // servo jerk rate, defined in the servo_info.yaml file in the bobot_utils/hardware folder
+    double sampling_rate; // servo jerk rate, defined in the servo_info.yaml file in the bobot_utils/hardware folder
     int64_t max_altitude; // the max altitude, since we want to inform the manager when we've reached it
     bool is_simulated; // boolean for if we are simulating values
-    bobot_hardware::BobotServoInterface altitude_serial_write;
+    bobot_hardware::BobotAltimeterInterface altitude_serial_interface;
 };
 
 

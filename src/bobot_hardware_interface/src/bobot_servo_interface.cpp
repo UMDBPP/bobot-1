@@ -21,7 +21,7 @@ namespace bobot_hardware
 
         // Hardcode this for now, make it better later?
         // initialize the servo vectors
-        for(int i=0;i<2;i+=1)
+        for(int i=0;i<3;i+=1)
         {
             this->servo_positions.push_back(0.0);
         }
@@ -90,7 +90,10 @@ namespace bobot_hardware
         // Read bytes. The behaviour of read() (e.g. does it block?,
         // how long does it block for?) depends on the configuration
         // settings above, specifically VMIN and VTIME
-        int num_bytes = read(serial_port, this->read_buf, 2); // always expecting bytes of size 2 for servos
+
+        // Allocate memory for read buffer, set size according to your needs
+        uint8_t* read_buf = new uint8_t[2]; // 1 byte for identity, 1 byte for data
+        int num_bytes = read(serial_port, read_buf, 2); // always expecting bytes of size 2 for servos
 
         // n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
         if(num_bytes < 0) 
@@ -102,36 +105,38 @@ namespace bobot_hardware
      	{
             if(read_buf[0] == 1)
             {
-                this->servo_positions[0] = this->read_buf[1];
+                this->servo_positions[0] = read_buf[1];
             }
             else if(read_buf[0] == 2)
             {
-                this->servo_positions[1] = this->read_buf[1];
+                this->servo_positions[1] = read_buf[1];
             }
         }
-
+        delete[] read_buf;
     }
 
     // Send a position command to the servo (only one servo at a time)
     void BobotServoInterface::command_position(uint8_t servoID, uint8_t command_position)
     {
         // Write to serial port
-	uint8_t* command = new uint8_t[3];
-	command[0] = 1; // 1 specifies "SET" command
-	command[1] = servoID;
-	command[2] = command_position;
+        uint8_t* command = new uint8_t[3];
+        command[0] = 1; // 1 specifies "SET" command
+        command[1] = servoID;
+        command[2] = command_position;
         write(serial_port, command, 3);
+        delete[] command;
     }
 
     // Request position data from the servo (only one servo at a time)
     void BobotServoInterface::request_position(uint8_t servoID)
     {
         // Write to serial port
-	uint8_t* req_command = new uint8_t[3]; // needs to be same size
-	req_command[0] = 2; // 2 specifices "GET" command
-	req_command[1] = servoID;
+        uint8_t* req_command = new uint8_t[3]; // needs to be same size
+        req_command[0] = 2; // 2 specifices "GET" command
+        req_command[1] = servoID;
         req_command[2] = 0; // unused
         write(serial_port, req_command, 3);
+        delete[] req_command;
     }
 
     // // command multiple position all at once
