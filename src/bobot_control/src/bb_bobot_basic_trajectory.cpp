@@ -114,6 +114,8 @@ public:
             }
             // this->print_debug_message(std::to_string(one_period_sweep[i]*1.0));
         }
+        this->size_period_sweep = (int)this->one_period_sweep.size();
+
     }
 
     void generate_0_90_180_trajectory()
@@ -126,56 +128,135 @@ public:
         for(int i=0;i<array_length/5;i++)
         {
             this->one_0_90_180_traj.push_back(5);
-            this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
+            // this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
         }
         for(int i=array_length/5;i<(2*(array_length/5));i++)
         {
             this->one_0_90_180_traj.push_back(90);
-            this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
+            // this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
         }
         for(int i=(2*(array_length/5));i<(3*(array_length/5));i++)
         {
             this->one_0_90_180_traj.push_back(175);
-            this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
+            // this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
         }
         for(int i=(3*(array_length/5));i<(4*(array_length/5));i++)
         {
             this->one_0_90_180_traj.push_back(90);
-            this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
+            // this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
         }
         for(int i=(4*(array_length/5));i<(array_length);i++)
         {
             this->one_0_90_180_traj.push_back(5);
-            this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
+            // this->print_debug_message(std::to_string(one_0_90_180_traj[i]*1.0));
         }
+        this->size_0_90_180_traj = (int)this->one_0_90_180_traj.size();
     }
     
 
     void trajectory_generator_callback()
     {
-        // std::unique_ptr<bobot_msgs::msg::BobotCommander> bobot_command_msg = std::make_unique<bobot_msgs::msg::BobotCommander>(); // make a unique point to our ROS message object
-        // std::string send_string = "Still jerking it (and by it, I mean servos): ";
-        // for(int i=0;i<(int)this->servos_to_jerk_id.size();i+=1)
-        // {
-        //     send_string = send_string + (this->servos_to_jerk_id[i]) + ", ";
-        // }
-        // trajectory_publishermsg->jerk_msg = send_string;
-        // trajectory_publishermsg->jerk_rate = this->jerk_rate;
-        // trajectory_publishermsg->num_strokes = this->strokes;
-        // trajectory_publishermsg->send_time = this->get_current_time_for_logs();
+        std::unique_ptr<bobot_msgs::msg::BobotCommander> bobot_command_msg = std::make_unique<bobot_msgs::msg::BobotCommander>(); // make a unique point to our ROS message object
+        // If we are doing the first trajectory
+        if(this->switch_trajectory == 1)
+        {
+            for(int i=0;i<this->num_joints;i+=1) // number of joints to sweep
+            {
+                // command the servos to move!
+                this->bobot_serial_interface.command_position(joint_IDs[i], this->one_period_sweep[this->count_inner]);
+                bobot_command_msg->joint_commands.push_back(this->one_period_sweep[this->count_inner]*1.0);
+            }
+            this->count_inner += 1;
+            if(this->count_inner == this->size_period_sweep)
+            {
+                this->count_inner = 0;
+                this->count_outer += 1;
+            }
+        }
+        // If we are doing the second trajectory
+        else if(this->switch_trajectory == -1)
+        {
+            for(int i=0;i<this->num_joints;i+=1) // number of joints to sweep
+            {
+                // command the servos to move!
+                this->bobot_serial_interface.command_position(joint_IDs[i], this->one_0_90_180_traj[this->count_inner]);
+                bobot_command_msg->joint_commands.push_back(this->one_0_90_180_traj[this->count_inner]*1.0);
+            }
+            this->count_inner += 1;
+            if(this->count_inner == this->size_0_90_180_traj)
+            {
+                this->count_inner = 0;
+                this->count_outer += 1;
+            }
+        }
 
-        // this->trajectory_publisher->publish(std::move(trajectory_publishermsg));
+        // Check if we've repeated the trajectory the right amount of times
+        if(this->count_outer == this->repeat_trajectory)
+        {
+            this->switch_trajectory = this->switch_trajectory*-1;
+            this->count_outer = 0;
+        }
+
+        // Now, get the joint positions:
+        for(int i=0;i<this->num_joints;i+=1)
+        {
+            this->bobot_serial_interface.request_position(this->joint_IDs[i]);
+            this->bobot_serial_interface.read_serial();
+            bobot_command_msg->joint_positions_feedback.push_back(bobot_serial_interface.servo_positions[i]);
+        }
+        bobot_command_msg->send_time = get_current_time_for_logs();
+        bobot_command_msg->ros_send_time = this->now().seconds(); /// get ros time
+        this->trajectory_publisher->publish(std::move(bobot_command_msg));
     }
     void simulated_trajectory_generator_callback()
     {
-        // std::unique_ptr<bobot_msgs::msg::BobotCommander> bobot_command_msg = std::make_unique<bobot_msgs::msg::BobotCommander>(); // make a unique point to our ROS message object
-        
-        // trajectory_publishermsg->jerk_msg = send_string;
-        // trajectory_publishermsg->jerk_rate = this->jerk_rate;
-        // trajectory_publishermsg->num_strokes = this->strokes;
-        // trajectory_publishermsg->send_time = this->get_current_time_for_logs();
+        std::unique_ptr<bobot_msgs::msg::BobotCommander> bobot_command_msg = std::make_unique<bobot_msgs::msg::BobotCommander>(); // make a unique point to our ROS message object
+        // If we are doing the first trajectory
+        if(this->switch_trajectory == 1)
+        {
+            for(int i=0;i<this->num_joints;i+=1) // number of joints to sweep
+            {
+                // command the servos to move!
+                bobot_command_msg->joint_commands.push_back(this->one_period_sweep[this->count_inner]*1.0);
+            }
+            this->count_inner += 1;
+            if(this->count_inner == this->size_period_sweep)
+            {
+                this->count_inner = 0;
+                this->count_outer += 1;
+            }
+        }
+        // If we are doing the second trajectory
+        else if(this->switch_trajectory == -1)
+        {
+            for(int i=0;i<this->num_joints;i+=1) // number of joints to sweep
+            {
+                // command the servos to move!
+                bobot_command_msg->joint_commands.push_back(this->one_0_90_180_traj[this->count_inner]*1.0);
+            }
+            this->count_inner += 1;
+            if(this->count_inner == this->size_0_90_180_traj)
+            {
+                this->count_inner = 0;
+                this->count_outer += 1;
+            }
+        }
 
-        // this->trajectory_publisher->publish(std::move(trajectory_publishermsg));
+        // Check if we've repeated the trajectory the right amount of times
+        if(this->count_outer == this->repeat_trajectory)
+        {
+            this->switch_trajectory = this->switch_trajectory*-1;
+            this->count_outer = 0;
+        }
+
+        // Now, get the joint positions:
+        for(int i=0;i<this->num_joints;i+=1)
+        {
+            bobot_command_msg->joint_positions_feedback.push_back(bobot_command_msg->joint_commands[i]);
+        }
+        bobot_command_msg->send_time = get_current_time_for_logs();
+        bobot_command_msg->ros_send_time = this->now().seconds(); /// get ros time
+        this->trajectory_publisher->publish(std::move(bobot_command_msg));
     }
 
 
@@ -314,6 +395,7 @@ protected:
         this->declare_parameter("HARDWARE_LOOP_RATE", 100.0);
         this->declare_parameter("CONSTANT_JOINT_VELOCITY", 90.0);
         this->declare_parameter("TRAJECTORY_TIME", 5);
+        this->declare_parameter("REPEAT_TRAJECTORY", 3);
 
         // Then, we get the parameters
         this->joint_IDs_long = this->get_parameter("JOINT_IDS").as_integer_array();
@@ -321,6 +403,7 @@ protected:
         this->hardware_loop_rate = this->get_parameter("HARDWARE_LOOP_RATE").as_double();
         this->constant_joint_velocity = this->get_parameter("CONSTANT_JOINT_VELOCITY").as_double();
         this->trajectory_time = this->get_parameter("TRAJECTORY_TIME").as_int();
+        this->repeat_trajectory = this->get_parameter("REPEAT_TRAJECTORY").as_int();
         this->num_joints = (int)this->joint_IDs_long.size();
         for(int i=0;i<this->num_joints;i+=1)
         {
@@ -331,7 +414,8 @@ protected:
                                 + std::string("Is Simulated: ") + std::to_string(this->is_simulated) + "\n"
                                 + std::string("Hardware Loop Rate: ") + std::to_string(this->hardware_loop_rate) + "\n"
                                 + std::string("Num Joints: ") + std::to_string(this->num_joints) + "\n"
-                                + std::string("Trajectory Time: ") + std::to_string(this->trajectory_time) + "\n");
+                                + std::string("Trajectory Time: ") + std::to_string(this->trajectory_time) + "\n"
+                                + std::string("Number of Repeats Per Trajectory: ") + std::to_string(this->repeat_trajectory) + "\n");
     }
 
 private:
@@ -365,11 +449,17 @@ private:
     int trajectory_time;
     bool is_simulated = false; // by default we are not in simulation
     double hardware_loop_rate;
+    int count_inner = 0;
+    int count_outer = 0;
+    int switch_trajectory = 1;
     bobot_hardware::BobotServoInterface bobot_serial_interface;
 
     // Trajectories
-    std::vector<uint8_t> one_period_sweep;
-    std::vector<uint8_t> one_0_90_180_traj;
+    std::vector<uint8_t> one_period_sweep; // array of joint positions for the trajectory
+    int size_period_sweep; // size of the above array
+    std::vector<uint8_t> one_0_90_180_traj; // arry of joint positions for the trajectory
+    int size_0_90_180_traj; // size of the above array
+    int repeat_trajectory;
 
 };
 

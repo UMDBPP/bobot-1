@@ -563,8 +563,9 @@ public:
         this->servo_jerker_change_state = this->create_client<lifecycle_msgs::srv::ChangeState>("servo_jerker/change_state");
 
         // Servo Command
-        this->servo_command_get_state = this->create_client<lifecycle_msgs::srv::GetState>("servo_command/get_state");
-        this->servo_command_change_state = this->create_client<lifecycle_msgs::srv::ChangeState>("servo_command/change_state");
+        // This is, at this point, a trajectory generator
+        this->servo_command_get_state = this->create_client<lifecycle_msgs::srv::GetState>("bobot_trajectory_generator/get_state");
+        this->servo_command_change_state = this->create_client<lifecycle_msgs::srv::ChangeState>("bobot_trajectory_generator/change_state");
 
         // Altitude Monitor 
         this->altitude_monitor_get_state = this->create_client<lifecycle_msgs::srv::GetState>("altitude_monitor/get_state");
@@ -622,27 +623,27 @@ public:
             this->print_debug_message(print_to_screen);
         }
 
-        // // Servo commander
-        // if(!servo_command_get_state->wait_for_service(std::chrono::seconds(5)))
-        // {
-        //     print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /get_state service for the servo commander! this is bad!", error_count);
-        //     this->print_error_message(print_to_screen);
-        // }
-        // else
-        // {
-        //     print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /get_state service for the servo commander!");
-        //     this->print_debug_message(print_to_screen);
-        // }
-        // if(!servo_command_change_state->wait_for_service(std::chrono::seconds(5)))
-        // {
-        //     print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /change_state service for the servo commander! this is bad!", error_count);
-        //     this->print_error_message(print_to_screen);
-        // }
-        // else
-        // {
-        //     print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /change_state service for the servo commander!");
-        //     this->print_debug_message(print_to_screen);
-        // }
+        // Servo commander
+        if(!servo_command_get_state->wait_for_service(std::chrono::seconds(5)))
+        {
+            print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /get_state service for the servo commander! this is bad!", error_count);
+            this->print_error_message(print_to_screen);
+        }
+        else
+        {
+            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /get_state service for the servo commander!");
+            this->print_debug_message(print_to_screen);
+        }
+        if(!servo_command_change_state->wait_for_service(std::chrono::seconds(5)))
+        {
+            print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Unable to connect to /change_state service for the servo commander! this is bad!", error_count);
+            this->print_error_message(print_to_screen);
+        }
+        else
+        {
+            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /change_state service for the servo commander!");
+            this->print_debug_message(print_to_screen);
+        }
 
         // Altitude Monitor
         if(!altitude_monitor_get_state->wait_for_service(std::chrono::seconds(5)))
@@ -666,17 +667,21 @@ public:
             this->print_debug_message(print_to_screen);
         }
 
+        // Make a Change State service message
         std::shared_ptr<lifecycle_msgs::srv::ChangeState::Request> change_state_req = std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
-        lifecycle_msgs::msg::Transition transition_req;
+        lifecycle_msgs::msg::Transition transition_req; // The change state service message is a struct with another message type in it, of type Transition
         transition_req.id = 1;
-        change_state_req->transition = transition_req;
+        change_state_req->transition = transition_req; // pack in the message
 
         servo_jerker_change_state->async_send_request(change_state_req);
         altitude_monitor_change_state->async_send_request(change_state_req);
+        servo_command_change_state->async_send_request(change_state_req); // set the state to unconfigured, but don't do anything else (maybe change later tbh)
         transition_req.id = 3;
         change_state_req->transition = transition_req;
         servo_jerker_change_state->async_send_request(change_state_req);
         altitude_monitor_change_state->async_send_request(change_state_req);
+        // servo_command_change_state->async_send_request(change_state_req); // For testing
+
 
     }
 
