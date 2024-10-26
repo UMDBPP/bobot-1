@@ -12,6 +12,8 @@
 #include <lifecycle_msgs/srv/get_available_transitions.hpp>
 #include <lifecycle_msgs/msg/state.hpp>
 #include <lifecycle_msgs/msg/transition.hpp>
+#include <std_srvs/srv/trigger.hpp>
+#include <std_msgs/msg/string.hpp>
 
 
 // C++ specific libraries
@@ -30,6 +32,7 @@
 #include <mutex>
 #include <vector>
 #include <iomanip>
+#include <functional>
 
 
 /*
@@ -323,6 +326,65 @@ public:
         // end
     }
 
+
+    void receive_past_due_notification(const std::shared_ptr<std_srvs::srv::Trigger::Request> request, std::shared_ptr<std_srvs::srv::Trigger::Response> response)
+    {
+        response->success = true;
+        if(this->begun_desired_motion == false)
+        {
+            response->message = "Successfully recieved past due notification! Starting trajectory";
+            this->print_debug_message("Recieved past due notification from timer, starting servo commander!");
+
+
+            // Make a Change State service message
+            std::shared_ptr<lifecycle_msgs::srv::ChangeState::Request> change_state_req = std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
+            lifecycle_msgs::msg::Transition transition_req; // The change state service message is a struct with another message type in it, of type Transition
+            transition_req.id = 4; // transition to deactive a node
+            change_state_req->transition = transition_req; // pack in the message
+            this->servo_jerker_change_state->async_send_request(change_state_req);
+
+            // Now tell the servo commander to turn on!
+            transition_req.id = 3;
+            change_state_req->transition = transition_req;
+            this->servo_command_change_state->async_send_request(change_state_req); // set state to active
+            this->print_debug_message("Manager is starting the servo commander!");
+        }
+        else
+        {
+            response->message = "Successfully recieved past due notification, but we've already reached our altitude!";
+            this->print_debug_message("Recieved past due notification from timer, but we've already reached our altitude!");
+        }
+    }
+
+    void reached_altitude_notification(const std::shared_ptr<std_srvs::srv::Trigger::Request> request, std::shared_ptr<std_srvs::srv::Trigger::Response> response)
+    {
+        response->success = true;
+        if(this->begun_desired_motion == false)
+        {
+            response->message = "Successfully informed that we have reached out operating altitude, starting servo commander!";
+            this->print_debug_message("Successfully informed that we have reached out operating altitude, starting servo commander!");
+
+
+            // Make a Change State service message
+            std::shared_ptr<lifecycle_msgs::srv::ChangeState::Request> change_state_req = std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
+            lifecycle_msgs::msg::Transition transition_req; // The change state service message is a struct with another message type in it, of type Transition
+            transition_req.id = 4; // transition to deactive a node
+            change_state_req->transition = transition_req; // pack in the message
+            this->servo_jerker_change_state->async_send_request(change_state_req);
+
+            // Now tell the servo commander to turn on!
+            transition_req.id = 3;
+            change_state_req->transition = transition_req;
+            this->servo_command_change_state->async_send_request(change_state_req); // set state to active
+            this->print_debug_message("Manager is starting the servo commander!");
+        }
+        else
+        {
+            response->message = "Successfully informed that we have reached out operating altitude, but we've already past our time limit!";
+            this->print_debug_message("Successfully informed that we have reached out operating altitude, but we've already past our time limit!");
+        }
+    }
+
     // Helper function to get the current time - stolen from rahul
     std::string get_current_time()
     {
@@ -554,9 +616,9 @@ public:
 
     void set_up_lifecycle_clients(std::string &flight_log_msg, std::string &critical_error_msg, int &error_count)
     {
-        // Flight timer
-        this->flight_timer_get_state = this->create_client<lifecycle_msgs::srv::GetState>("flight_timer/get_state");
-        this->flight_timer_change_state = this->create_client<lifecycle_msgs::srv::ChangeState>("flight_timer/change_state");
+        // // Flight timer
+        // this->flight_timer_get_state = this->create_client<lifecycle_msgs::srv::GetState>("flight_timer/get_state");
+        // this->flight_timer_change_state = this->create_client<lifecycle_msgs::srv::ChangeState>("flight_timer/change_state");
 
         // Servo Jerker
         this->servo_jerker_get_state = this->create_client<lifecycle_msgs::srv::GetState>("servo_jerker/get_state");
@@ -600,6 +662,11 @@ public:
         //     print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Successfully connected to /change_state service for the flight timer!");
         //     this->print_debug_message(print_to_screen);
         // }
+        
+        // Create over time limit server
+        this->past_due_timer_service = create_service<std_srvs::srv::Trigger>("simple_timer/is_past_due", std::bind(&BobotManager::receive_past_due_notification, this, std::placeholders::_1, std::placeholders::_2));
+        // Create past altitude server
+        this->reached_altitude_service = create_service<std_srvs::srv::Trigger>("altitude_monitor/altitude_reached", std::bind(&BobotManager::reached_altitude_notification, this, std::placeholders::_1, std::placeholders::_2));
 
         // Servo Jerker
         if(!servo_jerker_get_state->wait_for_service(std::chrono::seconds(5)))
@@ -673,6 +740,7 @@ public:
         transition_req.id = 1;
         change_state_req->transition = transition_req; // pack in the message
 
+        // Turn on each of our nodes
         servo_jerker_change_state->async_send_request(change_state_req);
         altitude_monitor_change_state->async_send_request(change_state_req);
         servo_command_change_state->async_send_request(change_state_req); // set the state to unconfigured, but don't do anything else (maybe change later tbh)
@@ -680,8 +748,10 @@ public:
         change_state_req->transition = transition_req;
         servo_jerker_change_state->async_send_request(change_state_req);
         altitude_monitor_change_state->async_send_request(change_state_req);
-        // servo_command_change_state->async_send_request(change_state_req); // For testing
+    }
 
+    void set_up_pubs_and_subs()
+    {
 
     }
 
@@ -689,28 +759,33 @@ private:
     // ROS VARIABLES
     std::string ros_logger_name;
 
-    // lifecycle node clients
-    // Flight timer clients
+// lifecycle node services and clients
+    // Flight timer services and clients
+    std::shared_ptr<rclcpp::Service<std_srvs::srv::Trigger>> past_due_timer_service;
     std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::GetState>> flight_timer_get_state;
     std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::ChangeState>> flight_timer_change_state;
     // TODO, maybe -add the other clients so we can utilize the full functionality of the states (probably unnecessary for us)
 
 //// ---- THIS WILL SOON BE CHANGE TO CONTROLLERS AND THE CONTROLLER MANAGER
-    // Servo jerker clients (soon to be hardware interface clients)
+    // Servo jerker services and clients (soon to be hardware interface clients)
     std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::GetState>> servo_jerker_get_state;
     std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::ChangeState>> servo_jerker_change_state;
     // TODO, maybe -add the other clients so we can utilize the full functionality of the states (probably unnecessary for us)
 
-    // Servo command clients
+    // Servo command services and clients
     std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::GetState>> servo_command_get_state;
     std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::ChangeState>> servo_command_change_state;
     // TODO, maybe -add the other clients so we can utilize the full functionality of the states (probably unnecessary for us)
 //// ---- END
 
-    // Altitude Monitor node clients
+    // Altitude Monitor services and clients
+    std::shared_ptr<rclcpp::Service<std_srvs::srv::Trigger>> reached_altitude_service;
     std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::GetState>> altitude_monitor_get_state;
     std::shared_ptr<rclcpp::Client<lifecycle_msgs::srv::ChangeState>> altitude_monitor_change_state;
     // TODO, maybe -add the other clients so we can utilize the full functionality of the states (probably unnecessary for us)
+
+// Manager Node publishers and subscribers
+    std::shared_ptr<rclcpp::Subscription<std_msgs::msg::String>> balls;
 
 
     // FLIGHT VS DEV VARIABLES
@@ -732,7 +807,8 @@ private:
     std::ofstream error_log;
     std::ofstream flight_log;
 
-
+    // boolean to check if we are beginning desired motion
+    bool begun_desired_motion = false;
 
 };
 

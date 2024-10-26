@@ -12,6 +12,7 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(std_srvs REQUIRED)
 find_package(bobot_msgs REQUIRED)
 find_package(rclcpp_lifecycle)
 find_package(lifecycle_msgs)
@@ -20,7 +21,7 @@ include_directories(include)
 
 # Add the bobot manager as an executable
 add_executable(manager src/bobot_manager.cpp)
-ament_target_dependencies(manager rclcpp std_msgs bobot_msgs lifecycle_msgs)
+ament_target_dependencies(manager rclcpp std_msgs std_srvs bobot_msgs lifecycle_msgs)
 
 # This is good and important. Keep it - Romeo
 install(

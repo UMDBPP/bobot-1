@@ -10,9 +10,11 @@
 #include <sys/mman.h>
 #include <sys/ioctl.h>
 #include <linux/videodev2.h>
+#include <cmath>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "std_srvs/srv/trigger.hpp"
 
 /** Image information */
 #define ORIGINAL_WIDTH  640
@@ -22,7 +24,7 @@
 
 /** Other names */
 #define CAMERA_DEV      "/dev/video2"
-#define IMAGE_HDR       "/home/oberon/bobot-1/src/bobot_camera/images/image"
+#define IMAGE_HDR       "/home/romeperl/bobot-1/src/bobot_flight_images/images/image"
 
 #define UCAM_SUCCESS 1
 
@@ -48,6 +50,7 @@ struct v4l2_buffer camera_buffer;
 struct v4l2_format format;
 
 rclcpp::Publisher<std_msgs::msg::String>::SharedPtr image_stream;
+rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr image_stopper_serice;
 rclcpp::TimerBase::SharedPtr timer;
 rclcpp::Node::SharedPtr node;
 
@@ -57,39 +60,56 @@ void yuyv_to_rgb(unsigned char *yuyv, unsigned char *rgb, int width, int height)
 int8_t get_next_image(const char* filename);
 int8_t UCAM_LIB_StartStream(void);
 int8_t UCAM_LIB_StopStream(void);
-int8_t UCAM_LIB_StopStream(void);
+// int8_t UCAM_LIB_StopStream(void);
 int32_t UCAM_LIB_Init(void);
 void timer_callback(void);
 int8_t prep_stream(void);
+void call_stop_recording(const std::shared_ptr<std_srvs::srv::Trigger::Request> request, std::shared_ptr<std_srvs::srv::Trigger::Response> response);
+
+std::string get_current_time()
+    {
+        // Stolen from Rahul
+        std::ostringstream oss; // Make an ostringstream object
+        auto t = std::time(nullptr); // Make a time objects
+        auto tm = *std::localtime(&t); // Make a tm pointer thingy
+        oss << std::put_time(&tm, "%Y-%m-%d"); // Do this stuff
+        return oss.str(); // return da string
+    }
 
 int main(int argc, char ** argv) {
-  rclcpp::init(argc, argv);
-  counter = 1;
-  node = rclcpp::Node::make_shared("bobot_camera");
-  timer = node->create_wall_timer(std::chrono::milliseconds(500), timer_callback);
-  image_stream = node->create_publisher<std_msgs::msg::String>("/bobot_camera/heartbeat", 10);
-  
-  if(UCAM_LIB_Init() != UCAM_SUCCESS) {
-    RCLCPP_ERROR(node->get_logger(), "[Bobot Camera] Failed to initialize oops baka.");
-    rclcpp::shutdown();
-    return 0;
-  }
-  
-  if(UCAM_LIB_StartStream() != UCAM_SUCCESS) {
-    RCLCPP_ERROR(node->get_logger(), "[Bobot Camera] Failed to start stream oops baka.");
-    rclcpp::shutdown();
-    return 0;
-  }
+    rclcpp::init(argc, argv);
+    node = rclcpp::Node::make_shared("bobot_camera");
+    counter = 1;
+    node->declare_parameter("CAMERA_FRAMES_PER_SEC", 24);
 
-  if(get_next_image("/home/oberon/bobot-1/src/bobot_camera/images/image0.jpg") != UCAM_SUCCESS) {
-    RCLCPP_ERROR(node->get_logger(), "[Bobot Camera] Failed to take initial image oops baka.");
+    int fps = node->get_parameter("CAMERA_FRAMES_PER_SEC").as_int();
+    int freq_in_miliseconds = std::floor(1/fps * 1000);
+    image_stream = node->create_publisher<std_msgs::msg::String>("/bobot_camera/heartbeat", 10);
+    image_stopper_serice = node->create_service<std_srvs::srv::Trigger>(node->get_name() + std::string("/stop_recording"), &call_stop_recording);
+    timer = node->create_wall_timer(std::chrono::milliseconds(freq_in_miliseconds), timer_callback);
+    
+    if(UCAM_LIB_Init() != UCAM_SUCCESS) {
+        RCLCPP_ERROR(node->get_logger(), "[Bobot Camera] Failed to initialize oops baka.");
+        rclcpp::shutdown();
+        return 0;
+    }
+    
+    if(UCAM_LIB_StartStream() != UCAM_SUCCESS) {
+        RCLCPP_ERROR(node->get_logger(), "[Bobot Camera] Failed to start stream oops baka.");
+        rclcpp::shutdown();
+        return 0;
+    }
+
+    if(get_next_image("/home/romeperl/bobot-1/src/bobot_flight_images/images/image0.jpg") != UCAM_SUCCESS) {
+        RCLCPP_ERROR(node->get_logger(), "[Bobot Camera] Failed to take initial image oops baka.");
+        rclcpp::shutdown();
+        return 0;
+    }
+    RCLCPP_ERROR(node->get_logger(), "[Bobot Camera] BALLS");
+
+    rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
-  }
-
-  rclcpp::spin(node);
-  rclcpp::shutdown();
-  return 0;
 }
 
 /**
@@ -97,6 +117,16 @@ int main(int argc, char ** argv) {
 * get_next_image() <- save image for u, just call with correct file path and name
 * make sure that u are using counter to help generate new names
 */
+
+void call_stop_recording(const std::shared_ptr<std_srvs::srv::Trigger::Request> request, std::shared_ptr<std_srvs::srv::Trigger::Response> response)
+{
+    response->success = true;
+    response->message = "Successfully stopped recording!";
+    UCAM_LIB_StopStream();
+    RCLCPP_INFO(node->get_logger(), "Successfully stopped recording!");
+}
+
+// In theory, we could add a start recording, but lets not for now? maybe later
 
 void timer_callback(void) {
     std::string filename = IMAGE_HDR;
@@ -210,6 +240,8 @@ int8_t get_next_image(const char* filename){
         RCLCPP_INFO(node->get_logger(), "[Bobot Camera] Failed to Dequeue Buffer ");
         return UCAM_NEXT_IMAGE_FAILED;
     }
+    RCLCPP_ERROR(rclcpp::get_logger("BALLS"), "COCK AND BALLS");
+
 
     /** do meth for getting the right format */
     yuyv_to_rgb((unsigned char*)input_buffer, rgb_buffer, ORIGINAL_WIDTH, ORIGINAL_HEIGHT);

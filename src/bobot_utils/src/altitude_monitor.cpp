@@ -9,6 +9,7 @@
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
 #include <bobot_msgs/msg/altitude_monitor.hpp> // AltitudeMonitor .msg file
 #include <std_msgs/msg/string.hpp>
+#include <std_srvs/srv/trigger.hpp>
 #include "bobot_hardware_interface/bobot_altimeter_interface.hpp"
 
 // C++ specific libraries
@@ -83,10 +84,20 @@ public:
         this->altitude_serial_interface.read_serial();
 
         // Check if we've reached the max altitude
-        if(this->altitude_serial_interface.altitude >= this->max_altitude)
+        if(this->altitude_serial_interface.altitude >= this->max_altitude && this->alt_reached == false)
         {
             this->alt_reached = true;
-            // Make service calll here
+            // Check if the service is available
+            if(!this->altitude_reached_notification->wait_for_service(std::chrono::seconds(2))) 
+            {
+                this->print_error_message("Unable to call altitude reached service! We're at altitude but can't do anything about it!");
+            }
+            else
+            {
+                // Notify the manager
+                std::shared_ptr<std_srvs::srv::Trigger::Request> request = std::make_shared<std_srvs::srv::Trigger::Request>();
+                this->altitude_reached_notification->async_send_request(request);
+            }
         }
 
         std::unique_ptr<bobot_msgs::msg::AltitudeMonitor> altitude_info_msg = std::make_unique<bobot_msgs::msg::AltitudeMonitor>(); // make a unique point to our ROS message object
@@ -98,17 +109,27 @@ public:
         altitude_info_msg->send_time = get_current_time_for_logs();
         altitude_info_msg->ros_send_time = this->now().seconds(); /// get ros time
 
-        altitude_info_->publish(std::move(altitude_info_msg));
+        this->altitude_info_->publish(std::move(altitude_info_msg));
     }
     void publish_simulated_altitude_info()
     {
         this->altitude_buffer_sim += this->simulate_altitude_sensor(); // simulate collecting the altitude from the sensor
 
         // Check if we've reached the max altitude
-        if(this->altitude_serial_interface.altitude >= this->max_altitude)
+        if(this->altitude_serial_interface.altitude >= this->max_altitude && this->alt_reached == false)
         {
             this->alt_reached = true;
-            // Make service calll here
+            // Check if the service is available
+            if(!this->altitude_reached_notification->wait_for_service(std::chrono::seconds(2))) 
+            {
+                this->print_error_message("Unable to call altitude reached service! We're at altitude but can't do anything about it!");
+            }
+            else
+            {
+                // Notify the manager
+                std::shared_ptr<std_srvs::srv::Trigger::Request> request = std::make_shared<std_srvs::srv::Trigger::Request>();
+                this->altitude_reached_notification->async_send_request(request);
+            }
         }
 
         std::unique_ptr<bobot_msgs::msg::AltitudeMonitor> altitude_info_msg = std::make_unique<bobot_msgs::msg::AltitudeMonitor>(); // make a unique point to our ROS message object
@@ -120,7 +141,7 @@ public:
         altitude_info_msg->send_time = get_current_time_for_logs();
         altitude_info_msg->ros_send_time = this->now().seconds(); /// get ros time
 
-        altitude_info_->publish(std::move(altitude_info_msg));
+        this->altitude_info_->publish(std::move(altitude_info_msg));
     }
 
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_error(const rclcpp_lifecycle::State&)
@@ -138,7 +159,8 @@ public:
         this->print_debug_message("Attempting to configure Altitude Monitor, please hold...");
 
         topic_name = bobot_name + "/altitude_monitor_info";
-        altitude_info_ = this->create_publisher<bobot_msgs::msg::AltitudeMonitor>(topic_name, 20); // Create a publisher with a namespace of bobot1 called timer, and have the queue size be 10 (since it should publish at 1 hz)
+        this->altitude_info_ = this->create_publisher<bobot_msgs::msg::AltitudeMonitor>(topic_name, 20); // Create a publisher with a namespace of bobot1 called timer, and have the queue size be 10 (since it should publish at 1 hz)
+        this->altitude_reached_notification = this->create_client<std_srvs::srv::Trigger>(this->get_name() + std::string("/altitude_reached"));
         int freq_in_miliseconds = 1/this->sampling_rate * 1000; 
         
         // set up the serial connection
@@ -280,6 +302,7 @@ private:
 */
     // This is a regular ROS publisher, BUT it follows the rules of the lifecycle management, as in it won't do JACK until you set a certain state
     std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<bobot_msgs::msg::AltitudeMonitor>> altitude_info_;
+    std::shared_ptr<rclcpp::Client<std_srvs::srv::Trigger>> altitude_reached_notification;
 
 /*
     We hold an instance of a timer which periodically triggers the publish function.

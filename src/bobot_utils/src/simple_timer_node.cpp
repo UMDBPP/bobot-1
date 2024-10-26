@@ -31,11 +31,20 @@ public:
   SimpleTimer()
   : Node("simple_timer"), count_(0)
   {
-    this->declare_parameter("time_upper_bound", 60 * 60 * 60);
-    publisher_ = this->create_publisher<std_msgs::msg::UInt16>("/bobot_timer/time", 10);
+    // get some parameters:
+    this->declare_parameter("BOBOT_NAME", "bobot_1");
+    this->declare_parameter("TIME_UPPER_BOUND", 7200); // changed default to 2 hours (in seconds)
+
+    this->bobot_name = this->get_parameter("BOBOT_NAME").as_string();
+    this->upper_bound = (long unsigned int)(this->get_parameter("TIME_UPPER_BOUND").as_int());
+
+
+    std::string topic_name = this->bobot_name + "/time";
+    std::string service_name = this->get_name() + std::string("/is_past_due");
+    publisher_ = this->create_publisher<std_msgs::msg::UInt16>(topic_name, 10);
     timer_ = this->create_wall_timer(1000ms, std::bind(&SimpleTimer::publishTime, this));
     
-    client_ = this->create_client<std_srvs::srv::Trigger>("/bobot_timer/is_past_due_date");
+    client_ = this->create_client<std_srvs::srv::Trigger>(service_name);
   }
 
 private:
@@ -43,9 +52,8 @@ private:
   {
     auto message = std_msgs::msg::UInt16();
     message.data = this->count_++;
-    RCLCPP_INFO(this->get_logger(), "Publishing: '%i'", message.data);
+    // RCLCPP_INFO(this->get_logger(), "Publishing: '%i'", message.data);
     this->publisher_->publish(message);
-    long unsigned int upper_bound = (long unsigned int)(this->get_parameter("time_upper_bound").as_int());
     if (count_ > upper_bound && !notified_)
     {
       pastDueNotification();
@@ -72,8 +80,10 @@ private:
   rclcpp::Publisher<std_msgs::msg::UInt16>::SharedPtr publisher_;
   size_t count_;
   rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr client_;
-
+  std::string bobot_name;
+  long unsigned int upper_bound;
   bool notified_ = false;
+
 };
 
 int main(int argc, char * argv[])

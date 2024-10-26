@@ -15,32 +15,14 @@ def generate_launch_description():
     bobot_launch_config = PathJoinSubstitution(["src", "bobot_bringup", "bobot_launch_config.yaml"])
     bobot_hardware_config = PathJoinSubstitution(["src", "bobot_utils", "bobot_hardware_config.yaml"])
 
-    bobot_simpler_timer = Node(
-        package="bobot_utils",
-        executable="simple_timer",
-        name="simple_timer",
-        emulate_tty=True,
-        parameters=[bobot_launch_config, bobot_hardware_config]
-    )
-
-    bobot_servo_jerk_node = Node(
-        package="bobot_utils",
-        executable="servo_jerk",
-        name="servo_jerker", # This overrides the name listed in the timer_node file, but that's okay because it's better here (and the same anyway)
-        emulate_tty=True,
-        parameters=[bobot_launch_config, bobot_hardware_config]
-    )
-
-    bobot_altitude_monitor_node = Node(
-        package="bobot_utils",
-        executable="altitude_monitor",
-        name="altitude_monitor", # This overrides the name listed in the timer_node file, but that's okay because it's better here (and the same anyway)
+    bobot_camera_node = Node(
+        package="bobot_camera",
+        executable="bobot_camera",
+        name="bobot_camera",
         emulate_tty=True,
         parameters=[bobot_launch_config, bobot_hardware_config]
     )
 
     return LaunchDescription([
-        bobot_simpler_timer,
-        bobot_servo_jerk_node,
-        bobot_altitude_monitor_node
+        bobot_camera_node
     ])
