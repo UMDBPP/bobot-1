@@ -1,0 +1,18 @@
+[BOOTUP BEGIN 27-08:13:13] (SEE ERROR LOG FOR CRITICAL ISSUES) Setting up the BobotManager for flight, please hold...
+[FLIGHT LOG :  27-08:13:13] Starting time: 2024-10-27_08-13-13
+[FLIGHT LOG :  27-08:13:13] bobot_bin/log_files/flight_logs/ directory exists! Moving on...
+[FLIGHT LOG :  27-08:13:13] bobot_bin/log_files/error_logs/ directory exists! Moving on...
+[FLIGHT LOG :  27-08:13:13] Error log file did not previously exist, creating it now!
+[FLIGHT LOG :  27-08:13:13] New error log file: /home/romeperl/bobot-1/src/bobot_bin/log_files/error_logs/bobot_error_log_2024-10-27_08-13-13.txt
+[FLIGHT LOG :  27-08:13:13] Flight log file did not previously exist, creating it now!
+[FLIGHT LOG :  27-08:13:13] New flight log file: /home/romeperl/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_log_2024-10-27_08-13-13.txt
+[FLIGHT LOG :  27-08:13:13] Flight CSV data log file did not previously exist, creating it now!
+[FLIGHT LOG :  27-08:13:13] New flight csv data log file: /home/romeperl/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_csv_data_log_2024-10-27_08-13-13.csv
+[FLIGHT LOG :  27-08:13:13] Finished verifiying startup sequence, now setting up ROS infrastructure!
+[FLIGHT LOG :  27-08:13:13] Attempting to connect to the flight timer's /get_state service!
+[FLIGHT LOG :  27-08:13:14] Successfully connected to /get_state service for the servo jerker!
+[FLIGHT LOG :  27-08:13:14] Successfully connected to /change_state service for the servo jerker!
+[FLIGHT LOG :  27-08:13:14] Successfully connected to /get_state service for the servo commander!
+[FLIGHT LOG :  27-08:13:14] Successfully connected to /change_state service for the servo commander!
+[FLIGHT LOG :  27-08:13:14] Successfully connected to /get_state service for the altitude monitor!
+[FLIGHT LOG :  27-08:13:14] Successfully connected to /change_state service for the altitude monitor!

@@ -1,0 +1,1 @@
+time,TimerNodeTime,AltitudeSendTime,AltitudeRosSendTime,CurrentAltitude,CurrentAltitudeCentimeters,AltitudeReached,ServoCommanderSendTime,ServoCommanderRosSendTime,Joint1CommandPos,Joint2ActualPos,ServoJerkSendTime,ServoJerkRosSendTime,NumStrokes,JerkMessage,JerkRate

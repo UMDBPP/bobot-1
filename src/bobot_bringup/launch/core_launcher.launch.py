@@ -14,13 +14,16 @@ def generate_launch_description():
 
     # Below is a HARDCODED path to the file type. I am okay with this - romeo.
     manager_parameters = PathJoinSubstitution(["src/bobot_bringup/bobot_launch_config.yaml"])
+    more_parameters = PathJoinSubstitution(["src/bobot_utils/bobot_hardware_config.yaml"])
     # Declare the nodes that we wish to run
     bobot_manager_node = Node(
         package="bobot_manager",
         executable="manager",
         name="bobot_manager",
         emulate_tty=True,
-        parameters=[manager_parameters]
+        respawn=True,
+        respawn_delay=5,
+        parameters=[manager_parameters, more_parameters]
     )
 
     # Get the bobot utilities launch file

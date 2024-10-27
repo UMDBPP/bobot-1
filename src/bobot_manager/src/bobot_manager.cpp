@@ -14,6 +14,10 @@
 #include <lifecycle_msgs/msg/transition.hpp>
 #include <std_srvs/srv/trigger.hpp>
 #include <std_msgs/msg/string.hpp>
+#include <std_msgs/msg/u_int16.hpp>
+#include "bobot_msgs/msg/altitude_monitor.hpp"
+#include "bobot_msgs/msg/servo_jerk.hpp"
+#include "bobot_msgs/msg/bobot_commander.hpp"
 
 
 // C++ specific libraries
@@ -58,6 +62,12 @@ public:
     {
         // Print out some log messages for the ROS logs
         this->print_debug_message("Bobot Manager starting up!");
+
+        this->declare_parameter("BOBOT_NAME", "bb_bobot_1");
+        this->declare_parameter("LOGGING_SAMPLE_RATE", 10.0);
+        this->bobot_name = this->get_parameter("BOBOT_NAME").as_string();
+        this->logging_sample_rate = this->get_parameter("LOGGING_SAMPLE_RATE").as_double();
+
 
         // Check to make sure the bobot_recovery/ directory exists, and that current_flight.txt and reset_counter.txt exist (but DONT check if they are empty)
         std::string start_time_logs = this->get_current_time_for_logs();
@@ -200,6 +210,7 @@ public:
                     else if(data_from_file[2] != "")
                     {
                         this->start_time = data_from_file[2]; // save the new start time
+                        // TODO - create a service request to the timer node and let it know that it should change it's timer value
                         print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Found a new time in the current_flight.txt file!");
                         this->print_debug_message(print_to_screen);
                         print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "New time: " + this->start_time);
@@ -322,8 +333,105 @@ public:
 
         // Now, create our pub/subs, and our services and clients
         this->set_up_lifecycle_clients(flight_log_msg, critical_error_msg, error_count);
+        this->set_up_pubs_and_subs();
+        this->set_up_wall_timers();
 
+        // Finally, write the current logs and errors to their respective files
+        // Create a temporary string to send to the current_flight.txt file
+        // Flight log file
+        this->flight_log.open(this->flight_log_file_path, std::ios::out | std::ios::app);
+        if(this->flight_log.is_open() == false)
+        {
+            std::string print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Could not open flight_log.txt when trying to save the flight data!", error_count);
+            this->print_error_message(print_to_screen);
+        }
+        this->flight_log << flight_log_msg << std::endl;
+        this->flight_log.flush();
+        this->flight_log.close();
+
+        // CSV data file
+        this->flight_csv_data_log.open(this->flight_csv_data_log_file_path, std::ios::out | std::ios::app);
+        if(this->flight_csv_data_log.is_open() == false)
+        {
+            std::string print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Could not open flight_csv_data_log.csv when trying to save the flight data!", error_count);
+            this->print_error_message(print_to_screen);
+        }
+        if(this->use_header == true)
+        {
+            this->write_headers_to_csv_file();
+        }
+        this->flight_csv_data_log.flush();
+
+        // Error log file
+        this->error_log.open(this->flight_log_file_path, std::ios::out | std::ios::app);
+        if(this->error_log.is_open() == false)
+        {
+            std::string print_to_screen = this->add_to_critical_error_log_init_msg(critical_error_msg, "Could not open flight_log.txt when trying to save the flight data!", error_count);
+            this->print_error_message(print_to_screen);
+        }
+        this->error_log << critical_error_msg << std::endl;
+        this->error_log.flush();
+        this->error_log.close();
+
+        this->print_debug_message("Finished constructing the manager, Bobot is now in it's nominal operation phase!");
+        
+        // At the very least, open the CSV file so that we can write to is
         // end
+        this->ros_start_time = this->now().seconds();
+        return;
+    }
+
+    void write_headers_to_csv_file()
+    {
+        std::string header_data = "time,TimerNodeTime,AltitudeSendTime,AltitudeRosSendTime,CurrentAltitude,CurrentAltitudeCentimeters,AltitudeReached,ServoCommanderSendTime,ServoCommanderRosSendTime,Joint1CommandPos,Joint1ActualPos,Joint2CommandPos,Joint2ActualPosServoJerkSendTime,ServoJerkRosSendTime,NumStrokes,JerkMessage,JerkRate";
+        this->flight_csv_data_log << header_data << std::endl;
+        return;
+    }
+
+    void log_csv_data_callback()
+    {
+        // stolen from rahul!
+         // Prepare the data line to write into the file
+        std::ostringstream oss;
+        
+        // Add the current ROS time in seconds
+        std::streamsize original_precision = oss.precision();
+        std::ios_base::fmtflags original_flags = oss.flags();
+        double elapsed_seconds = this->now().seconds() - this->ros_start_time;
+        oss <<  std::fixed << std::setprecision(2) << elapsed_seconds << ",";
+        oss.precision(original_precision);
+        oss.flags(original_flags);
+
+        // name of the controller active for sus and steering
+        oss << this->time_buf << ",";
+
+        // Altitude stuff
+        oss << this->alt_send_time_buf << ",";
+        oss << this->alt_ros_send_time_buf << ",";
+        oss << this->current_altitude_feet_buf << ",";
+        oss << this->current_altitude_centimeters_buf << ",";
+        oss << this->alt_reached_buf << ",";
+
+        // Servo commanding stuff
+        oss << this->joint_command_send_time_buf << ",";
+        oss << this->joint_command_ros_send_time_buf << ",";
+        oss << this->joint_commands_buf[0] << ",";
+        oss << this->joint_positions_feedback_buf[0] << ",";
+        oss << this->joint_commands_buf[1] << ",";
+        oss << this->joint_positions_feedback_buf[1] << ",";
+
+        // Servo Jerk stuff
+        oss << this->jerk_send_time_buf << ",";
+        oss << this->jerk_ros_send_time_buf << ",";
+        oss << this->num_strokes_buf << ",";
+        oss << this->jerk_msg_buf << ",";
+        oss << this->jerk_rate_buf << ",";
+
+        // commmenting out this data cause it floods the terminal screen. - Romeo :)
+        // ROS_INFO("[Charlie Data Collection] %s", oss.str().c_str());
+        // write to file and call it a day
+        flight_csv_data_log << oss.str() << std::endl;
+        flight_csv_data_log.flush();
     }
 
 
@@ -432,10 +540,12 @@ public:
         std::string bobot_flight_log_dir = "log_files/flight_logs";
         std::string bobot_error_log_file_path = "log_files/error_logs/bobot_error_log_" + this->start_time + ".txt";
         std::string bobot_flight_log_file_path = "log_files/flight_logs/bobot_flight_log_" + this->start_time + ".txt";
+        std::string bobot_flight_csv_data_log_file_path = "log_files/flight_logs/bobot_flight_csv_data_log_" + this->start_time + ".csv";
         this->error_log_dir = bobot_bin_dir / bobot_error_log_dir;
         this->flight_log_dir = bobot_bin_dir / bobot_flight_log_dir;
         this->error_log_file_path = bobot_bin_dir / bobot_error_log_file_path;
         this->flight_log_file_path = bobot_bin_dir / bobot_flight_log_file_path;
+        this->flight_csv_data_log_file_path = bobot_bin_dir / bobot_flight_csv_data_log_file_path;
         this->print_debug_message("Got the path to the error log for this flight: " + error_log_dir.string());
         this->print_debug_message("Got the path to the flight log for this flight: " + flight_log_dir.string());
         return;
@@ -543,10 +653,31 @@ public:
         {
             print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Flight log file already exists, appending new data to it");
             this->print_debug_message(print_to_screen);
-            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Found flight log file: " + this->error_log_file_path.string());
+            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Found flight log file: " + this->flight_log_file_path.string());
             this->print_debug_message(print_to_screen);
             print_to_screen = this->add_to_error_log_init_msg(critical_error_msg, "Found an already existing flight log at our start_time, indicating we've restarted. We should have already noted this!");
             this->print_warning_message(print_to_screen);
+            // done this case!
+        }
+
+
+        if(std::filesystem::exists(this->flight_csv_data_log_file_path) == false)
+        {
+            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Flight CSV data log file did not previously exist, creating it now!");
+            this->print_debug_message(print_to_screen);
+            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "New flight csv data log file: " + this->flight_csv_data_log_file_path.string());
+            this->print_debug_message(print_to_screen);
+            // done this case!
+        }
+        else if(std::filesystem::exists(this->flight_csv_data_log_file_path) == true)
+        {
+            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Flight log csv file already exists, appending new data to it");
+            this->print_debug_message(print_to_screen);
+            print_to_screen = this->add_to_flight_log_init_msg(flight_log_msg, "Found flight csv data log file: " + this->flight_csv_data_log_file_path.string());
+            this->print_debug_message(print_to_screen);
+            print_to_screen = this->add_to_error_log_init_msg(critical_error_msg, "Found an already existing flight csv data log at our start_time, indicating we've restarted. We should have already noted this!");
+            this->print_warning_message(print_to_screen);
+            this->use_header = false;
             // done this case!
         }
         // Done path checking!
@@ -764,8 +895,48 @@ public:
 
     void set_up_pubs_and_subs()
     {
-
+        this->alt_monitor_data = this->create_subscription<bobot_msgs::msg::AltitudeMonitor>(this->bobot_name + "/altitude_monitor_info", 10, std::bind(&BobotManager::get_altitude_data_callback, this, std::placeholders::_1));
+        this->servo_command_data = this->create_subscription<bobot_msgs::msg::BobotCommander>(this->bobot_name + "/basic_trajectory_generator", 10, std::bind(&BobotManager::get_servo_command_data_callback, this, std::placeholders::_1));
+        this->servo_jerk_data = this->create_subscription<bobot_msgs::msg::ServoJerk>(this->bobot_name + "/servo_jerk_info", 10, std::bind(&BobotManager::get_servo_jerk_data_callback, this, std::placeholders::_1));
+        this->timer_data = this->create_subscription<std_msgs::msg::UInt16>(this->bobot_name + "/time", 10, std::bind(&BobotManager::get_timer_data_callback, this, std::placeholders::_1));
     }
+
+    void set_up_wall_timers()
+    {
+        long int freq = (long int)(1/this->logging_sample_rate * 1000);
+        this->data_collection_loop = this->create_wall_timer(std::chrono::milliseconds(freq), std::bind(&BobotManager::log_csv_data_callback, this));
+    }
+
+    // Publisher callbacks 
+    void get_altitude_data_callback(const bobot_msgs::msg::AltitudeMonitor::SharedPtr msg)
+    {
+        this->current_altitude_feet_buf = msg->current_altitude_feet;
+        this->current_altitude_centimeters_buf = msg->current_altitude_centimeters;
+        this->alt_reached_buf = msg->alt_reached;
+        this->alt_send_time_buf = msg->send_time;
+        this->alt_ros_send_time_buf = msg->ros_send_time;
+    }
+    void get_servo_command_data_callback(bobot_msgs::msg::BobotCommander::SharedPtr msg)
+    {   
+        this->joint_commands_buf = msg->joint_commands;
+        this->joint_positions_feedback_buf = msg->joint_positions_feedback;
+        this->joint_command_send_time_buf = msg->send_time;
+        this->joint_command_ros_send_time_buf = msg->ros_send_time;
+    }
+    void get_servo_jerk_data_callback(bobot_msgs::msg::ServoJerk::SharedPtr msg)
+    {
+        this->jerk_rate_buf = msg->jerk_rate;
+        this->jerk_msg_buf = msg->jerk_msg;
+        this->num_strokes_buf = msg->num_strokes;
+        this->jerk_send_time_buf = msg->send_time;
+        this->jerk_ros_send_time_buf = msg->ros_send_time;
+    }
+    void get_timer_data_callback(const std_msgs::msg::UInt16::SharedPtr msg)
+    {
+        this->time_buf = msg->data;
+    }
+
+
 
 private:
     // ROS VARIABLES
@@ -797,8 +968,34 @@ private:
     // TODO, maybe -add the other clients so we can utilize the full functionality of the states (probably unnecessary for us)
 
 // Manager Node publishers and subscribers
-    std::shared_ptr<rclcpp::Subscription<std_msgs::msg::String>> balls;
+    rclcpp::Subscription<bobot_msgs::msg::AltitudeMonitor>::SharedPtr alt_monitor_data;
+    rclcpp::Subscription<bobot_msgs::msg::BobotCommander>::SharedPtr servo_command_data;
+    rclcpp::Subscription<bobot_msgs::msg::ServoJerk>::SharedPtr servo_jerk_data;
+    rclcpp::Subscription<std_msgs::msg::UInt16>::SharedPtr timer_data;
 
+// Main data collection thread
+    rclcpp::TimerBase::SharedPtr data_collection_loop;
+
+// data buffers
+    // Altitude data buffers
+    double current_altitude_feet_buf = 0.0;
+    double current_altitude_centimeters_buf = 0.0;
+    bool alt_reached_buf = false;
+    std::string alt_send_time_buf = "starting";
+    double alt_ros_send_time_buf = 0.0;
+
+    std::vector<double> joint_commands_buf = {0.0, 0.0};
+    std::vector<double> joint_positions_feedback_buf = {0.0, 0.0};
+    std::string joint_command_send_time_buf = "starting";
+    double joint_command_ros_send_time_buf = 0.0;
+
+    int jerk_rate_buf = 0;
+    std::string jerk_msg_buf = "starting";
+    long int num_strokes_buf = 0;
+    std::string jerk_send_time_buf = "starting";
+    double jerk_ros_send_time_buf = 0.0;
+
+    int64_t time_buf = 0;
 
     // FLIGHT VS DEV VARIABLES
     bool IS_FLIGHT = false;
@@ -812,15 +1009,26 @@ private:
     std::filesystem::path flight_log_dir;
     std::filesystem::path error_log_file_path;
     std::filesystem::path flight_log_file_path;
+    std::filesystem::path flight_csv_data_log_file_path;
 
     // FILE HANDLES
-    std::ofstream timer_log;
-    std::ofstream altitude_log;
+    // std::ofstream timer_log;
+    // std::ofstream altitude_log;
     std::ofstream error_log;
     std::ofstream flight_log;
+    std::ofstream flight_csv_data_log;
+    bool use_header = true;
 
     // boolean to check if we are beginning desired motion
     bool begun_desired_motion = false;
+
+    // bobot name
+    std::string bobot_name;
+
+    // logging sample rate
+    double logging_sample_rate;
+
+    double ros_start_time;
 
 };
 

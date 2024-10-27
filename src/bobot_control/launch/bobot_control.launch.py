@@ -20,6 +20,8 @@ def generate_launch_description():
         executable="bb_bobot_basic_trajectory",
         name="bobot_trajectory_generator", # This overrides the name listed in the timer_node file, but that's okay because it's better here (and the same anyway)
         emulate_tty=True,
+        respawn=True,
+        respawn_delay=5,
         parameters=[bobot_launch_config, bobot_hardware_config]
     )
 

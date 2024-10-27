@@ -20,9 +20,11 @@ def generate_launch_description():
         executable="bobot_camera",
         name="bobot_camera",
         emulate_tty=True,
+        respawn=True,
+        respawn_delay=5,
         parameters=[bobot_launch_config, bobot_hardware_config]
     )
 
     return LaunchDescription([
-        bobot_camera_node
+        # bobot_camera_node
     ])

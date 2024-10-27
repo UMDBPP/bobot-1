@@ -20,6 +20,8 @@ def generate_launch_description():
         executable="simple_timer",
         name="simple_timer",
         emulate_tty=True,
+        respawn=True,
+        respawn_delay=5,
         parameters=[bobot_launch_config, bobot_hardware_config]
     )
 
@@ -28,6 +30,8 @@ def generate_launch_description():
         executable="servo_jerk",
         name="servo_jerker", # This overrides the name listed in the timer_node file, but that's okay because it's better here (and the same anyway)
         emulate_tty=True,
+        respawn=True,
+        respawn_delay=5,
         parameters=[bobot_launch_config, bobot_hardware_config]
     )
 
@@ -36,6 +40,8 @@ def generate_launch_description():
         executable="altitude_monitor",
         name="altitude_monitor", # This overrides the name listed in the timer_node file, but that's okay because it's better here (and the same anyway)
         emulate_tty=True,
+        respawn=True,
+        respawn_delay=5,
         parameters=[bobot_launch_config, bobot_hardware_config]
     )
 

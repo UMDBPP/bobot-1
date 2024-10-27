@@ -17,4 +17,4 @@ cd ..
 source /opt/ros/jazzy/setup.bash
 source install/setup.bash
 
-gnome-terminal -- bash -c "ros2 launch bobot_bringup core_launcher.launch.py; exec bash"
+bash -c "ros2 launch bobot_bringup core_launcher.launch.py; exec bash"

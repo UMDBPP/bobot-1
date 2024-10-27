@@ -3,7 +3,7 @@
 
     # GENERAL PARAMETERS
     BOBOT_NAME: "bb_bobot_1"
-    LOGGING_SAMPLE_RATE: 10 # value is in Hz - float
+    LOGGING_SAMPLE_RATE: 10.0 # value is in Hz - float
 
     # SIMPLE TIMER NODE PARAMETERS
     TIME_UPPER_BOUND: 5400 # (seconds - int)
@@ -15,7 +15,7 @@
     SERVOS_TO_JERK: [1]
     MAX_ANGLE: 100 # degrees - int
     MIN_ANGLE: 95 # degrees - int
-    SERVO_IS_SIMULATED: false
+    SERVO_IS_SIMULATED: true
 
     # ALTITUDE NODE PARAMETERS
     SAMPLE_RATE: 100.0 # value is in Hz - float
@@ -25,14 +25,15 @@
 
     # TRAJECTORY COMMANDER NODE
     JOINT_IDS: [1,2]
-    TRAJ_IS_SIMULATED: false
     HARDWARE_LOOP_RATE: 100.0 # Hz - float
     CONSTANT_JOINT_VELOCITY: 90.0 # Degrees per second
     TRAJECTORY_TIME: 10 # (seconds - int) Making these integers for simplicity <-- the time to complete specific trajectories [NOTE - MAKE THESE INTERVALS OF 5 PLEASE]
     REPEAT_TRAJECTORY: 3 # (value - int)
+    TRAJ_IS_SIMULATED: true
 
     # CAMERA PARAMETER NODE
     CAMERA_FRAMES_PER_SEC: 1 # (FPS - int)
+    # CAMERA_IS_SIMULATED: true
 
 
 

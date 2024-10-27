@@ -80,6 +80,7 @@ private:
   rclcpp::Publisher<std_msgs::msg::UInt16>::SharedPtr publisher_;
   size_t count_;
   rclcpp::Client<std_srvs::srv::Trigger>::SharedPtr client_;
+  rclcpp::Service<std_srvs::srv::Trigger>::SharedPtr server_;
   std::string bobot_name;
   long unsigned int upper_bound;
   bool notified_ = false;
