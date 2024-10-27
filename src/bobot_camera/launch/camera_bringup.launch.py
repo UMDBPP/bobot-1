@@ -26,5 +26,5 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        # bobot_camera_node
+        bobot_camera_node
     ])

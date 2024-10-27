@@ -10,18 +10,18 @@
     TIMER_LOWER_BOUND: 1
 
     # SERVO JERKER NODE PARAMETERS
-    JERK_RATE: 4.0 # Jerk rate is in Hz
+    JERK_RATE: 5.0 # Jerk rate is in Hz
     SERVOS_TO_JERK_ID: ["ID-1"]
     SERVOS_TO_JERK: [1]
     MAX_ANGLE: 100 # degrees - int
     MIN_ANGLE: 95 # degrees - int
-    SERVO_IS_SIMULATED: true
+    SERVO_IS_SIMULATED: false
 
     # ALTITUDE NODE PARAMETERS
     SAMPLE_RATE: 100.0 # value is in Hz - float
-    MAX_ALTITUDE: 1000 # (feet - int) - Change per flight!
+    MAX_ALTITUDE: 75000 # (feet - int) - Change per flight!
     MIN_ALTITUDE: 0
-    ALT_IS_SIMULATED: true
+    ALT_IS_SIMULATED: false
 
     # TRAJECTORY COMMANDER NODE
     JOINT_IDS: [1,2]
@@ -29,10 +29,10 @@
     CONSTANT_JOINT_VELOCITY: 90.0 # Degrees per second
     TRAJECTORY_TIME: 10 # (seconds - int) Making these integers for simplicity <-- the time to complete specific trajectories [NOTE - MAKE THESE INTERVALS OF 5 PLEASE]
     REPEAT_TRAJECTORY: 3 # (value - int)
-    TRAJ_IS_SIMULATED: true
+    TRAJ_IS_SIMULATED: false
 
     # CAMERA PARAMETER NODE
-    CAMERA_FRAMES_PER_SEC: 1 # (FPS - int)
+    CAMERA_FRAMES_PER_SEC: 24 # (FPS - int)
     # CAMERA_IS_SIMULATED: true
 
 
