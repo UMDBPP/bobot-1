@@ -84,7 +84,7 @@ public:
         this->altitude_serial_interface.read_serial();
 
         // Check if we've reached the max altitude
-        if(this->altitude_serial_interface.altitude >= this->max_altitude && this->alt_reached == false)
+        if(this->altitude_serial_interface.altitude_feet >= this->max_altitude && this->alt_reached == false)
         {
             this->alt_reached = true;
             // Check if the service is available
@@ -103,7 +103,7 @@ public:
         std::unique_ptr<bobot_msgs::msg::AltitudeMonitor> altitude_info_msg = std::make_unique<bobot_msgs::msg::AltitudeMonitor>(); // make a unique point to our ROS message object
         
         // Add the info to the message
-        altitude_info_msg->current_altitude_feet = this->altitude_serial_interface.altitude;
+        altitude_info_msg->current_altitude_feet = this->altitude_serial_interface.altitude_feet;
         altitude_info_msg->current_altitude_centimeters = this->altitude_serial_interface.altitude_centimeters;
         altitude_info_msg->alt_reached = this->alt_reached;
         altitude_info_msg->send_time = get_current_time_for_logs();
