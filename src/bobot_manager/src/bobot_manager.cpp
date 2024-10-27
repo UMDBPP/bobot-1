@@ -345,8 +345,6 @@ public:
             transition_req.id = 2; // cleanup 
             change_state_req->transition = transition_req; // pack in the message
             this->servo_jerker_change_state->async_send_request(change_state_req);transition_req.id = 4; // transition to deactive a node
-            change_state_req->transition = transition_req; // pack in the message
-            this->servo_jerker_change_state->async_send_request(change_state_req);
 
             // Now tell the servo commander to turn on!
             transition_req.id = 1; // configure

@@ -272,7 +272,7 @@ public:
     */
     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_configure(const rclcpp_lifecycle::State&)
     {
-        this->print_debug_message("Attempting to configure Servo Jerker, please hold");
+        this->print_debug_message("Attempting to configure BB-Bobot-1's basic trajectory commander, please hold...");
 
         // Get the topic name
         this->topic_name = bobot_name + "/basic_trajectory_generator";
