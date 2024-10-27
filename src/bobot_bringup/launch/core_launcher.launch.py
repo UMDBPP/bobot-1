@@ -33,7 +33,7 @@ def generate_launch_description():
 
     # Get the bobot camera launch file
     bobot_camera_dir = get_package_share_directory('bobot_camera')
-    bobot_camera_launcher = IncludeLaunchDescription(PythonLaunchDescriptionSource(bobot_control_dir + '/launch/camera_bringup.launch.py'))
+    bobot_camera_launcher = IncludeLaunchDescription(PythonLaunchDescriptionSource(bobot_camera_dir + '/launch/camera_bringup.launch.py'))
 
     return LaunchDescription([
         bobot_manager_node,
