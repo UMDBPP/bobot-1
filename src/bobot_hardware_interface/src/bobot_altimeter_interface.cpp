@@ -96,7 +96,7 @@ namespace bobot_hardware
 
         if(num_bytes == 5) // note - need to change to whatever we decided on
         {
-	        // RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "BALLS %i, %i, %i, %i, %i", read_buf[0], read_buf[1],read_buf[2],read_buf[3],read_buf[4]);
+	        RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "BALLS %i, %i, %i, %i, %i", read_buf[0], read_buf[1],read_buf[2],read_buf[3],read_buf[4]);
             if(read_buf[0] == 5)
             {
                 uint32_t bit1_high = read_buf[4];
