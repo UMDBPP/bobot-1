@@ -116,7 +116,7 @@ public:
         this->altitude_buffer_sim += this->simulate_altitude_sensor(); // simulate collecting the altitude from the sensor
 
         // Check if we've reached the max altitude
-        if(this->altitude_serial_interface.altitude >= this->max_altitude && this->alt_reached == false)
+        if(this->altitude_buffer_sim >= this->max_altitude && this->alt_reached == false)
         {
             this->alt_reached = true;
             // Check if the service is available
