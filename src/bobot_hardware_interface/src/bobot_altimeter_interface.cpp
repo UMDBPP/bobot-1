@@ -99,11 +99,17 @@ namespace bobot_hardware
 	   // RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "BALLS %i, %i, %i, %i, %i", read_buf[0], read_buf[1],read_buf[2],read_buf[3],read_buf[4]);
             if(read_buf[0] == 5)
             {
-                int32_t bit1_high = read_buf[4] << 24;
-                int32_t bit2 = read_buf[3] << 16;
-                int32_t bit3 = read_buf[2] << 8;
-                int32_t bit4_low = read_buf[1];
-                this->altitude_centimeters = bit1_high | bit2 | bit3 | bit4_low; // Get the altitude
+                uint32_t bit1_high = read_buf[4];
+                bit1_high = bit1_high << 24;
+
+                uint32_t bit2 = read_buf[3];
+                bit2 = bit2 << 16;
+
+                uint32_t bit3 = read_buf[2];
+                bit3 = bit3 << 8;
+                uint32_t bit4_low = read_buf[1];
+
+                int32_t final_altitude_centimeters = bit1_high | bit2 | bit3 | bit4_low; // Get the altitude
 
                 // int32_t bit = 0
                 // for int(i=0;i<4;i+=1)
@@ -112,7 +118,8 @@ namespace bobot_hardware
                 //     altitude_centimeters = altitude_centimeters | bit;
                 //     bit = 0;
                 // }
-               this->altitude = altitude_centimeters/30.48; // convert centimeters to feet
+                this->altitude_centimeters = final_altitude_centimeters*1.0;
+                this->altitude_feet = altitude_centimeters/30.48; // convert centimeters to feet
             }
         }
 

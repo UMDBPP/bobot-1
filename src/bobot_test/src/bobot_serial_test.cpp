@@ -29,7 +29,7 @@ int main()
 	    bobot_altimeter.request_altitude();
 	    bobot_altimeter.read_serial();
         
-        std::cout << "altitude: " << bobot_altimeter.altitude << ", " << bobot_altimeter.altitude_centimeters << " Servo info: " << bobot_servo.servo_positions[0]*1.0 << ", " << bobot_servo.servo_positions[1]*1.0 << ", " << count*1.0 << std::endl;
+        std::cout << "altitude: " << bobot_altimeter.altitude_feet << ", " << bobot_altimeter.altitude_centimeters << " Servo info: " << bobot_servo.servo_positions[0]*1.0 << ", " << bobot_servo.servo_positions[1]*1.0 << ", " << count*1.0 << std::endl;
 	    bobot_servo.command_position(1,count);
      	bobot_servo.command_position(2,count);
 	    count += (2*direction);

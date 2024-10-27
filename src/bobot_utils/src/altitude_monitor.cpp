@@ -103,7 +103,7 @@ public:
         std::unique_ptr<bobot_msgs::msg::AltitudeMonitor> altitude_info_msg = std::make_unique<bobot_msgs::msg::AltitudeMonitor>(); // make a unique point to our ROS message object
         
         // Add the info to the message
-        altitude_info_msg->current_altitude = this->altitude_serial_interface.altitude;
+        altitude_info_msg->current_altitude_feet = this->altitude_serial_interface.altitude;
         altitude_info_msg->current_altitude_centimeters = this->altitude_serial_interface.altitude_centimeters;
         altitude_info_msg->alt_reached = this->alt_reached;
         altitude_info_msg->send_time = get_current_time_for_logs();
@@ -135,8 +135,8 @@ public:
         std::unique_ptr<bobot_msgs::msg::AltitudeMonitor> altitude_info_msg = std::make_unique<bobot_msgs::msg::AltitudeMonitor>(); // make a unique point to our ROS message object
         
         // Add the info to the message
-        altitude_info_msg->current_altitude = this->altitude_buffer_sim;
-        altitude_info_msg->current_altitude_centimeters = (int)(this->altitude_buffer_sim*30.48);
+        altitude_info_msg->current_altitude_feet = this->altitude_buffer_sim;
+        altitude_info_msg->current_altitude_centimeters = this->altitude_buffer_sim*30.48;
         altitude_info_msg->alt_reached = this->alt_reached;
         altitude_info_msg->send_time = get_current_time_for_logs();
         altitude_info_msg->ros_send_time = this->now().seconds(); /// get ros time

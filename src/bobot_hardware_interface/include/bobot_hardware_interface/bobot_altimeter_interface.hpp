@@ -44,8 +44,8 @@ public:
     // Request position data from the servo (only one servo at a time)
     void request_altitude();
 
-    double altitude = 0; // initialize with 0 incase the arduino fails during flight
-    int32_t altitude_centimeters = 0; // initialize with 0 incase the arduino fails during flight
+    double altitude_feet = 0.0; // initialize with 0 incase the arduino fails during flight
+    double altitude_centimeters = 0.0; // initialize with 0 incase the arduino fails during flight
 
 private:
     // Integer to hold the serial port data
