@@ -27,16 +27,16 @@ def generate_launch_description():
     bobot_utils_dir = get_package_share_directory('bobot_utils')
     bobot_utils_launcher = IncludeLaunchDescription(PythonLaunchDescriptionSource(bobot_utils_dir + '/launch/bobot_utility_launcher.launch.py'))
 
-    # Get the bobot control launch file
-    bobot_control_dir = get_package_share_directory('bobot_control')
-    bobot_control_launcher = IncludeLaunchDescription(PythonLaunchDescriptionSource(bobot_control_dir + '/launch/bobot_control.launch.py'))
+   # # Get the bobot control launch file
+   # bobot_control_dir = get_package_share_directory('bobot_control')
+   # bobot_control_launcher = IncludeLaunchDescription(PythonLaunchDescriptionSource(bobot_control_dir + '/launch/bobot_control.launch.py'))
 
     # bobot_camera_dir = get_package_share_directory('bobot_camera')
     # bobot_camera_launcher = IncludeLaunchDescription(PythonLaunchDescriptionSource(bobot_control_dir + '/launch/camera_bringup.launch.py'))
 
     return LaunchDescription([
         bobot_manager_node,
-        bobot_utils_launcher,
-        bobot_control_launcher,
+        bobot_utils_launcher
+     #   bobot_control_launcher,
         # bobot_camera_launcher
     ])
