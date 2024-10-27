@@ -23,8 +23,8 @@
 #define RESIZED_HEIGHT  240
 
 /** Other names */
-#define CAMERA_DEV      "/dev/video2"
-#define IMAGE_HDR       "/home/romeperl/bobot-1/src/bobot_flight_images/images/image"
+#define CAMERA_DEV      "/dev/video0"
+#define IMAGE_HDR       "/home/bobot1/bobot-1/src/bobot_flight_images/images/image"
 
 #define UCAM_SUCCESS 1
 
@@ -100,12 +100,11 @@ int main(int argc, char ** argv) {
         return 0;
     }
 
-    if(get_next_image("/home/romeperl/bobot-1/src/bobot_flight_images/images/image0.jpg") != UCAM_SUCCESS) {
+    if(get_next_image("/home/bobot1/bobot-1/src/bobot_flight_images/images/image0.jpg") != UCAM_SUCCESS) {
         RCLCPP_ERROR(node->get_logger(), "[Bobot Camera] Failed to take initial image oops baka.");
         rclcpp::shutdown();
         return 0;
     }
-    RCLCPP_ERROR(node->get_logger(), "[Bobot Camera] BALLS");
 
     rclcpp::spin(node);
     rclcpp::shutdown();
@@ -240,7 +239,6 @@ int8_t get_next_image(const char* filename){
         RCLCPP_INFO(node->get_logger(), "[Bobot Camera] Failed to Dequeue Buffer ");
         return UCAM_NEXT_IMAGE_FAILED;
     }
-    RCLCPP_ERROR(rclcpp::get_logger("BALLS"), "COCK AND BALLS");
 
 
     /** do meth for getting the right format */
