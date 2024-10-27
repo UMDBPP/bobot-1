@@ -371,16 +371,21 @@ public:
             response->message = "Successfully informed that we have reached out operating altitude, starting servo commander!";
             this->print_debug_message("Successfully informed that we have reached out operating altitude, starting servo commander!");
 
-
             // Make a Change State service message
             std::shared_ptr<lifecycle_msgs::srv::ChangeState::Request> change_state_req = std::make_shared<lifecycle_msgs::srv::ChangeState::Request>();
             lifecycle_msgs::msg::Transition transition_req; // The change state service message is a struct with another message type in it, of type Transition
             transition_req.id = 4; // transition to deactive a node
             change_state_req->transition = transition_req; // pack in the message
             this->servo_jerker_change_state->async_send_request(change_state_req);
+            transition_req.id = 2; // cleanup 
+            change_state_req->transition = transition_req; // pack in the message
+            this->servo_jerker_change_state->async_send_request(change_state_req);transition_req.id = 4; // transition to deactive a node
 
             // Now tell the servo commander to turn on!
-            transition_req.id = 3;
+            transition_req.id = 1; // configure
+            change_state_req->transition = transition_req;
+            this->servo_command_change_state->async_send_request(change_state_req); // set state to active
+            transition_req.id = 3; // activate
             change_state_req->transition = transition_req;
             this->servo_command_change_state->async_send_request(change_state_req); // set state to active
             this->print_debug_message("Manager is starting the servo commander!");
