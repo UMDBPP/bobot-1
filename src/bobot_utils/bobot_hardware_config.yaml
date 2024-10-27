@@ -19,7 +19,7 @@
 
     # ALTITUDE NODE PARAMETERS
     SAMPLE_RATE: 100.0 # value is in Hz - float
-    MAX_ALTITUDE: 2000 # (feet - int) - Change per flight!
+    MAX_ALTITUDE: 1000 # (feet - int) - Change per flight!
     MIN_ALTITUDE: 0
     ALT_IS_SIMULATED: true
 
