@@ -31,6 +31,9 @@
     TRAJECTORY_TIME: 10 # (seconds - int) Making these integers for simplicity <-- the time to complete specific trajectories [NOTE - MAKE THESE INTERVALS OF 5 PLEASE]
     REPEAT_TRAJECTORY: 3 # (value - int)
 
+    # CAMERA PARAMETER NODE
+    CAMERA_FRAMES_PER_SEC: 1 # (FPS - int)
+
 
 
 
