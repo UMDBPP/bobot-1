@@ -348,6 +348,7 @@ public:
             change_state_req->transition = transition_req;
             this->servo_command_change_state->async_send_request(change_state_req); // set state to active
             this->print_debug_message("Manager is starting the servo commander!");
+            this->begun_desired_motion == true;
         }
         else
         {
@@ -377,6 +378,7 @@ public:
             change_state_req->transition = transition_req;
             this->servo_command_change_state->async_send_request(change_state_req); // set state to active
             this->print_debug_message("Manager is starting the servo commander!");
+            this->begun_desired_motion == true;
         }
         else
         {
