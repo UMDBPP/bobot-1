@@ -37,7 +37,7 @@ def generate_launch_description():
 
     return LaunchDescription([
         bobot_manager_node,
-        bobot_utils_launcher
+        bobot_utils_launcher,
         bobot_control_launcher,
         bobot_camera_launcher
     ])
