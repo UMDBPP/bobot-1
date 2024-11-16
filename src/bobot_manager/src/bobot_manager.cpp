@@ -383,7 +383,7 @@ public:
 
     void write_headers_to_csv_file()
     {
-        std::string header_data = "time,TimerNodeTime,AltitudeSendTime,AltitudeRosSendTime,CurrentAltitude,CurrentAltitudeCentimeters,AltitudeReached,ServoCommanderSendTime,ServoCommanderRosSendTime,Joint1CommandPos,Joint1ActualPos,Joint2CommandPos,Joint2ActualPos,ServoJerkSendTime,ServoJerkRosSendTime,NumStrokes,JerkMessage,JerkRate";
+        std::string header_data = "time,TimerNodeTime,AltitudeSendTime,AltitudeRosSendTime,CurrentAltitude,CurrentAltitudeCentimeters,AltitudeReached,ServoCommanderSendTime,ServoCommanderRosSendTime,Joint1CommandPos,Joint1ActualPos,Joint2CommandPos,Joint2ActualPos,ServoJerkSendTime,ServoJerkRosSendTime,NumStrokes,JerkMessage,JerkRate,";
         this->flight_csv_data_log << header_data << std::endl;
         return;
     }
