@@ -3,7 +3,7 @@
 
     # GENERAL PARAMETERS
     BOBOT_NAME: "bb_bobot_1"
-    LOGGING_SAMPLE_RATE: 100.0 # value is in Hz - float
+    LOGGING_SAMPLE_RATE: 10.0 # value is in Hz - float
 
     # SIMPLE TIMER NODE PARAMETERS
     TIME_UPPER_BOUND: 10 # (seconds - int)
