@@ -1,0 +1,23 @@
+[BOOTUP BEGIN 16-21:25:00] (SEE ERROR LOG FOR CRITICAL ISSUES) Setting up the BobotManager for flight, please hold...
+[FLIGHT LOG :  16-21:25:00] Starting time: 2024-11-16_21-25-00
+[FLIGHT LOG :  16-21:25:00] Reading from current_flight.txt to see if we had already recorded data!
+[FLIGHT LOG :  16-21:25:00] current_flight.txt is empty, filling it with current flight data!
+[FLIGHT LOG :  16-21:25:00] Reading from reset_counter.txt to see if we had already reset!
+[FLIGHT LOG :  16-21:25:00] reset_counter.txt is empty, assuming no prior resets! Writing current number resets to file
+[FLIGHT LOG :  16-21:25:00] bobot_bin/log_files/flight_logs/ directory exists! Moving on...
+[FLIGHT LOG :  16-21:25:00] bobot_bin/log_files/error_logs/ directory exists! Moving on...
+[FLIGHT LOG :  16-21:25:00] Error log file did not previously exist, creating it now!
+[FLIGHT LOG :  16-21:25:00] New error log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/error_logs/bobot_error_log_2024-11-16_21-25-00.txt
+[FLIGHT LOG :  16-21:25:00] Flight log file did not previously exist, creating it now!
+[FLIGHT LOG :  16-21:25:00] New flight log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_log_2024-11-16_21-25-00.txt
+[FLIGHT LOG :  16-21:25:00] Flight CSV data log file did not previously exist, creating it now!
+[FLIGHT LOG :  16-21:25:00] New flight csv data log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_csv_data_log_2024-11-16_21-25-00.csv
+[FLIGHT LOG :  16-21:25:00] Finished verifiying startup sequence, now setting up ROS infrastructure!
+[FLIGHT LOG :  16-21:25:01] Attempting to connect to the flight timer's /get_state service!
+[FLIGHT LOG :  16-21:25:01] Successfully connected to /get_state service for the servo jerker!
+[FLIGHT LOG :  16-21:25:01] Successfully connected to /change_state service for the servo jerker!
+[FLIGHT LOG :  16-21:25:01] Successfully connected to /get_state service for the servo commander!
+[FLIGHT LOG :  16-21:25:01] Successfully connected to /change_state service for the servo commander!
+[FLIGHT LOG :  16-21:25:01] Successfully connected to /get_state service for the altitude monitor!
+[FLIGHT LOG :  16-21:25:01] Successfully connected to /change_state service for the altitude monitor!
+[BOOTUP BEGIN 16-21:25:00] Checking if bobot_recovery/current_flight.txt and bobot_recovery/reset_counter.txt exist! If so attempting to read from them now
