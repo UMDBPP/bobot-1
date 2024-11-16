@@ -6,8 +6,8 @@
     LOGGING_SAMPLE_RATE: 10.0 # value is in Hz - float
 
     # SIMPLE TIMER NODE PARAMETERS
-    TIME_UPPER_BOUND: 10 # (seconds - int)
-    TIMER_LOWER_BOUND: 1
+    TIME_UPPER_BOUND: 3600 # (seconds - int)
+    TIMER_LOWER_BOUND: 200
 
     # SERVO JERKER NODE PARAMETERS
     JERK_RATE: 2.0 # Jerk rate is in Hz
