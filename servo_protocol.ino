@@ -80,11 +80,11 @@ void loop()
         uint8_t mask = 0xFF;
         int32_t altitude = baro.getHeightCentiMeters(); // dont need decimal accuracy lmao
         // Stolen from rahul
-        // for(int x = 0; x < 4; x += 1)
-        // { 
-        //     long_write_buffer[1 + x] = (altitude >> (8 * x)) & mask; // this should be in HSB form
-        // }
-        // Serial.write(long_write_buffer, 5);
+        for(int x = 0; x < 4; x += 1)
+        { 
+            long_write_buffer[1 + x] = (altitude >> (8 * x)) & mask; // this should be in HSB form
+        }
+        Serial.write(long_write_buffer, 5);
       }
     }
     //delete[] read_buffer;
