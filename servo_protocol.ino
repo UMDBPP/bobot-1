@@ -22,6 +22,8 @@ Intersema::BaroPressure_MS5607B baro(true);
 Servo servo1;
 Servo servo2;
 
+// Buffers
+
 void setup() {
   servo1.attach(S1_PIN);
   servo2.attach(S2_PIN);
