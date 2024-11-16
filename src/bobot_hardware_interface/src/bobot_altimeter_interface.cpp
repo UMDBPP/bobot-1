@@ -18,7 +18,11 @@ namespace bobot_hardware
         // memset(&this->read_buf, '\0', sizeof(this->read_buf));
     }
 
-    BobotAltimeterInterface::~BobotAltimeterInterface() = default;
+    BobotAltimeterInterface::~BobotAltimeterInterface()
+	{
+		delete[] this->req_command;
+		delete[] this->read_buf;
+	}
 
     // Open the serial connection and talk tuah (its over) the servos
     bool BobotAltimeterInterface::open_serial_connection()
@@ -83,9 +87,10 @@ namespace bobot_hardware
         // how long does it block for?) depends on the configuration
         // settings above, specifically VMIN and VTIME
 
+	
         // Allocate memory for read buffer, set size according to your needs
-        uint8_t* read_buf = new uint8_t[5]; // we should only need 5
-        int num_bytes = read(serial_port, read_buf, 5);
+        //uint8_t* read_buf = new uint8_t[5]; // we should only need 5
+        int num_bytes = read(serial_port, this->read_buf, 5);
 
         // n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
         if(num_bytes <= 0) 
@@ -96,18 +101,18 @@ namespace bobot_hardware
 
         if(num_bytes == 5) // note - need to change to whatever we decided on
         {
-	        RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "BALLS %i, %i, %i, %i, %i", read_buf[0], read_buf[1],read_buf[2],read_buf[3],read_buf[4]);
-            if(read_buf[0] == 5)
+	    //RCLCPP_ERROR(rclcpp::get_logger(ros_logger_string), "BALLS %i, %i, %i, %i, %i", read_buf[0], read_buf[1],read_buf[2],read_buf[3],read_buf[4]);
+            if(this->read_buf[0] == 5)
             {
-                uint32_t bit1_high = read_buf[4];
+                uint32_t bit1_high = this->read_buf[4];
                 bit1_high = bit1_high << 24;
 
-                uint32_t bit2 = read_buf[3];
+                uint32_t bit2 = this->read_buf[3];
                 bit2 = bit2 << 16;
 
-                uint32_t bit3 = read_buf[2];
+                uint32_t bit3 = this->read_buf[2];
                 bit3 = bit3 << 8;
-                uint32_t bit4_low = read_buf[1];
+                uint32_t bit4_low = this->read_buf[1];
 
                 int32_t final_altitude_centimeters = bit1_high | bit2 | bit3 | bit4_low; // Get the altitude
 
@@ -124,19 +129,19 @@ namespace bobot_hardware
         }
 
         // free up the pointer
-        delete[] read_buf;
+        //delete[] read_buf;
     }
 
     // Request position data from the servo (only one servo at a time)
     void BobotAltimeterInterface::request_altitude()
     {
         // Write to serial port
-        uint8_t* req_command = new uint8_t[3];
-        req_command[0] = 2; // 2 specifies "GET"
-        req_command[1] = 5; // 5 is the ID for the altimeter
-        req_command[2] = 0; // unused
-        write(serial_port, req_command, 3);
-        delete[] req_command;
+        //uint8_t* req_command = new uint8_t[3];
+        this->req_command[0] = 2; // 2 specifies "GET"
+        this->req_command[1] = 5; // 5 is the ID for the altimeter
+        this->req_command[2] = 0; // unused
+        write(serial_port, this->req_command, 3);
+        //delete[] req_command;
     }
 
 };

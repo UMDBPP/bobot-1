@@ -77,7 +77,7 @@ public:
     void publish_jerking_info()
     {
         std::unique_ptr<bobot_msgs::msg::ServoJerk> servo_jerk_info_msg = std::make_unique<bobot_msgs::msg::ServoJerk>(); // make a unique point to our ROS message object
-        std::string send_string = "Still jerking it (and by it, I mean servos): ";
+        std::string send_string = "Still jerking it (and by it I mean servos): ";
         for(int i=0;i<(int)this->servos_to_jerk_id.size();i+=1)
         {
             send_string = send_string + (this->servos_to_jerk_id[i]) + ", ";

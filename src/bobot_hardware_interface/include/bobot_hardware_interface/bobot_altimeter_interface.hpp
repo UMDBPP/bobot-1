@@ -57,6 +57,12 @@ private:
     // logger string
     std::string ros_logger_string = "BobotAltimeterInterface";
 
+	// read buffer
+	uint8_t* read_buf = new uint8_t[5];
+
+	// write buffer
+	uint8_t* req_command = new uint8_t[3];
+
 };
 
 

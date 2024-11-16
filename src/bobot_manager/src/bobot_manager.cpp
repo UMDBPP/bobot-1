@@ -264,7 +264,7 @@ public:
                     1| 0 <---- (or another number, depending on how many times we've reset)
 
                     [END OF FILE]
-                
+               
                     So in theory, we should only have ONE line of data, on line 1
 
                 */
@@ -487,7 +487,7 @@ public:
             this->servo_jerker_change_state->async_send_request(change_state_req);
             transition_req.id = 2; // cleanup 
             change_state_req->transition = transition_req; // pack in the message
-            this->servo_jerker_change_state->async_send_request(change_state_req);transition_req.id = 4; // transition to deactive a node
+            this->servo_jerker_change_state->async_send_request(change_state_req); // transition to deactive a node
 
             // Now tell the servo commander to turn on!
             transition_req.id = 1; // configure

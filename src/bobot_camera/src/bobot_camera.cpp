@@ -23,7 +23,7 @@
 #define RESIZED_HEIGHT  240
 
 /** Other names */
-#define CAMERA_DEV      "/dev/video0"
+#define CAMERA_DEV      "/dev/video2"
 #define IMAGE_HDR       "/home/bobot1/bobot-1/src/bobot_flight_images/images/image"
 
 #define UCAM_SUCCESS 1

@@ -67,6 +67,15 @@ private:
     // logger string
     std::string ros_logger_string = "BobotServoInterface";
 
+	// read buffer
+	uint8_t* read_buf = new uint8_t[2];
+	
+	// write buffer
+	uint8_t* command = new uint8_t[3];
+
+	// write buffer for queries
+	uint8_t* req_command = new uint8_t[3];
+
 };
 
 
