@@ -10,7 +10,7 @@
     TIMER_LOWER_BOUND: 1
 
     # SERVO JERKER NODE PARAMETERS
-    JERK_RATE: 2 # Jerk rate is in Hz
+    JERK_RATE: 2.0 # Jerk rate is in Hz
     SERVOS_TO_JERK_ID: ["ID-1"]
     SERVOS_TO_JERK: [1]
     MAX_ANGLE: 100 # degrees - int

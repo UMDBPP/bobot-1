@@ -124,7 +124,7 @@ namespace bobot_hardware
                 //     bit = 0;
                 // }
                 this->altitude_centimeters = final_altitude_centimeters*1.0;
-                this->altitude_feet = final_altitude_centimeters/30.48; // convert centimeters to feet
+                this->altitude_feet = final_altitude_centimeters/30.48/30.48; // convert centimeters to feet
             }
         }
 
