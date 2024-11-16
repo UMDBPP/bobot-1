@@ -80,7 +80,9 @@ public:
         std::string send_string = "Still jerking it (and by it I mean servos): ";
         for(int i=0;i<(int)this->servos_to_jerk_id.size();i+=1)
         {
-            send_string = send_string + (this->servos_to_jerk_id[i]) + ", ";
+		send_string = send_string + "[";
+            send_string = send_string + (this->servos_to_jerk_id[i]);
+		send_string = send_string + "]";
         }
         servo_jerk_info_msg->jerk_msg = send_string;
         servo_jerk_info_msg->jerk_rate = this->jerk_rate;
