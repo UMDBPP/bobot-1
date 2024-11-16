@@ -23,6 +23,10 @@ Servo servo1;
 Servo servo2;
 
 // Buffers
+uint8_t* read_buffer = new uint8_t[3];
+uint8_t* write_buffer = new uint8_t[2];
+uint8_t* long_write_buffer = new uint8_t[5];
+
 
 void setup() {
   servo1.attach(S1_PIN);
@@ -39,10 +43,7 @@ void loop()
 {
   // if(Serial.available() > 0)
   // {
-    // make a local read buffer
-    uint8_t* read_buffer = new uint8_t[3];
-    uint8_t* write_buffer = new uint8_t[2];
-    uint8_t* long_write_buffer = new uint8_t[5];
+    
     Serial.readBytes(read_buffer, 3);  // ; char denotes end of each command
 
     if (read_buffer[0] == 1) // 1 is set command
@@ -86,8 +87,8 @@ void loop()
         Serial.write(long_write_buffer, 5);
       }
     }
-    delete[] read_buffer;
-    delete[] write_buffer;
-    delete[] long_write_buffer;
+    //delete[] read_buffer;
+    //delete[] write_buffer;
+    //delete[] long_write_buffer;
     Serial.flush();
 }
