@@ -1,4 +1,4 @@
-time,TimerNodeTime,AltitudeSendTime,AltitudeRosSendTime,CurrentAltitude,CurrentAltitudeCentimeters,AltitudeReached,ServoCommanderSendTime,ServoCommanderRosSendTime,Joint1CommandPos,Joint1ActualPos,Joint2CommandPos,Joint2ActualPos,ServoJerkSendTime,ServoJerkRosSendTime,NumStrokes,JerkMessage,JerkRate
+time,TimerNodeTime,AltitudeSendTime,AltitudeRosSendTime,CurrentAltitude,CurrentAltitudeCentimeters,AltitudeReached,ServoCommanderSendTime,ServoCommanderRosSendTime,Joint1CommandPos,Joint1ActualPos,Joint2CommandPos,Joint2ActualPos,ServoJerkSendTime,ServoJerkRosSendTime,NumStrokes,JerkMessage,JerkRate,
 0.20,0,starting,0,0,0,0,starting,0,0,0,0,0,starting,0,0,starting,0,
 0.40,0,starting,0,0,0,0,starting,0,0,0,0,0,starting,0,0,starting,0,
 0.60,0,starting,0,0,0,0,starting,0,0,0,0,0,starting,0,0,starting,0,
