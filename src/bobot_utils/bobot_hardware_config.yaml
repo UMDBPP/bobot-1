@@ -10,7 +10,7 @@
     TIMER_LOWER_BOUND: 1
 
     # SERVO JERKER NODE PARAMETERS
-    JERK_RATE: 0.2 # Jerk rate is in Hz
+    JERK_RATE: 2 # Jerk rate is in Hz
     SERVOS_TO_JERK_ID: ["ID-1"]
     SERVOS_TO_JERK: [1]
     MAX_ANGLE: 100 # degrees - int
@@ -18,7 +18,7 @@
     SERVO_IS_SIMULATED: false
 
     # ALTITUDE NODE PARAMETERS
-    SAMPLE_RATE: 1.0 # value is in Hz - float
+    SAMPLE_RATE: 0.2 # value is in Hz - float
     MAX_ALTITUDE: 75000 # (feet - int) - Change per flight!
     MIN_ALTITUDE: 0
     ALT_IS_SIMULATED: false
