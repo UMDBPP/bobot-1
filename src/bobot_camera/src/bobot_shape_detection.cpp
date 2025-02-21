@@ -1,3 +1,7 @@
+//https://www.opencv-srf.com/2010/09/object-detection-using-color-seperation.html
+//Reminder convert to ROS 2 
+
+
 #include <iostream>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
@@ -15,7 +19,7 @@ using namespace std;
          return -1;
     }
 
-    namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
+  namedWindow("Control", CV_WINDOW_AUTOSIZE); //create a window called "Control"
 
  int iLowH = 0;
  int iHighH = 179;
