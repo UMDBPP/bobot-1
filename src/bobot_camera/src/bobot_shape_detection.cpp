@@ -1,6 +1,16 @@
 //https://www.opencv-srf.com/2010/09/object-detection-using-color-seperation.html
 //Reminder convert to ROS 2 
 
+// Box Shape Contour Conditions
+// Bobot 1 Box:
+// Width: 20.5 cm
+// Height: 12.5 cm
+
+// Test Box:
+// Width: 12.5 cm
+// Height: 12 cm
+
+
 #include <iostream>
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
