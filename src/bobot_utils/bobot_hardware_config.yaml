@@ -15,13 +15,13 @@
     SERVOS_TO_JERK: [1]
     MAX_ANGLE: 100 # degrees - int
     MIN_ANGLE: 80 # degrees - int
-    SERVO_IS_SIMULATED: false
+    SERVO_IS_SIMULATED: true
 
     # ALTITUDE NODE PARAMETERS
     SAMPLE_RATE: 0.2 # value is in Hz - float
     MAX_ALTITUDE: 75000 # (feet - int) - Change per flight!
     MIN_ALTITUDE: 0
-    ALT_IS_SIMULATED: false
+    ALT_IS_SIMULATED: true
 
     # TRAJECTORY COMMANDER NODE
     JOINT_IDS: [1,2]

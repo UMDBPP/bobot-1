@@ -1,0 +1,21 @@
+[BOOTUP BEGIN 11-17:08:39] (SEE ERROR LOG FOR CRITICAL ISSUES) Setting up the BobotManager for flight, please hold...
+[FLIGHT LOG :  11-17:08:39] Starting time: 2025-05-11_17-08-39
+[FLIGHT LOG :  11-17:08:39] bobot_bin/log_files/flight_logs/ directory exists! Moving on...
+[FLIGHT LOG :  11-17:08:39] Creating bobot_bin/log_files/error_logs/ directory as it did not exist
+[FLIGHT LOG :  11-17:08:39] Created bobot_bin/log_files/error_logs/
+[FLIGHT LOG :  11-17:08:39] Error log file did not previously exist, creating it now!
+[FLIGHT LOG :  11-17:08:39] New error log file: /home/romeperl/bobot-1/src/bobot_bin/log_files/error_logs/bobot_error_log_2025-05-11_17-08-39.txt
+[FLIGHT LOG :  11-17:08:39] Flight log file did not previously exist, creating it now!
+[FLIGHT LOG :  11-17:08:39] New flight log file: /home/romeperl/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_log_2025-05-11_17-08-39.txt
+[FLIGHT LOG :  11-17:08:39] Flight CSV data log file did not previously exist, creating it now!
+[FLIGHT LOG :  11-17:08:39] New flight csv data log file: /home/romeperl/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_csv_data_log_2025-05-11_17-08-39.csv
+[FLIGHT LOG :  11-17:08:39] Finished verifiying startup sequence, now setting up ROS infrastructure!
+[FLIGHT LOG :  11-17:08:39] Attempting to connect to the flight timer's /get_state service!
+[FLIGHT LOG :  11-17:08:39] Successfully connected to /get_state service for the servo jerker!
+[FLIGHT LOG :  11-17:08:39] Successfully connected to /change_state service for the servo jerker!
+[FLIGHT LOG :  11-17:08:40] Successfully connected to /get_state service for the servo commander!
+[FLIGHT LOG :  11-17:08:40] Successfully connected to /change_state service for the servo commander!
+[FLIGHT LOG :  11-17:08:40] Successfully connected to /get_state service for the altitude monitor!
+[FLIGHT LOG :  11-17:08:40] Successfully connected to /change_state service for the altitude monitor!
+[BOOTUP BEGIN 11-17:08:39] Checking if bobot_recovery/current_flight.txt and bobot_recovery/reset_counter.txt exist! If so attempting to read from them now
+[CRITICAL STARTUP ERROR 1 : 11-17:08:39] bobot_bin/log_files/error_logs/ directory does not exist - taking note of this as this should not be the case!
