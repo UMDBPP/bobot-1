@@ -7,9 +7,29 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(bobot_msgs REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
+find_package(bobot_hardware_interface REQUIRED)
+
+include_directories(
+  include
+  ${std_msgs_INCLUDE_DIRS}
+  ${lifecycle_msgs_INCLUDE_DIRS}
+  ${rclcpp_lifecycle_INCLUDE_DIRS}
+  ${rclcpp_INCLUDE_DIRS})
+
+add_executable(bb_bobot_basic_trajectory src/bb_bobot_basic_trajectory.cpp)
+
+ament_target_dependencies(bb_bobot_basic_trajectory rclcpp std_msgs bobot_msgs bobot_hardware_interface)
+
+target_link_libraries(bb_bobot_basic_trajectory
+  ${rclcpp_lifecycle_LIBRARIES}
+  ${std_msgs_LIBRARIES}
+)
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -22,5 +42,19 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+install(TARGETS
+  bb_bobot_basic_trajectory
+  DESTINATION lib/${PROJECT_NAME})
+
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
+)
+
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
 
 ament_package()

@@ -1,0 +1,40 @@
+/**:
+  ros__parameters:
+
+    # GENERAL PARAMETERS
+    BOBOT_NAME: "bb_bobot_1"
+    LOGGING_SAMPLE_RATE: 10.0 # value is in Hz - float
+
+    # SIMPLE TIMER NODE PARAMETERS
+    TIME_UPPER_BOUND: 3600 # (seconds - int)
+    TIMER_LOWER_BOUND: 200
+
+    # SERVO JERKER NODE PARAMETERS
+    JERK_RATE: 2.0 # Jerk rate is in Hz
+    SERVOS_TO_JERK_ID: ["ID-1"]
+    SERVOS_TO_JERK: [1]
+    MAX_ANGLE: 100 # degrees - int
+    MIN_ANGLE: 80 # degrees - int
+    SERVO_IS_SIMULATED: false
+
+    # ALTITUDE NODE PARAMETERS
+    SAMPLE_RATE: 0.2 # value is in Hz - float
+    MAX_ALTITUDE: 75000 # (feet - int) - Change per flight!
+    MIN_ALTITUDE: 0
+    ALT_IS_SIMULATED: false
+
+    # TRAJECTORY COMMANDER NODE
+    JOINT_IDS: [1,2]
+    HARDWARE_LOOP_RATE: 100.0 # Hz - float
+    CONSTANT_JOINT_VELOCITY: 90.0 # Degrees per second
+    TRAJECTORY_TIME: 5 # (seconds - int) Making these integers for simplicity <-- the time to complete specific trajectories [NOTE - MAKE THESE INTERVALS OF 5 PLEASE]
+    REPEAT_TRAJECTORY: 3 # (value - int)
+    TRAJ_IS_SIMULATED: false
+
+    # CAMERA PARAMETER NODE
+    CAMERA_FRAMES_PER_SEC: 24 # (FPS - int)
+    # CAMERA_IS_SIMULATED: true
+
+
+
+

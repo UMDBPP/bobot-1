@@ -65,6 +65,7 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-a
 #update once more and install!
 sudo apt update
 sudo apt install -y \
+    ros-jazzy-desktop
     ros-jazzy-rmw-fastrtps-cpp
     ros-jazzy-ros2-control \
     ros-jazzy-ros2-controllers \
@@ -72,11 +73,12 @@ sudo apt install -y \
     ros-jazzy-xacro \
     ros-jazzy-tf2-tools \
     ros-jazzy-tf-transformations \
-    ros-jazzy-desktop
+    ros-jazzy-hardware-interface
 source /opt/ros/jazzy/setup.bash
 ##### ----- #####
 
 # install colcon build tools and other thingies
+sudo apt install arduino
 sudo apt install python3-colcon-common-extensions -y
 sudo apt install python3-pip -y
 pip3 install setuptools

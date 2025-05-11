@@ -1,0 +1,458 @@
+[INFO] [launch]: All log files can be found below /home/bobot1/.ros/log/2024-11-16-23-25-24-726426-balloonrobot-1027
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [manager-1]: process started with pid [1031]
+[INFO] [simple_timer-2]: process started with pid [1032]
+[INFO] [servo_jerk-3]: process started with pid [1033]
+[INFO] [altitude_monitor-4]: process started with pid [1034]
+[INFO] [bb_bobot_basic_trajectory-5]: process started with pid [1035]
+[INFO] [bobot_camera-6]: process started with pid [1036]
+[manager-1] [0m[INFO] [1731799526.403100996] [bobot_manager]: [USER DEBUG LOG] Bobot Manager starting up![0m
+[manager-1] [0m[INFO] [1731799526.412168508] [bobot_manager]: [USER DEBUG LOG] Starting time: 2024-11-16_23-25-26[0m
+[manager-1] [0m[INFO] [1731799526.415915470] [bobot_manager]: [USER DEBUG LOG] We are currently in flight mode![0m
+[manager-1] [0m[INFO] [1731799526.418918858] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Reading from current_flight.txt to see if we had already recorded data![0m
+[manager-1] [0m[INFO] [1731799526.419671808] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] current_flight.txt is empty, filling it with current flight data![0m
+[manager-1] [0m[INFO] [1731799526.422985320] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Reading from reset_counter.txt to see if we had already reset![0m
+[manager-1] [0m[INFO] [1731799526.426940470] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Found number of resets: 9[0m
+[manager-1] [0m[INFO] [1731799526.427295470] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Currrent number of resets: 9[0m
+[manager-1] [31m[ERROR] [1731799526.427500782] [bobot_manager]: [USER ERROR LOG] [CRITICAL STARTUP ERROR 1 : 16-23:25:26] reset_counter.txt indicates that we've reset multiple times! This is a critical error that will require investigating![0m
+[manager-1] [0m[INFO] [1731799526.429966445] [bobot_manager]: [USER DEBUG LOG] Got the path to bobot_bin/ directory: /home/bobot1/bobot-1/src/bobot_bin[0m
+[manager-1] [0m[INFO] [1731799526.430328357] [bobot_manager]: [USER DEBUG LOG] Got the path to the error log for this flight: /home/bobot1/bobot-1/src/bobot_bin/log_files/error_logs[0m
+[manager-1] [0m[INFO] [1731799526.433151344] [bobot_manager]: [USER DEBUG LOG] Got the path to the flight log for this flight: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs[0m
+[manager-1] [0m[INFO] [1731799526.435236307] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] bobot_bin/log_files/flight_logs/ directory exists! Moving on...[0m
+[manager-1] [0m[INFO] [1731799526.435725082] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] bobot_bin/log_files/error_logs/ directory exists! Moving on...[0m
+[manager-1] [0m[INFO] [1731799526.436880232] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Error log file did not previously exist, creating it now![0m
+[manager-1] [0m[INFO] [1731799526.437265794] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] New error log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/error_logs/bobot_error_log_2024-11-16_23-25-26.txt[0m
+[manager-1] [0m[INFO] [1731799526.440130482] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Flight log file did not previously exist, creating it now![0m
+[manager-1] [0m[INFO] [1731799526.440530257] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] New flight log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_log_2024-11-16_23-25-26.txt[0m
+[manager-1] [0m[INFO] [1731799526.440870632] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Flight CSV data log file did not previously exist, creating it now![0m
+[manager-1] [0m[INFO] [1731799526.444384694] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] New flight csv data log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_csv_data_log_2024-11-16_23-25-26.csv[0m
+[manager-1] [0m[INFO] [1731799526.444674069] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Finished verifiying startup sequence, now setting up ROS infrastructure![0m
+[manager-1] [0m[INFO] [1731799526.492431267] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Attempting to connect to the flight timer's /get_state service![0m
+[servo_jerk-3] [0m[INFO] [1731799526.509146304] [servo_jerker]: [USER DEBUG LOG] Getting parameters for Servo Jerker node...[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731799526.510718204] [bobot_trajectory_generator]: [USER DEBUG LOG] Getting parameters for BB-Bobot Trajectory Generator node...[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731799526.516132766] [bobot_trajectory_generator]: [USER DEBUG LOG] Found joint with id: 1[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731799526.516557041] [bobot_trajectory_generator]: [USER DEBUG LOG] Found joint with id: 2[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731799526.516657016] [bobot_trajectory_generator]: [USER DEBUG LOG] Found following parameters for BB-Bobot-1's Basic Trajectory Generator
+[bb_bobot_basic_trajectory-5] Is Simulated: 0
+[bb_bobot_basic_trajectory-5] Hardware Loop Rate: 100.000000
+[bb_bobot_basic_trajectory-5] Num Joints: 2
+[bb_bobot_basic_trajectory-5] Trajectory Time: 5
+[bb_bobot_basic_trajectory-5] Number of Repeats Per Trajectory: 3
+[bb_bobot_basic_trajectory-5] [0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731799526.517027116] [bobot_trajectory_generator]: [USER DEBUG LOG] BB-Bobot-1 Trajectory Generator node has successfully launched! Starting state is {state: unconfigured}[0m
+[servo_jerk-3] [0m[INFO] [1731799526.522184166] [servo_jerker]: [USER DEBUG LOG] Found servo to jerk: ID-1[0m
+[servo_jerk-3] [0m[INFO] [1731799526.522508479] [servo_jerker]: [USER DEBUG LOG] Found following parameters for Servo Jerker
+[servo_jerk-3] Servo Jerk rate (Hz): 2.000000
+[servo_jerk-3] Is simulated: 0
+[servo_jerk-3] Max Angle: 100
+[servo_jerk-3] Min Angle: 80
+[servo_jerk-3] [0m
+[servo_jerk-3] [0m[INFO] [1731799526.522597154] [servo_jerker]: [USER DEBUG LOG] Servo Jerker node has successfully launched! Starting state is {state: unconfigured}[0m
+[manager-1] [0m[INFO] [1731799526.534935191] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Successfully connected to /get_state service for the servo jerker![0m
+[manager-1] [0m[INFO] [1731799526.535385741] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Successfully connected to /change_state service for the servo jerker![0m
+[manager-1] [0m[INFO] [1731799526.535560878] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Successfully connected to /get_state service for the servo commander![0m
+[manager-1] [0m[INFO] [1731799526.535695228] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Successfully connected to /change_state service for the servo commander![0m
+[manager-1] [0m[INFO] [1731799526.535875078] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Successfully connected to /get_state service for the altitude monitor![0m
+[manager-1] [0m[INFO] [1731799526.536031116] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:25:26] Successfully connected to /change_state service for the altitude monitor![0m
+[servo_jerk-3] [0m[INFO] [1731799526.537946453] [servo_jerker]: [USER DEBUG LOG] Attempting to configure Servo Jerker, please hold[0m
+[altitude_monitor-4] [0m[INFO] [1731799526.543555965] [altitude_monitor]: [USER DEBUG LOG] Getting parameters for Altitude Monitor node...[0m
+[bobot_camera-6] [0m[INFO] [1731799526.546294990] [bobot_camera]: [Bobot Camera] Openned video device [0m
+[bobot_camera-6] [0m[INFO] [1731799526.547048328] [bobot_camera]: [Bobot Camera] Queried capabilities [0m
+[bobot_camera-6] [0m[INFO] [1731799526.548928828] [bobot_camera]: [Bobot Camera] Set up pixel format [0m
+[bobot_camera-6] [0m[INFO] [1731799526.551193502] [bobot_camera]: [Bobot Camera] Made request buffer[0m
+[bobot_camera-6] [0m[INFO] [1731799526.551741715] [bobot_camera]: [Bobot Camera] Made query buffer [0m
+[bobot_camera-6] [0m[INFO] [1731799526.552094390] [bobot_camera]: [Bobot Camera] Made input buffer [0m
+[bobot_camera-6] [0m[INFO] [1731799526.552295240] [bobot_camera]: [Bobot Camera] Initialized.[0m
+[altitude_monitor-4] [0m[INFO] [1731799526.547440440] [altitude_monitor]: [USER DEBUG LOG] Found following parameters for the Altitude Monitor
+[altitude_monitor-4] Sample Rate (Hz): 0.200000
+[altitude_monitor-4] Max Altitude: 75000
+[altitude_monitor-4] Is Simulated: 0
+[altitude_monitor-4] [0m
+[altitude_monitor-4] [0m[INFO] [1731799526.548230740] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor node has succesfully launched! Starting state is [unconfigured][0m
+[altitude_monitor-4] [0m[INFO] [1731799526.550213440] [altitude_monitor]: [USER DEBUG LOG] Attempting to configure Altitude Monitor, please hold...[0m
+[bobot_camera-6] [0m[INFO] [1731799526.556634315] [bobot_camera]: [Bobot Camera] Started capturing images [0m
+[servo_jerk-3] [0m[INFO] [1731799526.558036627] [servo_jerker]: [USER DEBUG LOG] Servo Jerker ROS stuff made! Opening the serial port[0m
+[servo_jerk-3] [0m[INFO] [1731799526.560923340] [servo_jerker]: [USER DEBUG LOG] Servo Jerker successfully opened the serial port[0m
+[servo_jerk-3] [0m[INFO] [1731799526.562433440] [servo_jerker]: [USER DEBUG LOG] Servo Jerking has been activated![0m
+[altitude_monitor-4] [0m[INFO] [1731799526.583995439] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor successfully opened the serial port[0m
+[manager-1] [0m[INFO] [1731799526.590488363] [bobot_manager]: [USER DEBUG LOG] Finished constructing the manager, Bobot is now in it's nominal operation phase![0m
+[altitude_monitor-4] [0m[INFO] [1731799526.676097798] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor has been activated has been activated[0m
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[bobot_camera-6] [0m[INFO] [1731799553.098290155] [rclcpp]: signal_handler(signum=2)[0m
+[servo_jerk-3] [0m[INFO] [1731799553.098646230] [rclcpp]: signal_handler(signum=2)[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731799553.098439644] [rclcpp]: signal_handler(signum=2)[0m
+[altitude_monitor-4] [0m[INFO] [1731799553.098414583] [rclcpp]: signal_handler(signum=2)[0m
+[simple_timer-2] [0m[INFO] [1731799553.099128305] [rclcpp]: signal_handler(signum=2)[0m
+[manager-1] [0m[INFO] [1731799553.099886403] [rclcpp]: signal_handler(signum=2)[0m
+[INFO] [simple_timer-2]: process has finished cleanly [pid 1032]
+[INFO] [bb_bobot_basic_trajectory-5]: process has finished cleanly [pid 1035]
+[INFO] [altitude_monitor-4]: process has finished cleanly [pid 1034]
+[INFO] [manager-1]: process has finished cleanly [pid 1031]
+[INFO] [servo_jerk-3]: process has finished cleanly [pid 1033]
+[ERROR] [bobot_camera-6]: process[bobot_camera-6] failed to terminate '5' seconds after receiving 'SIGINT', escalating to 'SIGTERM'
+[INFO] [bobot_camera-6]: sending signal 'SIGTERM' to process[bobot_camera-6]
+[ERROR] [bobot_camera-6]: process has died [pid 1036, exit code -15, cmd '/home/bobot1/bobot-1/install/bobot_camera/lib/bobot_camera/bobot_camera --ros-args -r __node:=bobot_camera --params-file src/bobot_bringup/bobot_launch_config.yaml --params-file src/bobot_utils/bobot_hardware_config.yaml'].
+[INFO] [launch]: All log files can be found below /home/bobot1/.ros/log/2024-11-16-23-39-34-780699-balloonrobot-1014
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [manager-1]: process started with pid [1019]
+[INFO] [simple_timer-2]: process started with pid [1020]
+[INFO] [servo_jerk-3]: process started with pid [1021]
+[INFO] [altitude_monitor-4]: process started with pid [1022]
+[INFO] [bb_bobot_basic_trajectory-5]: process started with pid [1023]
+[INFO] [bobot_camera-6]: process started with pid [1024]
+[altitude_monitor-4] [0m[INFO] [1731800376.376428524] [altitude_monitor]: [USER DEBUG LOG] Getting parameters for Altitude Monitor node...[0m
+[altitude_monitor-4] [0m[INFO] [1731800376.378917611] [altitude_monitor]: [USER DEBUG LOG] Found following parameters for the Altitude Monitor
+[altitude_monitor-4] Sample Rate (Hz): 0.200000
+[altitude_monitor-4] Max Altitude: 75000
+[altitude_monitor-4] Is Simulated: 0
+[altitude_monitor-4] [0m
+[altitude_monitor-4] [0m[INFO] [1731800376.381114761] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor node has succesfully launched! Starting state is [unconfigured][0m
+[manager-1] [0m[INFO] [1731800376.399998160] [bobot_manager]: [USER DEBUG LOG] Bobot Manager starting up![0m
+[manager-1] [0m[INFO] [1731800376.415105710] [bobot_manager]: [USER DEBUG LOG] Starting time: 2024-11-16_23-39-36[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731800376.415653635] [bobot_trajectory_generator]: [USER DEBUG LOG] Getting parameters for BB-Bobot Trajectory Generator node...[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731800376.424545072] [bobot_trajectory_generator]: [USER DEBUG LOG] Found joint with id: 1[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731800376.424792647] [bobot_trajectory_generator]: [USER DEBUG LOG] Found joint with id: 2[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731800376.424931247] [bobot_trajectory_generator]: [USER DEBUG LOG] Found following parameters for BB-Bobot-1's Basic Trajectory Generator
+[bb_bobot_basic_trajectory-5] Is Simulated: 0
+[bb_bobot_basic_trajectory-5] Hardware Loop Rate: 100.000000
+[bb_bobot_basic_trajectory-5] Num Joints: 2
+[bb_bobot_basic_trajectory-5] Trajectory Time: 5
+[bb_bobot_basic_trajectory-5] Number of Repeats Per Trajectory: 3
+[bb_bobot_basic_trajectory-5] [0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731800376.425133934] [bobot_trajectory_generator]: [USER DEBUG LOG] BB-Bobot-1 Trajectory Generator node has successfully launched! Starting state is {state: unconfigured}[0m
+[manager-1] [0m[INFO] [1731800376.416608622] [bobot_manager]: [USER DEBUG LOG] We are currently in flight mode![0m
+[manager-1] [0m[INFO] [1731800376.420222659] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Reading from current_flight.txt to see if we had already recorded data![0m
+[manager-1] [0m[INFO] [1731800376.420876872] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] current_flight.txt is empty, filling it with current flight data![0m
+[manager-1] [0m[INFO] [1731800376.422280222] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Reading from reset_counter.txt to see if we had already reset![0m
+[manager-1] [0m[INFO] [1731800376.427128297] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Found number of resets: 9[0m
+[manager-1] [0m[INFO] [1731800376.427417909] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Currrent number of resets: 9[0m
+[manager-1] [31m[ERROR] [1731800376.427614322] [bobot_manager]: [USER ERROR LOG] [CRITICAL STARTUP ERROR 1 : 16-23:39:36] reset_counter.txt indicates that we've reset multiple times! This is a critical error that will require investigating![0m
+[manager-1] [0m[INFO] [1731800376.429728834] [bobot_manager]: [USER DEBUG LOG] Got the path to bobot_bin/ directory: /home/bobot1/bobot-1/src/bobot_bin[0m
+[manager-1] [0m[INFO] [1731800376.430081309] [bobot_manager]: [USER DEBUG LOG] Got the path to the error log for this flight: /home/bobot1/bobot-1/src/bobot_bin/log_files/error_logs[0m
+[manager-1] [0m[INFO] [1731800376.430216497] [bobot_manager]: [USER DEBUG LOG] Got the path to the flight log for this flight: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs[0m
+[manager-1] [0m[INFO] [1731800376.434351546] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] bobot_bin/log_files/flight_logs/ directory exists! Moving on...[0m
+[manager-1] [0m[INFO] [1731800376.434662346] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] bobot_bin/log_files/error_logs/ directory exists! Moving on...[0m
+[manager-1] [0m[INFO] [1731800376.435721171] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Error log file did not previously exist, creating it now![0m
+[manager-1] [0m[INFO] [1731800376.436035646] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] New error log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/error_logs/bobot_error_log_2024-11-16_23-39-36.txt[0m
+[manager-1] [0m[INFO] [1731800376.437075996] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Flight log file did not previously exist, creating it now![0m
+[manager-1] [0m[INFO] [1731800376.437542421] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] New flight log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_log_2024-11-16_23-39-36.txt[0m
+[manager-1] [0m[INFO] [1731800376.437815721] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Flight CSV data log file did not previously exist, creating it now![0m
+[manager-1] [0m[INFO] [1731800376.438052659] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] New flight csv data log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_csv_data_log_2024-11-16_23-39-36.csv[0m
+[manager-1] [0m[INFO] [1731800376.438224671] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Finished verifiying startup sequence, now setting up ROS infrastructure![0m
+[servo_jerk-3] [0m[INFO] [1731800376.453625408] [servo_jerker]: [USER DEBUG LOG] Getting parameters for Servo Jerker node...[0m
+[servo_jerk-3] [0m[INFO] [1731800376.461293183] [servo_jerker]: [USER DEBUG LOG] Found servo to jerk: ID-1[0m
+[servo_jerk-3] [0m[INFO] [1731800376.461589070] [servo_jerker]: [USER DEBUG LOG] Found following parameters for Servo Jerker
+[servo_jerk-3] Servo Jerk rate (Hz): 2.000000
+[servo_jerk-3] Is simulated: 0
+[servo_jerk-3] Max Angle: 100
+[servo_jerk-3] Min Angle: 80
+[servo_jerk-3] [0m
+[servo_jerk-3] [0m[INFO] [1731800376.461987470] [servo_jerker]: [USER DEBUG LOG] Servo Jerker node has successfully launched! Starting state is {state: unconfigured}[0m
+[manager-1] [0m[INFO] [1731800376.476453907] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Attempting to connect to the flight timer's /get_state service![0m
+[manager-1] [0m[INFO] [1731800376.488380657] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Successfully connected to /get_state service for the servo jerker![0m
+[manager-1] [0m[INFO] [1731800376.488689769] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Successfully connected to /change_state service for the servo jerker![0m
+[manager-1] [0m[INFO] [1731800376.488902994] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Successfully connected to /get_state service for the servo commander![0m
+[manager-1] [0m[INFO] [1731800376.489039932] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Successfully connected to /change_state service for the servo commander![0m
+[manager-1] [0m[INFO] [1731800376.489200744] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Successfully connected to /get_state service for the altitude monitor![0m
+[manager-1] [0m[INFO] [1731800376.489334944] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:39:36] Successfully connected to /change_state service for the altitude monitor![0m
+[servo_jerk-3] [0m[INFO] [1731800376.490677119] [servo_jerker]: [USER DEBUG LOG] Attempting to configure Servo Jerker, please hold[0m
+[altitude_monitor-4] [0m[INFO] [1731800376.490676582] [altitude_monitor]: [USER DEBUG LOG] Attempting to configure Altitude Monitor, please hold...[0m
+[servo_jerk-3] [0m[INFO] [1731800376.504473694] [servo_jerker]: [USER DEBUG LOG] Servo Jerker ROS stuff made! Opening the serial port[0m
+[servo_jerk-3] [0m[INFO] [1731800376.508017919] [servo_jerker]: [USER DEBUG LOG] Servo Jerker successfully opened the serial port[0m
+[servo_jerk-3] [0m[INFO] [1731800376.508904494] [servo_jerker]: [USER DEBUG LOG] Servo Jerking has been activated![0m
+[bobot_camera-6] [0m[INFO] [1731800376.516388518] [bobot_camera]: [Bobot Camera] Openned video device [0m
+[bobot_camera-6] [0m[INFO] [1731800376.517030206] [bobot_camera]: [Bobot Camera] Queried capabilities [0m
+[bobot_camera-6] [0m[INFO] [1731800376.519063143] [bobot_camera]: [Bobot Camera] Set up pixel format [0m
+[bobot_camera-6] [0m[INFO] [1731800376.519908643] [bobot_camera]: [Bobot Camera] Made request buffer[0m
+[bobot_camera-6] [0m[INFO] [1731800376.520273318] [bobot_camera]: [Bobot Camera] Made query buffer [0m
+[bobot_camera-6] [0m[INFO] [1731800376.520551668] [bobot_camera]: [Bobot Camera] Made input buffer [0m
+[bobot_camera-6] [0m[INFO] [1731800376.520817881] [bobot_camera]: [Bobot Camera] Initialized.[0m
+[bobot_camera-6] [0m[INFO] [1731800376.523034118] [bobot_camera]: [Bobot Camera] Started capturing images [0m
+[altitude_monitor-4] [0m[INFO] [1731800376.525939005] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor successfully opened the serial port[0m
+[manager-1] [0m[INFO] [1731800376.525906868] [bobot_manager]: [USER DEBUG LOG] Finished constructing the manager, Bobot is now in it's nominal operation phase![0m
+[altitude_monitor-4] [0m[INFO] [1731800376.615977789] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor has been activated has been activated[0m
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731800566.261038893] [rclcpp]: signal_handler(signum=2)[0m
+[manager-1] [0m[INFO] [1731800566.261053330] [rclcpp]: signal_handler(signum=2)[0m
+[bobot_camera-6] [0m[INFO] [1731800566.260358418] [rclcpp]: signal_handler(signum=2)[0m
+[bobot_camera-6] [0m[INFO] [1731800566.260791443] [bobot_camera]: [Bobot Camera] Failed to Dequeue Buffer [0m
+[bobot_camera-6] [31m[ERROR] [1731800566.261140193] [bobot_camera]: [Bobot Camera] Failed to take initial image oops baka.[0m
+[servo_jerk-3] [0m[INFO] [1731800566.261936505] [rclcpp]: signal_handler(signum=2)[0m
+[simple_timer-2] [0m[INFO] [1731800566.262234118] [rclcpp]: signal_handler(signum=2)[0m
+[altitude_monitor-4] [0m[INFO] [1731800566.260574793] [rclcpp]: signal_handler(signum=2)[0m
+[INFO] [simple_timer-2]: process has finished cleanly [pid 1020]
+[INFO] [bb_bobot_basic_trajectory-5]: process has finished cleanly [pid 1023]
+[INFO] [altitude_monitor-4]: process has finished cleanly [pid 1022]
+[INFO] [manager-1]: process has finished cleanly [pid 1019]
+[INFO] [servo_jerk-3]: process has finished cleanly [pid 1021]
+[ERROR] [bobot_camera-6]: process has died [pid 1024, exit code -11, cmd '/home/bobot1/bobot-1/install/bobot_camera/lib/bobot_camera/bobot_camera --ros-args -r __node:=bobot_camera --params-file src/bobot_bringup/bobot_launch_config.yaml --params-file src/bobot_utils/bobot_hardware_config.yaml'].
+[INFO] [launch]: All log files can be found below /home/bobot1/.ros/log/2024-11-16-23-45-58-477752-balloonrobot-1030
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [manager-1]: process started with pid [1034]
+[INFO] [simple_timer-2]: process started with pid [1035]
+[INFO] [servo_jerk-3]: process started with pid [1036]
+[INFO] [altitude_monitor-4]: process started with pid [1037]
+[INFO] [bb_bobot_basic_trajectory-5]: process started with pid [1038]
+[INFO] [bobot_camera-6]: process started with pid [1039]
+[manager-1] [0m[INFO] [1731800759.820283029] [bobot_manager]: [USER DEBUG LOG] Bobot Manager starting up![0m
+[manager-1] [0m[INFO] [1731800759.838213016] [bobot_manager]: [USER DEBUG LOG] Starting time: 2024-11-16_23-45-59[0m
+[manager-1] [0m[INFO] [1731800759.842213316] [bobot_manager]: [USER DEBUG LOG] We are currently in flight mode![0m
+[manager-1] [0m[INFO] [1731800759.842740291] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] Reading from current_flight.txt to see if we had already recorded data![0m
+[manager-1] [0m[INFO] [1731800759.849640003] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] Found a new time in the current_flight.txt file![0m
+[manager-1] [0m[INFO] [1731800759.856352265] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] New time: 2024-11-16_23-39-36[0m
+[manager-1] [31m[ERROR] [1731800759.856849065] [bobot_manager]: [USER ERROR LOG] [CRITICAL STARTUP ERROR 1 : 16-23:45:59] Found a new time in current_flight.txt, indicating that we have reset! This is a considered a critical anomaly![0m
+[manager-1] [0m[INFO] [1731800759.857237840] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] Reading from reset_counter.txt to see if we had already reset![0m
+[manager-1] [0m[INFO] [1731800759.868189477] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] Found number of resets: 9[0m
+[manager-1] [0m[INFO] [1731800759.868667002] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] Currrent number of resets: 10[0m
+[manager-1] [31m[ERROR] [1731800759.868902152] [bobot_manager]: [USER ERROR LOG] [CRITICAL STARTUP ERROR 2 : 16-23:45:59] reset_counter.txt indicates that we've reset multiple times! This is a critical error that will require investigating![0m
+[manager-1] [0m[INFO] [1731800759.870203977] [bobot_manager]: [USER DEBUG LOG] Got the path to bobot_bin/ directory: /home/bobot1/bobot-1/src/bobot_bin[0m
+[manager-1] [0m[INFO] [1731800759.873762627] [bobot_manager]: [USER DEBUG LOG] Got the path to the error log for this flight: /home/bobot1/bobot-1/src/bobot_bin/log_files/error_logs[0m
+[manager-1] [0m[INFO] [1731800759.877578014] [bobot_manager]: [USER DEBUG LOG] Got the path to the flight log for this flight: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs[0m
+[manager-1] [0m[INFO] [1731800759.881709852] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] bobot_bin/log_files/flight_logs/ directory exists! Moving on...[0m
+[manager-1] [0m[INFO] [1731800759.882275014] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] bobot_bin/log_files/error_logs/ directory exists! Moving on...[0m
+[manager-1] [0m[INFO] [1731800759.886456064] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] Error log file did not previously exist, creating it now![0m
+[manager-1] [0m[INFO] [1731800759.886788752] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] New error log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/error_logs/bobot_error_log_2024-11-16_23-39-36.txt[0m
+[manager-1] [0m[INFO] [1731800759.887791264] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] Flight log file already exists, appending new data to it[0m
+[manager-1] [0m[INFO] [1731800759.888045251] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] Found flight log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_log_2024-11-16_23-39-36.txt[0m
+[manager-1] [33m[WARN] [1731800759.888154201] [bobot_manager]: [USER WARN LOG] [ERROR LOG: 16-23:45:59] Found an already existing flight log at our start_time, indicating we've restarted. We should have already noted this![0m
+[manager-1] [0m[INFO] [1731800759.888359264] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] Flight log csv file already exists, appending new data to it[0m
+[manager-1] [0m[INFO] [1731800759.888580901] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] Found flight csv data log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_csv_data_log_2024-11-16_23-39-36.csv[0m
+[manager-1] [33m[WARN] [1731800759.888728014] [bobot_manager]: [USER WARN LOG] [ERROR LOG: 16-23:45:59] Found an already existing flight csv data log at our start_time, indicating we've restarted. We should have already noted this![0m
+[manager-1] [0m[INFO] [1731800759.888832501] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] Finished verifiying startup sequence, now setting up ROS infrastructure![0m
+[altitude_monitor-4] [0m[INFO] [1731800759.909003451] [altitude_monitor]: [USER DEBUG LOG] Getting parameters for Altitude Monitor node...[0m
+[altitude_monitor-4] [0m[INFO] [1731800759.913122563] [altitude_monitor]: [USER DEBUG LOG] Found following parameters for the Altitude Monitor
+[altitude_monitor-4] Sample Rate (Hz): 0.200000
+[altitude_monitor-4] Max Altitude: 75000
+[altitude_monitor-4] Is Simulated: 0
+[altitude_monitor-4] [0m
+[altitude_monitor-4] [0m[INFO] [1731800759.914135438] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor node has succesfully launched! Starting state is [unconfigured][0m
+[manager-1] [0m[INFO] [1731800759.943045999] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:45:59] Attempting to connect to the flight timer's /get_state service![0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731800759.971126836] [bobot_trajectory_generator]: [USER DEBUG LOG] Getting parameters for BB-Bobot Trajectory Generator node...[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731800759.974712061] [bobot_trajectory_generator]: [USER DEBUG LOG] Found joint with id: 1[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731800759.974932448] [bobot_trajectory_generator]: [USER DEBUG LOG] Found joint with id: 2[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731800759.975030023] [bobot_trajectory_generator]: [USER DEBUG LOG] Found following parameters for BB-Bobot-1's Basic Trajectory Generator
+[bb_bobot_basic_trajectory-5] Is Simulated: 0
+[bb_bobot_basic_trajectory-5] Hardware Loop Rate: 100.000000
+[bb_bobot_basic_trajectory-5] Num Joints: 2
+[bb_bobot_basic_trajectory-5] Trajectory Time: 5
+[bb_bobot_basic_trajectory-5] Number of Repeats Per Trajectory: 3
+[bb_bobot_basic_trajectory-5] [0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731800759.975280323] [bobot_trajectory_generator]: [USER DEBUG LOG] BB-Bobot-1 Trajectory Generator node has successfully launched! Starting state is {state: unconfigured}[0m
+[bobot_camera-6] [0m[INFO] [1731800760.007563197] [bobot_camera]: [Bobot Camera] Openned video device [0m
+[bobot_camera-6] [0m[INFO] [1731800760.008468772] [bobot_camera]: [Bobot Camera] Queried capabilities [0m
+[bobot_camera-6] [0m[INFO] [1731800760.011189284] [bobot_camera]: [Bobot Camera] Set up pixel format [0m
+[bobot_camera-6] [0m[INFO] [1731800760.012179997] [bobot_camera]: [Bobot Camera] Made request buffer[0m
+[bobot_camera-6] [0m[INFO] [1731800760.012635209] [bobot_camera]: [Bobot Camera] Made query buffer [0m
+[bobot_camera-6] [0m[INFO] [1731800760.012955109] [bobot_camera]: [Bobot Camera] Made input buffer [0m
+[bobot_camera-6] [0m[INFO] [1731800760.013917022] [bobot_camera]: [Bobot Camera] Initialized.[0m
+[bobot_camera-6] [0m[INFO] [1731800760.016793784] [bobot_camera]: [Bobot Camera] Started capturing images [0m
+[manager-1] [0m[INFO] [1731800760.014550634] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:46:00] Successfully connected to /get_state service for the servo jerker![0m
+[manager-1] [0m[INFO] [1731800760.015021022] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:46:00] Successfully connected to /change_state service for the servo jerker![0m
+[manager-1] [0m[INFO] [1731800760.015258834] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:46:00] Successfully connected to /get_state service for the servo commander![0m
+[manager-1] [0m[INFO] [1731800760.015519697] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:46:00] Successfully connected to /change_state service for the servo commander![0m
+[manager-1] [0m[INFO] [1731800760.015719334] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:46:00] Successfully connected to /get_state service for the altitude monitor![0m
+[manager-1] [0m[INFO] [1731800760.015893009] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:46:00] Successfully connected to /change_state service for the altitude monitor![0m
+[altitude_monitor-4] [0m[INFO] [1731800760.018719722] [altitude_monitor]: [USER DEBUG LOG] Attempting to configure Altitude Monitor, please hold...[0m
+[servo_jerk-3] [0m[INFO] [1731800760.038010708] [servo_jerker]: [USER DEBUG LOG] Getting parameters for Servo Jerker node...[0m
+[servo_jerk-3] [0m[INFO] [1731800760.044487508] [servo_jerker]: [USER DEBUG LOG] Found servo to jerk: ID-1[0m
+[servo_jerk-3] [0m[INFO] [1731800760.044748783] [servo_jerker]: [USER DEBUG LOG] Found following parameters for Servo Jerker
+[servo_jerk-3] Servo Jerk rate (Hz): 2.000000
+[servo_jerk-3] Is simulated: 0
+[servo_jerk-3] Max Angle: 100
+[servo_jerk-3] Min Angle: 80
+[servo_jerk-3] [0m
+[servo_jerk-3] [0m[INFO] [1731800760.046093233] [servo_jerker]: [USER DEBUG LOG] Servo Jerker node has successfully launched! Starting state is {state: unconfigured}[0m
+[servo_jerk-3] [0m[INFO] [1731800760.051707733] [servo_jerker]: [USER DEBUG LOG] Attempting to configure Servo Jerker, please hold[0m
+[servo_jerk-3] [0m[INFO] [1731800760.069069095] [servo_jerker]: [USER DEBUG LOG] Servo Jerker ROS stuff made! Opening the serial port[0m
+[altitude_monitor-4] [0m[INFO] [1731800760.069067470] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor successfully opened the serial port[0m
+[manager-1] [0m[INFO] [1731800760.070100570] [bobot_manager]: [USER DEBUG LOG] Finished constructing the manager, Bobot is now in it's nominal operation phase![0m
+[servo_jerk-3] [0m[INFO] [1731800760.072957357] [servo_jerker]: [USER DEBUG LOG] Servo Jerker successfully opened the serial port[0m
+[servo_jerk-3] [0m[INFO] [1731800760.074265882] [servo_jerker]: [USER DEBUG LOG] Servo Jerking has been activated![0m
+[altitude_monitor-4] [0m[INFO] [1731800760.160011179] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor has been activated has been activated[0m
+[WARNING] [launch]: user interrupted with ctrl-c (SIGINT)
+[bobot_camera-6] [0m[INFO] [1731800770.746812075] [rclcpp]: signal_handler(signum=2)[0m
+[simple_timer-2] [0m[INFO] [1731800770.746914462] [rclcpp]: signal_handler(signum=2)[0m
+[servo_jerk-3] [0m[INFO] [1731800770.747205550] [rclcpp]: signal_handler(signum=2)[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731800770.749356337] [rclcpp]: signal_handler(signum=2)[0m
+[altitude_monitor-4] [0m[INFO] [1731800770.749593500] [rclcpp]: signal_handler(signum=2)[0m
+[manager-1] [0m[INFO] [1731800770.747508875] [rclcpp]: signal_handler(signum=2)[0m
+[INFO] [bb_bobot_basic_trajectory-5]: process has finished cleanly [pid 1038]
+[INFO] [simple_timer-2]: process has finished cleanly [pid 1035]
+[INFO] [servo_jerk-3]: process has finished cleanly [pid 1036]
+[INFO] [manager-1]: process has finished cleanly [pid 1034]
+[INFO] [altitude_monitor-4]: process has finished cleanly [pid 1037]
+[ERROR] [bobot_camera-6]: process[bobot_camera-6] failed to terminate '5' seconds after receiving 'SIGINT', escalating to 'SIGTERM'
+[INFO] [bobot_camera-6]: sending signal 'SIGTERM' to process[bobot_camera-6]
+[ERROR] [bobot_camera-6]: process has died [pid 1039, exit code -15, cmd '/home/bobot1/bobot-1/install/bobot_camera/lib/bobot_camera/bobot_camera --ros-args -r __node:=bobot_camera --params-file src/bobot_bringup/bobot_launch_config.yaml --params-file src/bobot_utils/bobot_hardware_config.yaml'].
+[INFO] [launch]: All log files can be found below /home/bobot1/.ros/log/2024-11-16-23-52-34-707508-balloonrobot-1025
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [manager-1]: process started with pid [1029]
+[INFO] [simple_timer-2]: process started with pid [1030]
+[INFO] [servo_jerk-3]: process started with pid [1031]
+[INFO] [altitude_monitor-4]: process started with pid [1032]
+[INFO] [bb_bobot_basic_trajectory-5]: process started with pid [1033]
+[INFO] [bobot_camera-6]: process started with pid [1034]
+[manager-1] [0m[INFO] [1731801156.255787633] [bobot_manager]: [USER DEBUG LOG] Bobot Manager starting up![0m
+[manager-1] [0m[INFO] [1731801156.265390770] [bobot_manager]: [USER DEBUG LOG] Starting time: 2024-11-16_23-52-36[0m
+[manager-1] [0m[INFO] [1731801156.266139770] [bobot_manager]: [USER DEBUG LOG] We are currently in flight mode![0m
+[manager-1] [0m[INFO] [1731801156.266362270] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Reading from current_flight.txt to see if we had already recorded data![0m
+[manager-1] [0m[INFO] [1731801156.266848308] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] current_flight.txt is empty, filling it with current flight data![0m
+[manager-1] [0m[INFO] [1731801156.268605958] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Reading from reset_counter.txt to see if we had already reset![0m
+[manager-1] [0m[INFO] [1731801156.271671183] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Found number of resets: 10[0m
+[manager-1] [0m[INFO] [1731801156.271907795] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Currrent number of resets: 10[0m
+[manager-1] [31m[ERROR] [1731801156.272077395] [bobot_manager]: [USER ERROR LOG] [CRITICAL STARTUP ERROR 1 : 16-23:52:36] reset_counter.txt indicates that we've reset multiple times! This is a critical error that will require investigating![0m
+[manager-1] [0m[INFO] [1731801156.273255620] [bobot_manager]: [USER DEBUG LOG] Got the path to bobot_bin/ directory: /home/bobot1/bobot-1/src/bobot_bin[0m
+[manager-1] [0m[INFO] [1731801156.273671982] [bobot_manager]: [USER DEBUG LOG] Got the path to the error log for this flight: /home/bobot1/bobot-1/src/bobot_bin/log_files/error_logs[0m
+[manager-1] [0m[INFO] [1731801156.273767107] [bobot_manager]: [USER DEBUG LOG] Got the path to the flight log for this flight: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs[0m
+[manager-1] [0m[INFO] [1731801156.275497545] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] bobot_bin/log_files/flight_logs/ directory exists! Moving on...[0m
+[manager-1] [0m[INFO] [1731801156.275807245] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] bobot_bin/log_files/error_logs/ directory exists! Moving on...[0m
+[manager-1] [0m[INFO] [1731801156.278717007] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Error log file did not previously exist, creating it now![0m
+[manager-1] [0m[INFO] [1731801156.278989845] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] New error log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/error_logs/bobot_error_log_2024-11-16_23-52-36.txt[0m
+[manager-1] [0m[INFO] [1731801156.279822045] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Flight log file did not previously exist, creating it now![0m
+[manager-1] [0m[INFO] [1731801156.280081557] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] New flight log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_log_2024-11-16_23-52-36.txt[0m
+[manager-1] [0m[INFO] [1731801156.280272532] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Flight CSV data log file did not previously exist, creating it now![0m
+[manager-1] [0m[INFO] [1731801156.280375407] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] New flight csv data log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_csv_data_log_2024-11-16_23-52-36.csv[0m
+[manager-1] [0m[INFO] [1731801156.280516132] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Finished verifiying startup sequence, now setting up ROS infrastructure![0m
+[servo_jerk-3] [0m[INFO] [1731801156.308361744] [servo_jerker]: [USER DEBUG LOG] Getting parameters for Servo Jerker node...[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731801156.309217144] [bobot_trajectory_generator]: [USER DEBUG LOG] Getting parameters for BB-Bobot Trajectory Generator node...[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731801156.313141793] [bobot_trajectory_generator]: [USER DEBUG LOG] Found joint with id: 1[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731801156.313271343] [bobot_trajectory_generator]: [USER DEBUG LOG] Found joint with id: 2[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731801156.313359568] [bobot_trajectory_generator]: [USER DEBUG LOG] Found following parameters for BB-Bobot-1's Basic Trajectory Generator
+[bb_bobot_basic_trajectory-5] Is Simulated: 0
+[bb_bobot_basic_trajectory-5] Hardware Loop Rate: 100.000000
+[bb_bobot_basic_trajectory-5] Num Joints: 2
+[bb_bobot_basic_trajectory-5] Trajectory Time: 5
+[bb_bobot_basic_trajectory-5] Number of Repeats Per Trajectory: 3
+[bb_bobot_basic_trajectory-5] [0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731801156.313658456] [bobot_trajectory_generator]: [USER DEBUG LOG] BB-Bobot-1 Trajectory Generator node has successfully launched! Starting state is {state: unconfigured}[0m
+[servo_jerk-3] [0m[INFO] [1731801156.313035143] [servo_jerker]: [USER DEBUG LOG] Found servo to jerk: ID-1[0m
+[servo_jerk-3] [0m[INFO] [1731801156.314391881] [servo_jerker]: [USER DEBUG LOG] Found following parameters for Servo Jerker
+[servo_jerk-3] Servo Jerk rate (Hz): 2.000000
+[servo_jerk-3] Is simulated: 0
+[servo_jerk-3] Max Angle: 100
+[servo_jerk-3] Min Angle: 80
+[servo_jerk-3] [0m
+[servo_jerk-3] [0m[INFO] [1731801156.314845043] [servo_jerker]: [USER DEBUG LOG] Servo Jerker node has successfully launched! Starting state is {state: unconfigured}[0m
+[altitude_monitor-4] [0m[INFO] [1731801156.326006718] [altitude_monitor]: [USER DEBUG LOG] Getting parameters for Altitude Monitor node...[0m
+[altitude_monitor-4] [0m[INFO] [1731801156.327408480] [altitude_monitor]: [USER DEBUG LOG] Found following parameters for the Altitude Monitor
+[altitude_monitor-4] Sample Rate (Hz): 0.200000
+[altitude_monitor-4] Max Altitude: 75000
+[altitude_monitor-4] Is Simulated: 0
+[altitude_monitor-4] [0m
+[altitude_monitor-4] [0m[INFO] [1731801156.330711543] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor node has succesfully launched! Starting state is [unconfigured][0m
+[manager-1] [0m[INFO] [1731801156.335945755] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Attempting to connect to the flight timer's /get_state service![0m
+[manager-1] [0m[INFO] [1731801156.348878992] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Successfully connected to /get_state service for the servo jerker![0m
+[manager-1] [0m[INFO] [1731801156.349221080] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Successfully connected to /change_state service for the servo jerker![0m
+[manager-1] [0m[INFO] [1731801156.349390055] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Successfully connected to /get_state service for the servo commander![0m
+[manager-1] [0m[INFO] [1731801156.349585267] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Successfully connected to /change_state service for the servo commander![0m
+[manager-1] [0m[INFO] [1731801156.349776592] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Successfully connected to /get_state service for the altitude monitor![0m
+[manager-1] [0m[INFO] [1731801156.349937942] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:52:36] Successfully connected to /change_state service for the altitude monitor![0m
+[altitude_monitor-4] [0m[INFO] [1731801156.351565455] [altitude_monitor]: [USER DEBUG LOG] Attempting to configure Altitude Monitor, please hold...[0m
+[servo_jerk-3] [0m[INFO] [1731801156.351840392] [servo_jerker]: [USER DEBUG LOG] Attempting to configure Servo Jerker, please hold[0m
+[servo_jerk-3] [0m[INFO] [1731801156.366770354] [servo_jerker]: [USER DEBUG LOG] Servo Jerker ROS stuff made! Opening the serial port[0m
+[servo_jerk-3] [0m[INFO] [1731801156.367731204] [servo_jerker]: [USER DEBUG LOG] Servo Jerker successfully opened the serial port[0m
+[servo_jerk-3] [0m[INFO] [1731801156.370954441] [servo_jerker]: [USER DEBUG LOG] Servo Jerking has been activated![0m
+[altitude_monitor-4] [0m[INFO] [1731801156.380653003] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor successfully opened the serial port[0m
+[manager-1] [0m[INFO] [1731801156.386253566] [bobot_manager]: [USER DEBUG LOG] Finished constructing the manager, Bobot is now in it's nominal operation phase![0m
+[bobot_camera-6] [0m[INFO] [1731801156.390867816] [bobot_camera]: [Bobot Camera] Openned video device [0m
+[bobot_camera-6] [0m[INFO] [1731801156.391327203] [bobot_camera]: [Bobot Camera] Queried capabilities [0m
+[bobot_camera-6] [0m[INFO] [1731801156.393940615] [bobot_camera]: [Bobot Camera] Set up pixel format [0m
+[bobot_camera-6] [0m[INFO] [1731801156.394583415] [bobot_camera]: [Bobot Camera] Made request buffer[0m
+[bobot_camera-6] [0m[INFO] [1731801156.394775853] [bobot_camera]: [Bobot Camera] Made query buffer [0m
+[bobot_camera-6] [0m[INFO] [1731801156.394941290] [bobot_camera]: [Bobot Camera] Made input buffer [0m
+[bobot_camera-6] [0m[INFO] [1731801156.394989153] [bobot_camera]: [Bobot Camera] Initialized.[0m
+[bobot_camera-6] [0m[INFO] [1731801156.413147352] [bobot_camera]: [Bobot Camera] Started capturing images [0m
+[altitude_monitor-4] [0m[INFO] [1731801156.470118437] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor has been activated has been activated[0m
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  [INFO] [launch]: All log files can be found below /home/bobot1/.ros/log/2024-11-16-23-55-42-051714-balloonrobot-1023
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [manager-1]: process started with pid [1028]
+[INFO] [simple_timer-2]: process started with pid [1029]
+[INFO] [servo_jerk-3]: process started with pid [1030]
+[INFO] [altitude_monitor-4]: process started with pid [1031]
+[INFO] [bb_bobot_basic_trajectory-5]: process started with pid [1032]
+[INFO] [bobot_camera-6]: process started with pid [1033]
+[manager-1] [0m[INFO] [1731801343.603080810] [bobot_manager]: [USER DEBUG LOG] Bobot Manager starting up![0m
+[manager-1] [0m[INFO] [1731801343.613187372] [bobot_manager]: [USER DEBUG LOG] Starting time: 2024-11-16_23-55-43[0m
+[manager-1] [0m[INFO] [1731801343.614209672] [bobot_manager]: [USER DEBUG LOG] We are currently in flight mode![0m
+[manager-1] [0m[INFO] [1731801343.614595935] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Reading from current_flight.txt to see if we had already recorded data![0m
+[manager-1] [0m[INFO] [1731801343.618175459] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Found a new time in the current_flight.txt file![0m
+[manager-1] [0m[INFO] [1731801343.618422034] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] New time: 2024-11-16_23-52-36[0m
+[manager-1] [31m[ERROR] [1731801343.618531672] [bobot_manager]: [USER ERROR LOG] [CRITICAL STARTUP ERROR 1 : 16-23:55:43] Found a new time in current_flight.txt, indicating that we have reset! This is a considered a critical anomaly![0m
+[manager-1] [0m[INFO] [1731801343.618898559] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Reading from reset_counter.txt to see if we had already reset![0m
+[manager-1] [0m[INFO] [1731801343.620473747] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Found number of resets: 12[0m
+[manager-1] [0m[INFO] [1731801343.623250784] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Currrent number of resets: 13[0m
+[manager-1] [31m[ERROR] [1731801343.623412384] [bobot_manager]: [USER ERROR LOG] [CRITICAL STARTUP ERROR 2 : 16-23:55:43] reset_counter.txt indicates that we've reset multiple times! This is a critical error that will require investigating![0m
+[manager-1] [0m[INFO] [1731801343.624366534] [bobot_manager]: [USER DEBUG LOG] Got the path to bobot_bin/ directory: /home/bobot1/bobot-1/src/bobot_bin[0m
+[manager-1] [0m[INFO] [1731801343.624616672] [bobot_manager]: [USER DEBUG LOG] Got the path to the error log for this flight: /home/bobot1/bobot-1/src/bobot_bin/log_files/error_logs[0m
+[manager-1] [0m[INFO] [1731801343.624696697] [bobot_manager]: [USER DEBUG LOG] Got the path to the flight log for this flight: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs[0m
+[manager-1] [0m[INFO] [1731801343.631079847] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] bobot_bin/log_files/flight_logs/ directory exists! Moving on...[0m
+[manager-1] [0m[INFO] [1731801343.631443359] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] bobot_bin/log_files/error_logs/ directory exists! Moving on...[0m
+[manager-1] [0m[INFO] [1731801343.632176634] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Error log file did not previously exist, creating it now![0m
+[manager-1] [0m[INFO] [1731801343.632417496] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] New error log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/error_logs/bobot_error_log_2024-11-16_23-52-36.txt[0m
+[manager-1] [0m[INFO] [1731801343.634396446] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Flight log file already exists, appending new data to it[0m
+[manager-1] [0m[INFO] [1731801343.634676084] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Found flight log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_log_2024-11-16_23-52-36.txt[0m
+[manager-1] [33m[WARN] [1731801343.634792821] [bobot_manager]: [USER WARN LOG] [ERROR LOG: 16-23:55:43] Found an already existing flight log at our start_time, indicating we've restarted. We should have already noted this![0m
+[manager-1] [0m[INFO] [1731801343.635057709] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Flight log csv file already exists, appending new data to it[0m
+[manager-1] [0m[INFO] [1731801343.635183709] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Found flight csv data log file: /home/bobot1/bobot-1/src/bobot_bin/log_files/flight_logs/bobot_flight_csv_data_log_2024-11-16_23-52-36.csv[0m
+[manager-1] [33m[WARN] [1731801343.635291771] [bobot_manager]: [USER WARN LOG] [ERROR LOG: 16-23:55:43] Found an already existing flight csv data log at our start_time, indicating we've restarted. We should have already noted this![0m
+[manager-1] [0m[INFO] [1731801343.635391021] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Finished verifiying startup sequence, now setting up ROS infrastructure![0m
+[altitude_monitor-4] [0m[INFO] [1731801343.656274833] [altitude_monitor]: [USER DEBUG LOG] Getting parameters for Altitude Monitor node...[0m
+[altitude_monitor-4] [0m[INFO] [1731801343.660712295] [altitude_monitor]: [USER DEBUG LOG] Found following parameters for the Altitude Monitor
+[altitude_monitor-4] Sample Rate (Hz): 0.200000
+[altitude_monitor-4] Max Altitude: 75000
+[altitude_monitor-4] Is Simulated: 0
+[altitude_monitor-4] [0m
+[altitude_monitor-4] [0m[INFO] [1731801343.660910083] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor node has succesfully launched! Starting state is [unconfigured][0m
+[bobot_camera-6] [0m[INFO] [1731801343.680172157] [bobot_camera]: [Bobot Camera] Openned video device [0m
+[bobot_camera-6] [0m[INFO] [1731801343.680697020] [bobot_camera]: [Bobot Camera] Queried capabilities [0m
+[bobot_camera-6] [0m[INFO] [1731801343.686730469] [bobot_camera]: [Bobot Camera] Set up pixel format [0m
+[bobot_camera-6] [0m[INFO] [1731801343.687690157] [bobot_camera]: [Bobot Camera] Made request buffer[0m
+[bobot_camera-6] [0m[INFO] [1731801343.688753069] [bobot_camera]: [Bobot Camera] Made query buffer [0m
+[manager-1] [0m[INFO] [1731801343.680212507] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Attempting to connect to the flight timer's /get_state service![0m
+[servo_jerk-3] [0m[INFO] [1731801343.681634707] [servo_jerker]: [USER DEBUG LOG] Getting parameters for Servo Jerker node...[0m
+[servo_jerk-3] [0m[INFO] [1731801343.687416969] [servo_jerker]: [USER DEBUG LOG] Found servo to jerk: ID-1[0m
+[servo_jerk-3] [0m[INFO] [1731801343.689787632] [servo_jerker]: [USER DEBUG LOG] Found following parameters for Servo Jerker
+[servo_jerk-3] Servo Jerk rate (Hz): 2.000000
+[servo_jerk-3] Is simulated: 0
+[servo_jerk-3] Max Angle: 100
+[servo_jerk-3] Min Angle: 80
+[servo_jerk-3] [0m
+[servo_jerk-3] [0m[INFO] [1731801343.690194582] [servo_jerker]: [USER DEBUG LOG] Servo Jerker node has successfully launched! Starting state is {state: unconfigured}[0m
+[bobot_camera-6] [0m[INFO] [1731801343.689061532] [bobot_camera]: [Bobot Camera] Made input buffer [0m
+[bobot_camera-6] [0m[INFO] [1731801343.691123732] [bobot_camera]: [Bobot Camera] Initialized.[0m
+[manager-1] [0m[INFO] [1731801343.699923744] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Successfully connected to /get_state service for the servo jerker![0m
+[manager-1] [0m[INFO] [1731801343.700296369] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Successfully connected to /change_state service for the servo jerker![0m
+[manager-1] [0m[INFO] [1731801343.700469506] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Successfully connected to /get_state service for the servo commander![0m
+[manager-1] [0m[INFO] [1731801343.700597806] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Successfully connected to /change_state service for the servo commander![0m
+[manager-1] [0m[INFO] [1731801343.700752081] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Successfully connected to /get_state service for the altitude monitor![0m
+[manager-1] [0m[INFO] [1731801343.700935819] [bobot_manager]: [USER DEBUG LOG] [FLIGHT LOG: 16-23:55:43] Successfully connected to /change_state service for the altitude monitor![0m
+[servo_jerk-3] [0m[INFO] [1731801343.702393944] [servo_jerker]: [USER DEBUG LOG] Attempting to configure Servo Jerker, please hold[0m
+[altitude_monitor-4] [0m[INFO] [1731801343.703247731] [altitude_monitor]: [USER DEBUG LOG] Attempting to configure Altitude Monitor, please hold...[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731801343.708460231] [bobot_trajectory_generator]: [USER DEBUG LOG] Getting parameters for BB-Bobot Trajectory Generator node...[0m
+[bobot_camera-6] [0m[INFO] [1731801343.710231081] [bobot_camera]: [Bobot Camera] Started capturing images [0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731801343.714661868] [bobot_trajectory_generator]: [USER DEBUG LOG] Found joint with id: 1[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731801343.714954506] [bobot_trajectory_generator]: [USER DEBUG LOG] Found joint with id: 2[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731801343.715089181] [bobot_trajectory_generator]: [USER DEBUG LOG] Found following parameters for BB-Bobot-1's Basic Trajectory Generator
+[bb_bobot_basic_trajectory-5] Is Simulated: 0
+[bb_bobot_basic_trajectory-5] Hardware Loop Rate: 100.000000
+[bb_bobot_basic_trajectory-5] Num Joints: 2
+[bb_bobot_basic_trajectory-5] Trajectory Time: 5
+[bb_bobot_basic_trajectory-5] Number of Repeats Per Trajectory: 3
+[bb_bobot_basic_trajectory-5] [0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731801343.715600568] [bobot_trajectory_generator]: [USER DEBUG LOG] BB-Bobot-1 Trajectory Generator node has successfully launched! Starting state is {state: unconfigured}[0m
+[servo_jerk-3] [0m[INFO] [1731801343.727159843] [servo_jerker]: [USER DEBUG LOG] Servo Jerker ROS stuff made! Opening the serial port[0m
+[servo_jerk-3] [0m[INFO] [1731801343.730253180] [servo_jerker]: [USER DEBUG LOG] Servo Jerker successfully opened the serial port[0m
+[servo_jerk-3] [0m[INFO] [1731801343.736475492] [servo_jerker]: [USER DEBUG LOG] Servo Jerking has been activated![0m
+[manager-1] [0m[INFO] [1731801343.739769630] [bobot_manager]: [USER DEBUG LOG] Finished constructing the manager, Bobot is now in it's nominal operation phase![0m
+[altitude_monitor-4] [0m[INFO] [1731801343.746091842] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor successfully opened the serial port[0m
+[altitude_monitor-4] [0m[INFO] [1731801343.837163889] [altitude_monitor]: [USER DEBUG LOG] Altitude Monitor has been activated has been activated[0m
+[simple_timer-2] [0m[INFO] [1731804944.588121631] [simple_timer]: Notified the manager node.[0m
+[manager-1] [0m[INFO] [1731804944.588758443] [bobot_manager]: [USER DEBUG LOG] Recieved past due notification from timer, starting servo commander![0m
+[manager-1] [0m[INFO] [1731804944.590228431] [bobot_manager]: [USER DEBUG LOG] Manager is starting the servo commander![0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731804944.590844818] [bobot_trajectory_generator]: [USER DEBUG LOG] Attempting to configure BB-Bobot-1's basic trajectory commander, please hold...[0m
+[servo_jerk-3] [0m[INFO] [1731804944.590369081] [servo_jerker]: [USER DEBUG LOG] Servo jerking has been deactivated... we should be starting motion![0m
+[servo_jerk-3] [0m[INFO] [1731804944.591420968] [servo_jerker]: [USER DEBUG LOG] Servo Jerk Node has begin cleaning up[0m
+[servo_jerk-3] [0m[INFO] [1731804944.591703956] [servo_jerker]: [USER DEBUG LOG] Servo Jerk Node has finished cleaning up, quite the mess we made![0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731804944.600905318] [bobot_trajectory_generator]: [USER DEBUG LOG] BB-Bobot-1 Trajectory Generator ROS stuff made! Opening the serial port[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731804944.601965455] [bobot_trajectory_generator]: [USER DEBUG LOG] BB-Bobot-1 Trajectory Generator successfully opened the serial port[0m
+[bb_bobot_basic_trajectory-5] [0m[INFO] [1731804944.602696030] [bobot_trajectory_generator]: [USER DEBUG LOG] BB-Bobot-1 Trajectory Generatoring has been activated![0m

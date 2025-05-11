@@ -17,6 +17,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/BobotAbsPosition.msg"
   "msg/ServoJerk.msg"
   "msg/AltitudeMonitor.msg"
+  "msg/BobotCommander.msg"
 
   # SERVICES
   "srv/BobotInitialize.srv"
